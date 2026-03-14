@@ -1,0 +1,7 @@
+{
+  "extends": "@pmf/config-typescript/base",
+  "compilerOptions": {
+    "rootDir": "."
+  },
+  "include": ["src/**/*.ts", "drizzle.config.ts"]
+}

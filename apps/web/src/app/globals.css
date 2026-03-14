@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 42 33% 98%;
+  --background-alt: 210 40% 96%;
+  --foreground: 222 47% 11%;
+  --surface: 0 0% 100%;
+  --surface-foreground: 222 47% 11%;
+  --muted: 210 28% 95%;
+  --muted-foreground: 215 16% 40%;
+  --border: 214 32% 91%;
+  --ring: 222 47% 11%;
+  --primary: 222 47% 11%;
+  --primary-foreground: 210 40% 98%;
+  --accent: 36 92% 56%;
+  --accent-foreground: 222 47% 11%;
+  --success: 142 71% 45%;
+  --success-foreground: 138 76% 97%;
+  --warning: 43 96% 56%;
+  --warning-foreground: 222 47% 11%;
+  --danger: 0 72% 51%;
+  --danger-foreground: 0 86% 97%;
+}
+
+* {
+  border-color: hsl(var(--border) / 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, hsl(var(--primary) / 0.18), transparent 24%),
+    radial-gradient(circle at top left, hsl(var(--accent) / 0.12), transparent 20%),
+    linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background-alt)) 100%);
+  color: hsl(var(--foreground));
+  text-rendering: optimizeLegibility;
+}
+
+.grid-surface {
+  background-image:
+    linear-gradient(to right, hsl(var(--border) / 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--border) / 0.45) 1px, transparent 1px);
+  background-size: 48px 48px;
+}

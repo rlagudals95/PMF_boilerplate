@@ -1,0 +1,6 @@
+{
+  "extends": "@pmf/config-typescript/base",
+  "compilerOptions": {
+    "noEmit": true
+  }
+}
