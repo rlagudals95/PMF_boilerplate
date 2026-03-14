@@ -3,7 +3,7 @@
 ## Purpose
 
 이 저장소는 PMF를 찾기 위한 실험용 보일러플레이트입니다.
-첫 제품은 `모두의렌탈`이지만, 다음 사이드 프로젝트에서도 랜딩-리드-상담-실험 관리 루프를 재사용할 수 있어야 합니다.
+첫 제품은 `모두의렌탈`이지만, 다음 사이드 프로젝트에서도 랜딩-리드-상담-결제-실험 관리 루프를 재사용할 수 있어야 합니다.
 
 ## Working rules
 
@@ -57,6 +57,10 @@ pnpm db:seed
 - `packages/ui`: shared UI
 - `packages/analytics`: track abstraction
 - `packages/error-logging`: error report abstraction
+- `docs/product-squad`: 역할 기반 운영 규칙과 work item 템플릿
+- `docs/work-items`: 실제 작업별 brief, spec, review 산출물
+- `docs/templates`: feature/experiment spec 템플릿
+- `docs/adr`: 구조와 운영 원칙에 대한 경량 결정 로그
 
 ## How to add a new experiment
 
@@ -65,3 +69,16 @@ pnpm db:seed
 3. 필요한 경우 폼 스키마를 확장한다.
 4. 이벤트 이름은 가능하면 기존 enum 안에서 재사용한다.
 5. 자세한 운영 규칙은 `docs/experiment-playbook.md`를 따른다.
+
+## How to run important work
+
+- 여러 파일에 걸친 기능 작업, 실험 변경, 폼/어드민/analytics/DB 변경은 먼저 `docs/product-squad/operating-model.md`를 읽는다.
+- 중요한 작업은 `ai/context/spec-driven.md`와 `ai/context/doc-sync.md`도 함께 읽는다.
+- 해당 작업은 `docs/work-items/<work-id>/`에 brief와 role spec을 만든 뒤 구현한다.
+- 작은 문구 수정이나 단일 스타일 수정은 full process를 생략할 수 있지만, skip 이유는 남긴다.
+
+## Documentation source of truth
+
+- 구현 기준 문서는 repo 안 Markdown이다.
+- Notion 같은 외부 도구는 optional collaboration surface로만 사용한다.
+- 외부 메모는 구현 전에 `docs/templates/*`, `docs/work-items/*`, `docs/adr/*` 중 하나로 정규화한다.

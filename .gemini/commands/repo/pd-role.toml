@@ -1,0 +1,14 @@
+description = "Applies the repository's pd-role workflow. Use when 카피, 정보 구조, CTA/폼 흐름, 상태/예외 UX를 검토할 때"
+prompt = '''
+Use the repository workflow below as the authoritative guide for this task.
+
+@{ai/skills/pd-role.md}
+
+Instructions:
+- Apply the workflow to the current conversation and workspace.
+- If the workflow asks you to load other canonical documents, load them before acting.
+- If command arguments are provided, treat them as the immediate task input.
+
+Task input:
+{{args}}
+'''

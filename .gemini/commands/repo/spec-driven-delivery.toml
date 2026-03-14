@@ -1,0 +1,14 @@
+description = "Applies the repository's spec-driven-delivery workflow. Use when 중요한 작업을 시작하기 전에 spec 존재 여부, 읽기 순서, 구현 전 결정 누락을 점검할 때"
+prompt = '''
+Use the repository workflow below as the authoritative guide for this task.
+
+@{ai/skills/spec-driven-delivery.md}
+
+Instructions:
+- Apply the workflow to the current conversation and workspace.
+- If the workflow asks you to load other canonical documents, load them before acting.
+- If command arguments are provided, treat them as the immediate task input.
+
+Task input:
+{{args}}
+'''

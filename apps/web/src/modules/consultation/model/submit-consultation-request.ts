@@ -1,56 +1,60 @@
 import {
-  consultationRequestInputSchema,
   createConsultationRequestFromInput,
   createLeadFromInput,
+  type ConsultationRequestInput,
 } from "@pmf/core";
 import { createConsultationRequest, createLead } from "@pmf/db";
 import { revalidatePath } from "next/cache";
 
 import { appAnalytics } from "@/lib/analytics";
 import { appErrorLogger } from "@/lib/error-logging";
-import {
-  createInvalidInputResult,
-  type ActionResult,
-  type AnalyticsContextInput,
-} from "@/shared/types/form-action";
+import type { ActionResult, AnalyticsContextInput } from "@/shared/types/form-action";
 
 export const submitConsultationRequest = async (
-  input: unknown,
+  input: ConsultationRequestInput,
   analyticsContext?: AnalyticsContextInput,
 ): Promise<ActionResult> => {
   try {
-    const parsed = consultationRequestInputSchema.safeParse(input);
-
-    if (!parsed.success) {
-      return createInvalidInputResult(parsed.error.flatten().fieldErrors);
-    }
-
     const lead = createLeadFromInput({
-      name: parsed.data.name,
-      phone: parsed.data.phone,
-      email: parsed.data.email,
-      productInterest: parsed.data.productInterest,
-      message: parsed.data.notes,
+      name: input.name,
+      phone: input.phone,
+      email: input.email,
+      productInterest: input.productInterest,
+      message: input.notes,
       source: "consult_page",
       consent: true,
     });
 
-    const consultationRequest = createConsultationRequestFromInput(parsed.data, lead.id);
+    const consultationRequest = createConsultationRequestFromInput(input, lead.id);
 
     await createLead(lead);
     await createConsultationRequest(consultationRequest);
 
-    await appAnalytics.track({
-      eventName: "consultation_requested",
-      path: "/consult",
-      sessionId: analyticsContext?.sessionId,
-      leadId: lead.id,
-      properties: {
-        consultationType: consultationRequest.consultationType,
-        budgetRange: consultationRequest.budgetRange,
-        rentalPeriod: consultationRequest.rentalPeriod,
-      },
-    });
+    try {
+      await appAnalytics.track({
+        eventName: "consultation_requested",
+        path: "/consult",
+        sessionId: analyticsContext?.sessionId,
+        leadId: lead.id,
+        properties: {
+          consultationType: consultationRequest.consultationType,
+          budgetRange: consultationRequest.budgetRange,
+          rentalPeriod: consultationRequest.rentalPeriod,
+        },
+      });
+    } catch (error) {
+      await appErrorLogger.report({
+        source: "module.consultation.submitConsultationRequest.analytics",
+        message: "Consultation request was saved but analytics tracking failed",
+        error,
+        level: "warning",
+        context: {
+          consultationRequestId: consultationRequest.id,
+          leadId: lead.id,
+          hasSessionId: Boolean(analyticsContext?.sessionId),
+        },
+      });
+    }
 
     revalidatePath("/consult");
     revalidatePath("/admin");

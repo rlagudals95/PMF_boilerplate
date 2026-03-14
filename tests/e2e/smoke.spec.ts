@@ -5,7 +5,7 @@ test("landing page loads", async ({ page }) => {
 
   await expect(
     page.getByRole("heading", {
-      name: /PMF 탐색용 보일러플레이트가.*기본으로 제공하는 것/i,
+      name: /PMF 실험용 보일러플레이트가.*기본으로 제공하는 기능/i,
     }),
   ).toBeVisible();
   await expect(page.getByTestId("lead-form")).toBeVisible();

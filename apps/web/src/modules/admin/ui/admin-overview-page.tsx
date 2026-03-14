@@ -4,6 +4,7 @@ import {
   listExperiments,
   listLeads,
   listPageEvents,
+  listPayments,
   listProducts,
 } from "@pmf/db";
 import {
@@ -23,13 +24,14 @@ import { MetricCard } from "@/modules/admin/ui/metric-card";
 import { StatusBadge } from "@/modules/admin/ui/status-badge";
 
 export default async function AdminOverviewPage() {
-  const [leads, consultations, products, experiments, pageEvents] =
+  const [leads, consultations, products, experiments, pageEvents, payments] =
     await Promise.all([
       listLeads(),
       listConsultationRequests(),
       listProducts(),
       listExperiments(),
       listPageEvents(),
+      listPayments(),
     ]);
 
   const metrics = summarizePipeline({
@@ -38,6 +40,7 @@ export default async function AdminOverviewPage() {
     products,
     experiments,
     pageEvents,
+    payments,
   });
 
   return (
@@ -57,6 +60,11 @@ export default async function AdminOverviewPage() {
           title="Consult requests"
           value={metrics.totalConsultations}
           description="강한 의사 신호로 볼 수 있는 상담 요청 수"
+        />
+        <MetricCard
+          title="Payments"
+          value={metrics.totalPayments}
+          description="결제 생성부터 완료까지 저장된 결제 시도 수"
         />
         <MetricCard
           title="Tracked events"
@@ -100,24 +108,33 @@ export default async function AdminOverviewPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>실험 현황</CardTitle>
+            <CardTitle>최근 결제</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {experiments.map((experiment) => (
+            {payments.slice(0, 4).map((payment) => (
               <div
-                key={experiment.id}
+                key={payment.id}
                 className="rounded-2xl border border-slate-200 p-4"
               >
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="font-medium text-slate-950">{experiment.name}</p>
-                    <p className="text-sm text-slate-500">{experiment.code}</p>
+                    <p className="font-medium text-slate-950">
+                      {payment.productDescription}
+                    </p>
+                    <p className="text-sm text-slate-500">{payment.orderNo}</p>
                   </div>
-                  <StatusBadge value={experiment.status} />
+                  <StatusBadge value={payment.status} />
                 </div>
-                <p className="mt-3 text-sm text-slate-600">{experiment.hypothesis}</p>
+                <p className="mt-3 text-sm text-slate-600">
+                  {payment.customerName} · {payment.amount.toLocaleString("ko-KR")}원
+                </p>
               </div>
             ))}
+            {payments.length === 0 ? (
+              <p className="text-sm text-slate-500">
+                아직 저장된 결제 시도가 없습니다.
+              </p>
+            ) : null}
           </CardContent>
         </Card>
       </div>

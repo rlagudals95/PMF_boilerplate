@@ -1,15 +1,17 @@
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import {
   consultationRequestSchema,
   experimentSchema,
   leadSchema,
   pageEventSchema,
+  paymentSchema,
   productSchema,
   type ConsultationRequest,
   type Experiment,
   type Lead,
   type PageEvent,
+  type Payment,
   type Product,
 } from "@pmf/core";
 
@@ -20,6 +22,7 @@ import {
   experiments,
   leads,
   pageEvents,
+  payments,
   products,
 } from "../schema";
 
@@ -38,8 +41,77 @@ const consultationListSchema = consultationRequestSchema.array();
 const productListSchema = productSchema.array();
 const experimentListSchema = experimentSchema.array();
 const pageEventListSchema = pageEventSchema.array();
+const paymentListSchema = paymentSchema.array();
 
 const optional = <T>(value: T | null | undefined) => value ?? undefined;
+
+type PaymentUpdateInput = Partial<Omit<Payment, "id" | "provider" | "orderNo" | "createdAt">>;
+
+const mapPaymentRow = (row: typeof payments.$inferSelect): Payment => ({
+  ...row,
+  provider: row.provider as Payment["provider"],
+  currency: row.currency as Payment["currency"],
+  status: row.status as Payment["status"],
+  customerEmail: optional(row.customerEmail),
+  payToken: optional(row.payToken),
+  checkoutUrl: optional(row.checkoutUrl),
+  payMethod: optional(row.payMethod),
+  approvedAt: optional(row.approvedAt),
+});
+
+const buildPaymentUpdateValues = (updates: PaymentUpdateInput) => {
+  const values: Record<string, unknown> = {};
+
+  if ("productDescription" in updates) {
+    values.productDescription = updates.productDescription;
+  }
+
+  if ("amount" in updates) {
+    values.amount = updates.amount;
+  }
+
+  if ("currency" in updates) {
+    values.currency = updates.currency;
+  }
+
+  if ("status" in updates) {
+    values.status = updates.status;
+  }
+
+  if ("customerName" in updates) {
+    values.customerName = updates.customerName;
+  }
+
+  if ("customerEmail" in updates) {
+    values.customerEmail = updates.customerEmail ?? null;
+  }
+
+  if ("payToken" in updates) {
+    values.payToken = updates.payToken ?? null;
+  }
+
+  if ("checkoutUrl" in updates) {
+    values.checkoutUrl = updates.checkoutUrl ?? null;
+  }
+
+  if ("payMethod" in updates) {
+    values.payMethod = updates.payMethod ?? null;
+  }
+
+  if ("metadata" in updates) {
+    values.metadata = updates.metadata ?? {};
+  }
+
+  if ("approvedAt" in updates) {
+    values.approvedAt = updates.approvedAt ?? null;
+  }
+
+  if ("updatedAt" in updates) {
+    values.updatedAt = updates.updatedAt;
+  }
+
+  return values;
+};
 
 export const listLeads = async (): Promise<Lead[]> => {
   if (!isDatabaseConfigured()) {
@@ -138,6 +210,55 @@ export const listPageEvents = async (): Promise<PageEvent[]> => {
   );
 };
 
+export const listPayments = async (): Promise<Payment[]> => {
+  if (!isDatabaseConfigured()) {
+    const store = await readLocalStore();
+    return sortByNewest(paymentListSchema.parse(store.payments));
+  }
+
+  const rows = await getDatabase().select().from(payments).orderBy(desc(payments.createdAt));
+
+  return paymentListSchema.parse(rows.map(mapPaymentRow));
+};
+
+export const findPaymentByOrderNo = async (
+  orderNo: string,
+): Promise<Payment | undefined> => {
+  if (!isDatabaseConfigured()) {
+    const store = await readLocalStore();
+    return paymentSchema
+      .optional()
+      .parse(store.payments.find((payment) => payment.orderNo === orderNo));
+  }
+
+  const [row] = await getDatabase()
+    .select()
+    .from(payments)
+    .where(eq(payments.orderNo, orderNo))
+    .limit(1);
+
+  return paymentSchema.optional().parse(row ? mapPaymentRow(row) : undefined);
+};
+
+export const findPaymentByPayToken = async (
+  payToken: string,
+): Promise<Payment | undefined> => {
+  if (!isDatabaseConfigured()) {
+    const store = await readLocalStore();
+    return paymentSchema
+      .optional()
+      .parse(store.payments.find((payment) => payment.payToken === payToken));
+  }
+
+  const [row] = await getDatabase()
+    .select()
+    .from(payments)
+    .where(eq(payments.payToken, payToken))
+    .limit(1);
+
+  return paymentSchema.optional().parse(row ? mapPaymentRow(row) : undefined);
+};
+
 export const createLead = async (lead: Lead) => {
   if (!isDatabaseConfigured()) {
     const store = await readLocalStore();
@@ -176,4 +297,80 @@ export const createPageEvent = async (pageEvent: PageEvent) => {
 
   await getDatabase().insert(pageEvents).values(pageEvent);
   return pageEvent;
+};
+
+export const createPayment = async (payment: Payment) => {
+  if (!isDatabaseConfigured()) {
+    const store = await readLocalStore();
+    store.payments.unshift(payment);
+    await writeLocalStore(store);
+    return payment;
+  }
+
+  await getDatabase().insert(payments).values(payment);
+  return payment;
+};
+
+export const updatePaymentByOrderNo = async (
+  orderNo: string,
+  updates: PaymentUpdateInput,
+) => {
+  if (!isDatabaseConfigured()) {
+    const store = await readLocalStore();
+    const index = store.payments.findIndex((payment) => payment.orderNo === orderNo);
+
+    if (index < 0) {
+      return undefined;
+    }
+
+    const current = store.payments[index]!;
+    const next: Payment = {
+      ...current,
+      ...updates,
+      updatedAt: updates.updatedAt ?? current.updatedAt,
+    };
+
+    store.payments[index] = next;
+    await writeLocalStore(store);
+    return next;
+  }
+
+  await getDatabase()
+    .update(payments)
+    .set(buildPaymentUpdateValues(updates))
+    .where(eq(payments.orderNo, orderNo));
+
+  return findPaymentByOrderNo(orderNo);
+};
+
+export const updatePaymentByPayToken = async (
+  payToken: string,
+  updates: PaymentUpdateInput,
+) => {
+  if (!isDatabaseConfigured()) {
+    const store = await readLocalStore();
+    const index = store.payments.findIndex((payment) => payment.payToken === payToken);
+
+    if (index < 0) {
+      return undefined;
+    }
+
+    const current = store.payments[index]!;
+    const next: Payment = {
+      ...current,
+      ...updates,
+      updatedAt: updates.updatedAt ?? current.updatedAt,
+    };
+
+    store.payments[index] = next;
+    await writeLocalStore(store);
+    return next;
+  }
+
+  await getDatabase()
+    .update(payments)
+    .set(buildPaymentUpdateValues(updates))
+    .where(eq(payments.payToken, payToken));
+
+  return findPaymentByPayToken(payToken);
 };

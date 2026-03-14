@@ -16,6 +16,13 @@ import { getAnalyticsSessionId } from "@/shared/lib/analytics-session";
 import { applyActionErrors } from "@/shared/lib/apply-action-errors";
 import { FieldError } from "@/shared/ui/field-error";
 
+const consentClassName =
+  "flex items-start gap-3 rounded-2xl border border-border bg-muted/70 px-4 py-3 text-sm text-muted-foreground";
+const checkboxClassName =
+  "mt-1 h-4 w-4 rounded border-border text-primary accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/20";
+const selectClassName =
+  "flex h-11 w-full rounded-2xl border border-border bg-surface px-4 text-sm text-foreground outline-none ring-offset-background transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/20";
+
 export function ConsultationRequestForm() {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -63,10 +70,10 @@ export function ConsultationRequestForm() {
   });
 
   return (
-    <Card className="border-slate-900/10 bg-white shadow-glow">
+    <Card className="border-primary/15 bg-surface shadow-glow">
       <CardHeader>
         <CardTitle className="text-2xl">상담 요청</CardTitle>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-muted-foreground">
           리드만 보는 수준을 넘어, 실제 상담 의사와 맥락까지 확인하는 검증 단계입니다.
         </p>
       </CardHeader>
@@ -114,11 +121,7 @@ export function ConsultationRequestForm() {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="consult-type">상담 방식</Label>
-              <select
-                id="consult-type"
-                className="flex h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-950 outline-none focus-visible:border-slate-950 focus-visible:ring-2 focus-visible:ring-slate-900/10"
-                {...register("consultationType")}
-              >
+              <select id="consult-type" className={selectClassName} {...register("consultationType")}>
                 <option value="call">전화</option>
                 <option value="kakao">카카오</option>
                 <option value="visit">방문</option>
@@ -166,10 +169,10 @@ export function ConsultationRequestForm() {
             <FieldError message={errors.notes?.message} />
           </div>
 
-          <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <label className={consentClassName}>
             <input
               type="checkbox"
-              className="mt-1 h-4 w-4 rounded border-slate-300"
+              className={checkboxClassName}
               {...register("consent")}
             />
             상담 진행을 위한 개인정보 수집 및 연락에 동의합니다.
@@ -186,7 +189,7 @@ export function ConsultationRequestForm() {
           </Button>
 
           {serverMessage ? (
-            <p className="text-sm text-slate-600" data-testid="consult-message">
+            <p className="text-sm text-muted-foreground" data-testid="consult-message">
               {serverMessage}
             </p>
           ) : null}

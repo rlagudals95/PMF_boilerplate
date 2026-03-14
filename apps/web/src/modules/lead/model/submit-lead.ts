@@ -1,39 +1,42 @@
-import { createLeadFromInput, leadCaptureInputSchema } from "@pmf/core";
+import { createLeadFromInput, type LeadCaptureInput } from "@pmf/core";
 import { createLead } from "@pmf/db";
 import { revalidatePath } from "next/cache";
 
 import { appAnalytics } from "@/lib/analytics";
 import { appErrorLogger } from "@/lib/error-logging";
-import {
-  createInvalidInputResult,
-  type ActionResult,
-  type AnalyticsContextInput,
-} from "@/shared/types/form-action";
+import type { ActionResult, AnalyticsContextInput } from "@/shared/types/form-action";
 
 export const submitLead = async (
-  input: unknown,
+  input: LeadCaptureInput,
   analyticsContext?: AnalyticsContextInput,
 ): Promise<ActionResult> => {
   try {
-    const parsed = leadCaptureInputSchema.safeParse(input);
-
-    if (!parsed.success) {
-      return createInvalidInputResult(parsed.error.flatten().fieldErrors);
-    }
-
-    const lead = createLeadFromInput(parsed.data);
+    const lead = createLeadFromInput(input);
     await createLead(lead);
 
-    await appAnalytics.track({
-      eventName: "lead_form_submitted",
-      path: "/",
-      sessionId: analyticsContext?.sessionId,
-      leadId: lead.id,
-      properties: {
-        source: lead.source,
-        productInterest: lead.productInterest,
-      },
-    });
+    try {
+      await appAnalytics.track({
+        eventName: "lead_form_submitted",
+        path: "/",
+        sessionId: analyticsContext?.sessionId,
+        leadId: lead.id,
+        properties: {
+          source: lead.source,
+          productInterest: lead.productInterest,
+        },
+      });
+    } catch (error) {
+      await appErrorLogger.report({
+        source: "module.lead.submitLead.analytics",
+        message: "Lead was saved but analytics tracking failed",
+        error,
+        level: "warning",
+        context: {
+          leadId: lead.id,
+          hasSessionId: Boolean(analyticsContext?.sessionId),
+        },
+      });
+    }
 
     revalidatePath("/");
     revalidatePath("/admin");

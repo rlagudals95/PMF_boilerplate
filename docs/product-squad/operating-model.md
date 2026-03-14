@@ -1,0 +1,120 @@
+# Product Squad Operating Model
+
+## 목적
+
+- 중요한 작업을 PM/PD/FE/BE 역할로 분리하되, repo 안 문서를 source of truth로 유지한다.
+- 구현 전에 결정 누락을 문서로 고정해 바이브 코딩의 품질 편차를 줄인다.
+
+## 기본 원칙
+
+- 기본 진입점은 `product-squad`다.
+- 중요한 작업은 먼저 문서 산출물을 만든다.
+- 최신 `brief.md`가 구현 전 기준 문서다.
+- 작은 수정은 full process를 생략할 수 있지만 `skip_reason`은 남긴다.
+- spec-driven 기준은 `ai/context/spec-driven.md`를 따른다.
+- 문서 sync 기준은 `ai/context/doc-sync.md`를 따른다.
+
+## 어떤 작업이 gated work 인가
+
+- 새 실험 추가 또는 기존 실험 로직 변경
+- 랜딩, 폼, 어드민 동작 변경
+- analytics event, marketing event, error logging 변경
+- DB schema, repository, validation 변경
+- 여러 파일에 걸친 기능 작업
+
+## 어떤 작업은 light work 인가
+
+- 오탈자 수정
+- 단일 스타일 수정
+- 명백한 소규모 버그 수정
+- 기존 spec 범위 안의 단순 리팩터링
+
+## 역할
+
+- `product-squad`
+  - 작업 분류
+  - 역할 선택
+  - work item 구조와 skip 규칙 관리
+- `pm-role`
+  - 문제 정의
+  - 목표, 비범위, success metric
+  - acceptance criteria
+- `pd-role`
+  - 카피, IA, CTA/폼 흐름
+  - happy path와 edge state 검토
+- `fe-role`
+  - route, module, component 경계
+  - client/server 상태 흐름
+  - FE 테스트 전략
+- `be-role`
+  - validation, use case, repository
+  - analytics/event 영향
+  - failure mode와 테스트 전략
+
+## 역할 선택 규칙
+
+- 사용자 흐름, 카피, 폼 변경: `PM + PD + FE`
+- validation, persistence, analytics event, DB 영향 포함: `PM + PD + FE + BE`
+- 순수 FE 리팩터링: `FE`만 허용 가능
+- 순수 BE 리팩터링: `BE`만 허용 가능
+
+생략한 역할 문서는 `status: skipped`와 `skip_reason`을 채운다.
+
+## Work ID 규칙
+
+- 기본 형식: `YYYYMMDD-short-slug`
+- 실험 작업: `LP-001-YYYYMMDD-short-slug`
+
+예시:
+
+- `20251201-consult-form-copy`
+- `LP-001-20251201-hero-cta-test`
+
+## 폴더 구조
+
+```txt
+docs/work-items/<work-id>/
+  brief.md
+  ux-review.md
+  frontend-spec.md
+  backend-spec.md
+```
+
+## Frontmatter 계약
+
+모든 work item 문서는 아래 필드를 가진다.
+
+- `status`
+  - `draft`, `approved`, `in_progress`, `blocked`, `done`, `skipped`
+- `owner_role`
+  - `product-squad`, `pm`, `pd`, `fe`, `be`
+- `source_request`
+  - 사용자 요청 또는 이슈 링크
+- `affected_paths`
+  - 예상 영향 경로 목록
+- `dependencies`
+  - 선행 문서 또는 의존 작업 목록
+- `skip_reason`
+  - 생략 시 사유, 아니면 `null`
+
+## 운영 순서
+
+1. 요청을 `gated work` 또는 `light work`로 분류한다.
+2. gated work면 `work-id`를 만든다.
+3. `brief.md`를 먼저 만든다.
+4. 필요한 역할 문서를 만든다.
+5. 필요 없는 문서는 `skipped`로 남긴다.
+6. 구현은 필요한 문서가 준비된 뒤에만 시작한다.
+7. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
+8. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인한다.
+
+## PD 범위 제한
+
+- PD는 첫 버전에서 가벼운 UX 리뷰 역할만 맡는다.
+- 픽셀 단위 디자인 시스템, Figma 산출물, 브랜딩 리뉴얼은 범위 밖이다.
+
+## V1 제외 범위
+
+- 외부 PM 툴 연동
+- 백그라운드 에이전트
+- 별도 멀티에이전트 오케스트레이션 서비스

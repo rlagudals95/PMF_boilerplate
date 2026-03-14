@@ -10,11 +10,6 @@
 
 ## Available skills
 
-### `pmf-loop`
-
-- 위치: `ai/skills/pmf-loop.md`
-- 사용 시점: 랜딩, 리드, 상담, 인터뷰, 실험 설계를 수정할 때
-
 ### `repo-guardrails`
 
 - 위치: `ai/skills/repo-guardrails.md`
@@ -24,3 +19,38 @@
 
 - 위치: `ai/skills/experiment-ops.md`
 - 사용 시점: 실험 등록, 이벤트 명명, success metric 설계, 종료 기준 판단
+
+### `product-squad`
+
+- 위치: `ai/skills/product-squad.md`
+- 사용 시점: 중요한 기능 작업이나 실험 변경을 PM/PD/FE/BE 역할로 나눠서 운영할 때
+
+### `pm-role`
+
+- 위치: `ai/skills/pm-role.md`
+- 사용 시점: 문제정의, 목표, 범위, success metric, acceptance criteria를 고정할 때
+
+### `pd-role`
+
+- 위치: `ai/skills/pd-role.md`
+- 사용 시점: 카피, 정보 구조, CTA/폼 흐름, 상태/예외 UX를 검토할 때
+
+### `fe-role`
+
+- 위치: `ai/skills/fe-role.md`
+- 사용 시점: route, module, component, client/server 경계, FE 테스트 전략을 정리할 때
+
+### `be-role`
+
+- 위치: `ai/skills/be-role.md`
+- 사용 시점: validation, use case, repository, analytics/event 영향, failure mode를 정리할 때
+
+### `spec-driven-delivery`
+
+- 위치: `ai/skills/spec-driven-delivery.md`
+- 사용 시점: 중요한 작업을 시작하기 전에 spec 존재 여부, 읽기 순서, 구현 전 결정 누락을 점검할 때
+
+### `doc-sync`
+
+- 위치: `ai/skills/doc-sync.md`
+- 사용 시점: 구조 변경, 운영 규칙 변경, PR 마무리 시 문서 sync 필요 여부를 판단할 때

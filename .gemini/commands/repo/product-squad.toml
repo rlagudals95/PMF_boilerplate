@@ -1,0 +1,14 @@
+description = "Applies the repository's product-squad workflow. Use when 중요한 기능 작업이나 실험 변경을 PM/PD/FE/BE 역할로 나눠서 운영할 때"
+prompt = '''
+Use the repository workflow below as the authoritative guide for this task.
+
+@{ai/skills/product-squad.md}
+
+Instructions:
+- Apply the workflow to the current conversation and workspace.
+- If the workflow asks you to load other canonical documents, load them before acting.
+- If command arguments are provided, treat them as the immediate task input.
+
+Task input:
+{{args}}
+'''

@@ -9,6 +9,9 @@ export const appConfig = {
     "store",
     ...(process.env.MIXPANEL_PROJECT_TOKEN ? ["mixpanel"] : []),
   ],
+  paymentProviders: [
+    ...(process.env.TOSS_PAYMENTS_API_KEY ? ["toss"] : []),
+  ],
   marketingProviders: [
     ...(process.env.NEXT_PUBLIC_META_PIXEL_ID ? ["meta-pixel"] : []),
     ...(process.env.NEXT_PUBLIC_KAKAO_PIXEL_ID ? ["kakao-pixel"] : []),

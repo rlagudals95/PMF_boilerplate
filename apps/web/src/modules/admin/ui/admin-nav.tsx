@@ -8,6 +8,7 @@ import { cn } from "@pmf/ui";
 const items = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/leads", label: "Leads" },
+  { href: "/admin/payments", label: "Payments" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/experiments", label: "Experiments" },
 ];
@@ -30,8 +31,8 @@ export function AdminNav() {
             className={cn(
               "rounded-full px-4 py-2 text-sm font-medium transition",
               active
-                ? "bg-slate-950 text-white"
-                : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50",
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-surface text-muted-foreground ring-1 ring-border hover:bg-muted",
             )}
           >
             {item.label}

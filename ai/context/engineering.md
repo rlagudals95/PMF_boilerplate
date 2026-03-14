@@ -28,27 +28,33 @@
 1. `ai/context/project.md`
 2. 이 문서
 3. `ai/context/engineering-common.md`
-4. 작업에 맞는 FE/BE 문서
-5. `ai/skills/_index.md`
-6. 관련 스킬 문서
-7. 관련 `docs/*`와 실제 영향 파일
+4. `ai/context/spec-driven.md`
+5. 작업에 맞는 FE/BE 문서
+6. `ai/context/doc-sync.md`
+7. `ai/skills/_index.md`
+8. 관련 스킬 문서
+9. 관련 `docs/*`와 실제 영향 파일
 
 ## 어떤 작업에 어떤 문서를 읽는가
 
 - FE 작업
   - `engineering-common.md`
+  - `spec-driven.md`
   - `engineering-frontend.md`
 - DB/schema/repository/integration 작업
   - `engineering-common.md`
+  - `spec-driven.md`
   - `engineering-backend.md`
 - full-stack 작업
   - `engineering-common.md`
+  - `spec-driven.md`
   - `engineering-frontend.md`
   - `engineering-backend.md`
 
 ## 공통 핵심 가드레일 요약
 
 - 코드 변경 전에는 관련 문서와 실제 영향 파일을 먼저 읽는다.
+- 중요한 작업은 spec 존재 여부를 먼저 확인한다.
 - 공통 규칙은 한 문서에만 두고 중복 복붙하지 않는다.
 - 추상화는 재사용 근거가 있을 때만 도입한다.
 - 구조 규칙이 바뀌면 canonical context와 관련 아키텍처 문서를 함께 갱신한다.

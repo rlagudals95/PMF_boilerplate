@@ -25,15 +25,16 @@
 
 ### 3. Drizzle 스키마는 제품보다 실험 루프 중심
 
-초기 모델은 다음 다섯 가지입니다.
+초기 모델은 다음 여섯 가지입니다.
 
 - `leads`
 - `consultation_requests`
 - `products`
 - `experiments`
 - `page_events`
+- `payments`
 
-이 구조는 특정 렌탈 상품이 아니라 "문제-가설-리드-상담-이벤트" 루프를 재사용하기 위한 최소 공통 분모입니다.
+이 구조는 특정 렌탈 상품이 아니라 "문제-가설-리드-상담-결제-이벤트" 루프를 재사용하기 위한 최소 공통 분모입니다.
 
 ### 4. 리드와 상담 요청 분리
 
@@ -65,7 +66,8 @@
 ### 6. UI는 작은 shadcn 스타일 베이스만 공유
 
 - 버튼, 카드, 입력, 배지, 테이블 정도만 공유 패키지로 둡니다.
-- 큰 디자인 시스템이나 토큰 체계는 만들지 않았습니다.
+- 무거운 디자인 시스템은 만들지 않되, 서비스별 브랜드 변경을 위한 작은 semantic theme layer는 둡니다.
+- shared UI와 app shell은 raw brand color utility 대신 semantic token을 사용합니다.
 - 이유: PMF 실험 보일러플레이트는 미학보다 속도와 가독성이 우선입니다.
 
 ### 7. `apps/web`는 Hybrid FSD Lite 구조를 따른다
@@ -80,6 +82,7 @@ apps/web/src/
     landing/
     lead/
     consultation/
+    payment/
     admin/
     demo-funnel/
   shared/               # app-local shared UI, hooks, action entrypoint
@@ -100,6 +103,8 @@ apps/web/src/
 
 - FE 수정 규칙의 canonical source는 `ai/context/engineering-frontend.md`
 - backend/domain/infrastructure 규칙의 canonical source는 `ai/context/engineering-backend.md`
+- spec-driven 운영 기준의 canonical source는 `ai/context/spec-driven.md`
+- 문서 sync 기준의 canonical source는 `ai/context/doc-sync.md`
 - 이 문서는 현재 저장소 구조를 설명하고, `engineering-*` 문서는 수정 규칙을 설명합니다.
 
 ### 8. 책임 분리 규칙
@@ -161,12 +166,30 @@ page.tsx
 - 검증과 저장이 분리된다.
 - 문서와 테스트가 코드 변경을 따라간다.
 
+### 11. 중요한 작업은 역할 기반 문서 산출물로 관리한다
+
+- 기본 진입점은 `product-squad` 오케스트레이터입니다.
+- 역할은 `pm-role`, `pd-role`, `fe-role`, `be-role`로 나눕니다.
+- 중요한 작업은 구현 전에 `docs/work-items/<work-id>/`에 brief와 role spec을 먼저 만듭니다.
+- 이 문서 산출물은 외부 PM 툴이 아니라 repo 안의 source of truth로 취급합니다.
+- 작은 문구 수정, 단일 스타일 수정, 명백한 소규모 버그는 full process를 생략할 수 있습니다.
+- 자세한 운영 규칙은 `docs/product-squad/operating-model.md`를 canonical source로 둡니다.
+
+### 12. Spec-driven 운영은 repo 문서를 기준으로 한다
+
+- 구현 기준 문서는 repo 안 Markdown입니다.
+- `ai/context/spec-driven.md`는 어떤 작업에 어떤 문서가 먼저 필요한지 정의합니다.
+- `ai/context/doc-sync.md`는 어떤 변경이 어떤 문서를 갱신해야 하는지 정의합니다.
+- `docs/templates/*`는 feature/experiment spec의 최소 계약을 제공합니다.
+- `docs/adr/*`는 반복 규칙이나 구조 결정이 바뀔 때 기록합니다.
+- Notion 같은 외부 도구는 discovery와 협업에 사용할 수 있지만 source of truth는 아닙니다.
+
 ## 트레이드오프
 
 ### 의도적으로 넣지 않은 것
 
 - 복잡한 인증 플로우
-- 결제
+- 복잡한 구독/정산/환불 백오피스
 - CMS
 - 큐/백그라운드 잡
 - vendor lock-in analytics
@@ -177,6 +200,7 @@ page.tsx
 - Supabase auth 기반 admin 보호
 - 실험별 랜딩 템플릿 시스템
 - 이벤트 속성 표준화와 세션 추적
+- 다회차 결제/정산/환불 운영 도구
 - CSV export / CRM 연동
 - feature flags
 
@@ -186,6 +210,7 @@ page.tsx
 2. 필요한 경우 폼 zod 스키마를 확장합니다.
 3. 실험 채널/상태 enum을 추가합니다.
 4. 제품별 코드는 먼저 `apps/web/src/modules/*`에 두고, 두 번 이상 재사용되는 코드는 `apps/web/src/shared/*`를 검토합니다.
+5. 중요한 작업이면 관련 spec을 repo 문서로 먼저 고정한 뒤 구현합니다.
 
 ## 무엇을 더 넣고 무엇을 빼야 하는가
 
@@ -210,5 +235,7 @@ page.tsx
 
 1. `modules/<domain>` 안에 `ui`, `model`, `actions`를 먼저 둡니다.
 2. route/page는 해당 모듈을 조합만 하게 유지합니다.
-3. 두 번 이상 재사용되는 코드는 먼저 `shared/*`로 올리고, 그 다음에만 `packages/*` 승격을 검토합니다.
-4. 구조 규칙이 바뀌면 `ai/context/engineering.md`, 관련 `engineering-*` 문서, 이 문서를 함께 갱신합니다.
+3. 중요한 작업이면 `docs/work-items/<work-id>/brief.md`를 먼저 만들고, 필요한 role spec을 채웁니다.
+4. 두 번 이상 재사용되는 코드는 먼저 `shared/*`로 올리고, 그 다음에만 `packages/*` 승격을 검토합니다.
+5. 구조 규칙이 바뀌면 `ai/context/engineering.md`, 관련 `engineering-*` 문서, 이 문서를 함께 갱신합니다.
+6. 중요한 작업이면 spec, work item, 관련 문서 sync를 함께 확인합니다.

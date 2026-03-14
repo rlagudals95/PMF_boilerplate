@@ -13,11 +13,13 @@
 1. `ai/context/project.md`
 2. `ai/context/engineering.md`
 3. `ai/context/engineering-common.md`
-4. 현재 작업에 맞는 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md` 중 하나 또는 둘 다
-5. `ai/skills/_index.md`
-6. `docs/agent-context.md`
-7. 현재 작업과 관련된 `docs/*` 또는 패키지 문서
-8. 실험 관련 작업이면 `docs/experiment-playbook.md`
+4. `ai/context/spec-driven.md`
+5. 현재 작업에 맞는 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md` 중 하나 또는 둘 다
+6. `ai/context/doc-sync.md`
+7. `ai/skills/_index.md`
+8. `docs/agent-context.md`
+9. 현재 작업과 관련된 `docs/*` 또는 패키지 문서
+10. 실험 관련 작업이면 `docs/experiment-playbook.md`
 
 ## 아키텍처 원칙
 
@@ -68,6 +70,7 @@
 ## 작업 기본 규칙
 
 - 코드 수정 전에는 관련 문서와 영향 파일을 먼저 읽는다.
+- 중요한 작업이면 spec 존재 여부와 source of truth 문서를 먼저 확인한다.
 - FE 작업이면 `engineering-frontend.md`, DB/schema/repository/integration 작업이면 `engineering-backend.md`를 읽는다.
 - `page.tsx`나 `route.ts`에 비즈니스 로직을 넣지 않는다.
 - `app/actions.ts`처럼 모든 흐름을 한 액션 파일에 모으지 않는다.
@@ -91,3 +94,6 @@
 - 공통 규칙은 `ai/`에 둔다.
 - 이 파일은 canonical source가 아니라 adapter entry다.
 - Claude Code, Codex, Gemini용 문서를 따로 두더라도 내용 본문은 복제하지 않는다.
+- Notion 같은 외부 도구는 optional integration이며 repo Markdown이 canonical source다.
+- 실제 런타임 어댑터 산출물은 `pnpm ai:sync`로 `.claude/`, `.gemini/`, `.codex/`에 생성한다.
+- 생성된 어댑터 파일은 파생 산출물이고 source of truth는 계속 `ai/`와 이 루트 엔트리 문서다.

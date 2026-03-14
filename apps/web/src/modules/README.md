@@ -18,6 +18,7 @@ modules/
     model/
     actions/
   consultation/
+  payment/
   admin/
   landing/
 ```

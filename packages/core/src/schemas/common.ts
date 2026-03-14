@@ -62,6 +62,7 @@ export const pageEventNameSchema = z.enum([
   "payment_checkout_started",
   "payment_succeeded",
   "payment_cancelled",
+  "payment_failed",
   "admin_page_viewed",
 ]);
 

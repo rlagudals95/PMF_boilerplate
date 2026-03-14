@@ -42,7 +42,7 @@ export default function ConsultPage() {
             ].map((item) => (
               <Card key={item.title}>
                 <CardHeader className="pb-3">
-                  <item.icon className="h-5 w-5 text-emerald-600" />
+                  <item.icon className="h-5 w-5 text-primary" />
                   <CardTitle className="mt-3">{item.title}</CardTitle>
                 </CardHeader>
                 <CardContent>

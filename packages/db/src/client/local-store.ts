@@ -7,11 +7,13 @@ import {
   mockExperiments,
   mockLeads,
   mockPageEvents,
+  mockPayments,
   mockProducts,
   type ConsultationRequest,
   type Experiment,
   type Lead,
   type PageEvent,
+  type Payment,
   type Product,
 } from "@pmf/core";
 
@@ -21,6 +23,7 @@ export interface LocalDataStore {
   products: Product[];
   experiments: Experiment[];
   pageEvents: PageEvent[];
+  payments: Payment[];
 }
 
 const packageRoot = path.resolve(
@@ -35,6 +38,7 @@ const defaultSeed = (): LocalDataStore => ({
   products: mockProducts,
   experiments: mockExperiments,
   pageEvents: mockPageEvents,
+  payments: mockPayments,
 });
 
 export const resolveLocalDataFile = () => {
@@ -54,7 +58,17 @@ export const readLocalStore = async (): Promise<LocalDataStore> => {
 
   try {
     const raw = await fs.readFile(target, "utf8");
-    return JSON.parse(raw) as LocalDataStore;
+    const parsed = JSON.parse(raw) as Partial<LocalDataStore>;
+    const seed = defaultSeed();
+
+    return {
+      leads: parsed.leads ?? seed.leads,
+      consultationRequests: parsed.consultationRequests ?? seed.consultationRequests,
+      products: parsed.products ?? seed.products,
+      experiments: parsed.experiments ?? seed.experiments,
+      pageEvents: parsed.pageEvents ?? seed.pageEvents,
+      payments: parsed.payments ?? seed.payments,
+    };
   } catch {
     const seed = defaultSeed();
     await writeLocalStore(seed);

@@ -28,10 +28,10 @@ export default function DemoFunnelPage() {
       <section className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <div className="space-y-6">
           <div className="space-y-4">
-            <Badge variant="warning">useFunnel Example</Badge>
+            <Badge variant="accent">useFunnel Example</Badge>
             <h1 className="text-4xl font-semibold tracking-tight text-slate-950">
               단계형 제품 흐름을 빠르게 조립하는{" "}
-              <span className="font-mono text-amber-600">useFunnel</span> 데모
+              <span className="font-mono text-primary">useFunnel</span> 데모
             </h1>
             <p className="text-lg text-slate-600">
               이번 예시는 데스크톱용 step 카드가 아니라, CTA 버튼으로 다음 화면으로 넘어가는
@@ -63,7 +63,7 @@ export default function DemoFunnelPage() {
             ].map((item) => (
               <Card key={item.title}>
                 <CardHeader className="pb-3">
-                  <item.icon className="h-5 w-5 text-amber-600" />
+                  <item.icon className="h-5 w-5 text-primary" />
                   <CardTitle className="mt-3">{item.title}</CardTitle>
                 </CardHeader>
                 <CardContent>

@@ -39,7 +39,7 @@ export const consultationRequestInputSchema = z.object({
 
 export const paymentCheckoutInputSchema = z.object({
   productDescription: z.string().trim().min(2, "상품 설명을 입력해 주세요."),
-  amount: z.coerce
+  amount: z
     .number({
       error: "결제 금액을 숫자로 입력해 주세요.",
     })

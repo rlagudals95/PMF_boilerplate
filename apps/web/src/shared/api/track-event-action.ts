@@ -33,7 +33,5 @@ export const trackEventAction = async (input: TrackEventActionInput) => {
         path: input.path,
       },
     });
-
-    throw error;
   }
 };

@@ -67,6 +67,7 @@ apps/web/src/
 - `src/components` 같은 광범위 공용 폴더는 다시 만들지 않는다.
 - `modules/*` direct import로 cross-feature 공유하지 않는다.
 - client/server component 경계는 React/Next 제약 기준으로 나눈다.
+- shared UI와 app shell에서는 raw brand color utility를 직접 쓰지 않고, 서비스 테마는 `apps/web/src/lib/app-theme.ts`에서 관리한다.
 
 ## FE Checklist
 

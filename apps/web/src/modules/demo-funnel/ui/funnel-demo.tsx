@@ -112,7 +112,13 @@ export function FunnelDemo() {
 
   return (
     <div className="mx-auto w-full max-w-sm space-y-4" data-testid="funnel-demo">
-      <div className="rounded-[40px] bg-[radial-gradient(circle_at_top,#fde68a,transparent_42%),linear-gradient(180deg,#f8fafc_0%,#e2e8f0_100%)] p-3 shadow-[0_30px_80px_rgba(15,23,42,0.2)]">
+      <div
+        className="rounded-[40px] p-3 shadow-[0_30px_80px_hsl(var(--foreground)/0.2)]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at top, hsl(var(--primary) / 0.22), transparent 42%), linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background-alt)) 100%)",
+        }}
+      >
         <div className="overflow-hidden rounded-[32px] border-[10px] border-slate-950 bg-white">
           <div className="flex min-h-[720px] flex-col">
             <div className="border-b border-slate-200 bg-white px-5 pb-4 pt-5">
@@ -131,14 +137,14 @@ export function FunnelDemo() {
                   <ChevronLeft className="h-4 w-4" />
                 </button>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-amber-600">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-primary">
                     {currentStepMeta.eyebrow}
                   </p>
                   <p className="truncate text-sm font-semibold text-slate-950">
                     렌탈 상담 미니 퍼널
                   </p>
                 </div>
-                <Badge variant="warning">Mobile</Badge>
+                <Badge variant="accent">Mobile</Badge>
               </div>
               <div className="mt-4 h-2 rounded-full bg-slate-100">
                 <div
@@ -180,8 +186,8 @@ export function FunnelDemo() {
                               <div
                                 className={`rounded-2xl p-3 ${
                                   isSelected
-                                    ? "bg-white/15 text-amber-300"
-                                    : "bg-amber-100 text-amber-700"
+                                    ? "bg-white/15 text-primary"
+                                    : "bg-primary/10 text-primary"
                                 }`}
                               >
                                 <option.icon className="h-5 w-5" />
@@ -277,8 +283,8 @@ export function FunnelDemo() {
                         </CardContent>
                       </Card>
 
-                      <div className="rounded-[28px] border border-amber-200 bg-amber-50 p-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-700">
+                      <div className="rounded-[28px] border border-primary/20 bg-primary/10 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">
                           Hook Snapshot
                         </p>
                         <div className="mt-3 grid grid-cols-2 gap-2">

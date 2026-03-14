@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  integer,
   jsonb,
   pgTable,
   text,
@@ -104,6 +105,37 @@ export const pageEvents = pgTable("page_events", {
     .notNull()
     .default({}),
   occurredAt: timestamp("occurred_at", {
+    mode: "string",
+    withTimezone: true,
+  }).notNull(),
+});
+
+export const payments = pgTable("payments", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  provider: varchar("provider", { length: 20 }).notNull(),
+  orderNo: varchar("order_no", { length: 120 }).notNull(),
+  productDescription: varchar("product_description", { length: 160 }).notNull(),
+  amount: integer("amount").notNull(),
+  currency: varchar("currency", { length: 10 }).notNull(),
+  status: varchar("status", { length: 20 }).notNull(),
+  customerName: varchar("customer_name", { length: 120 }).notNull(),
+  customerEmail: varchar("customer_email", { length: 160 }),
+  payToken: varchar("pay_token", { length: 160 }),
+  checkoutUrl: text("checkout_url"),
+  payMethod: varchar("pay_method", { length: 80 }),
+  metadata: jsonb("metadata")
+    .$type<Record<string, unknown>>()
+    .notNull()
+    .default({}),
+  approvedAt: timestamp("approved_at", {
+    mode: "string",
+    withTimezone: true,
+  }),
+  createdAt: timestamp("created_at", {
+    mode: "string",
+    withTimezone: true,
+  }).notNull(),
+  updatedAt: timestamp("updated_at", {
     mode: "string",
     withTimezone: true,
   }).notNull(),
