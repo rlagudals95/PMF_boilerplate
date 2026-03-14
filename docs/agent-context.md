@@ -27,12 +27,13 @@
 - `AGENTS.md`
 - `CLAUDE.md`
 - `GEMINI.md`
-- `pnpm ai:sync`로 생성하는 `.claude/skills/*`
+- `pnpm ai:sync`로 생성하는 `.claude/skills/*/SKILL.md`
 - `pnpm ai:sync`로 생성하는 `.gemini/commands/repo/*`
-- `pnpm ai:sync`로 생성하는 `.codex/skills/*`
+- `pnpm ai:sync`로 생성하는 `.gemini/extensions/*/skills/*/SKILL.md`
+- `pnpm ai:sync`로 생성하는 `.codex/skills/*/SKILL.md`
 
 이 파일들은 공통 원본을 참조하고, 각 도구가 기대하는 최소 포맷만 담습니다.
-단, Codex의 공식 repo entry는 계속 루트 `AGENTS.md`이고 `.codex/*`는 generated mirror입니다.
+단, Codex의 공식 repo entry는 계속 루트 `AGENTS.md`입니다.
 
 ### 3. Task-local context
 

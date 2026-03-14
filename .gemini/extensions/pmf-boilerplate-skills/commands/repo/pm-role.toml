@@ -1,0 +1,14 @@
+description = "Applies the repository's pm-role workflow. Use when 문제정의, 목표, 범위, success metric, acceptance criteria를 고정할 때"
+prompt = '''
+Use the repository workflow below as the authoritative guide for this task.
+
+@{ai/skills/pm-role.md}
+
+Instructions:
+- Apply the workflow to the current conversation and workspace.
+- If the workflow asks you to load other canonical documents, load them before acting.
+- If command arguments are provided, treat them as the immediate task input.
+
+Task input:
+{{args}}
+'''

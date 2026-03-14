@@ -1,0 +1,14 @@
+description = "Applies the repository's repo-guardrails workflow. Use when 새 패키지/새 추상화/새 인프라를 추가하려 할 때"
+prompt = '''
+Use the repository workflow below as the authoritative guide for this task.
+
+@{ai/skills/repo-guardrails.md}
+
+Instructions:
+- Apply the workflow to the current conversation and workspace.
+- If the workflow asks you to load other canonical documents, load them before acting.
+- If command arguments are provided, treat them as the immediate task input.
+
+Task input:
+{{args}}
+'''

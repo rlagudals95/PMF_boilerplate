@@ -1,0 +1,14 @@
+description = "Applies the repository's doc-sync workflow. Use when 구조 변경, 운영 규칙 변경, PR 마무리 시 문서 sync 필요 여부를 판단할 때"
+prompt = '''
+Use the repository workflow below as the authoritative guide for this task.
+
+@{ai/skills/doc-sync.md}
+
+Instructions:
+- Apply the workflow to the current conversation and workspace.
+- If the workflow asks you to load other canonical documents, load them before acting.
+- If command arguments are provided, treat them as the immediate task input.
+
+Task input:
+{{args}}
+'''
