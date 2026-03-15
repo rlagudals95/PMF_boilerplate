@@ -44,7 +44,7 @@
 - 사용자 행동:
 - 기대 결과:
 
-## JTBD
+## Jobs To Be Done
 
 -
 
@@ -66,18 +66,18 @@
 
 ### example-feature
 
-- 요약:
-- 사용자 가치:
-- 주요 모듈:
-- 라우트:
-- 사용자 화면 영향:
-- 어드민 화면 영향:
-- 백엔드 변경:
-- 인증 필요 여부:
-- 결제 필요 여부:
-- 외부 서비스 영향:
-- 분석 이벤트 필요 여부:
-- 추천 여부:
+- summary:
+- user_value:
+- primary_module:
+- routes:
+- ui_surface:
+- admin_surface:
+- backend_changes:
+- auth_required:
+- payment_required:
+- external_provider_impact:
+- analytics_required:
+- recommended:
 
 ## Testability Notes
 
@@ -92,9 +92,9 @@
 
 Acceptance Criteria 작성 규칙:
 
-- 구현 디테일이 아니라 사용자 관점의 public behavior로 적습니다.
-- 구현자가 추가 해석 없이 바로 테스트로 옮길 수 있게 적습니다.
-- 중요한 작업이면 어떤 항목을 첫 failing test로 잡을지 힌트를 남깁니다.
+구현 디테일이 아니라 사용자 관점의 public behavior로 적습니다.
+구현자가 추가 해석 없이 바로 테스트로 옮길 수 있게 적습니다.
+중요한 작업이면 어떤 항목을 첫 failing test로 잡을지 힌트를 남깁니다.
 
 ## Analytics Impact
 
@@ -116,7 +116,7 @@ Acceptance Criteria 작성 규칙:
 
 | 날짜 | 유형 | 요약 | 작성자 |
 | --- | --- | --- | --- |
-| YYYY-MM-DD | created | 초기 PRD 작성 | owner |
+| YYYY-MM-DD | created | Initial PRD created. | owner |
 
 Notion mirror rules:
 

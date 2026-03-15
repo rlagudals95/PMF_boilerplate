@@ -12,15 +12,23 @@ async function main() {
   const template = await readFile(templatePath, "utf8");
   const destinationPath = path.join(prdsDir, `${slug}.md`);
   const today = new Date().toISOString().slice(0, 10);
-  const contents = template
-    .replace('title: "New PRD"', `title: ${JSON.stringify(toTitleCase(slug))}`)
-    .replace('source_url: ""', `source_url: ${JSON.stringify(sourceUrl)}`)
-    .replace('created_at: ""', `created_at: ${JSON.stringify(today)}`)
-    .replace('updated_at: ""', `updated_at: ${JSON.stringify(today)}`)
-    .replace(
-      "| YYYY-MM-DD | created | Initial PRD created. | owner |",
-      `| ${today} | created | Initial PRD created. | TBD |`,
-    );
+  const contents = replaceField(
+    replaceField(
+      replaceField(
+        replaceField(
+          replaceField(template, "title", JSON.stringify(toTitleCase(slug))),
+          "source_url",
+          JSON.stringify(sourceUrl),
+        ),
+        "created_at",
+        JSON.stringify(today),
+      ),
+      "updated_at",
+      JSON.stringify(today),
+    ),
+    "history",
+    `| ${today} | created | Initial PRD created. | TBD |`,
+  );
 
   await mkdir(prdsDir, { recursive: true });
   await writeFile(destinationPath, contents, {
@@ -86,6 +94,20 @@ function normalizeSlug(value) {
   }
 
   return slug;
+}
+
+function replaceField(template, field, value) {
+  if (field === "history") {
+    return template.replace(
+      /\| YYYY-MM-DD \| created \| .* \| owner \|/,
+      value,
+    );
+  }
+
+  return template.replace(
+    new RegExp(`^${field}:\\s*.*$`, "m"),
+    `${field}: ${value}`,
+  );
 }
 
 function toTitleCase(value) {

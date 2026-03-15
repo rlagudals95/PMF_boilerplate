@@ -23,6 +23,11 @@
 - 하지만 초기 개발과 테스트는 `packages/db/local-data.json` 기반으로 동작합니다.
 - 이유: 로컬에서 바로 폼 제출과 어드민 확인이 가능해야 실험 iteration 속도가 납니다.
 
+추가 기준:
+
+- Supabase는 DB 전환뿐 아니라 Google/Kakao social login starter를 붙일 때도 우선 선택지로 둡니다.
+- 다만 auth는 lightweight starter 범위에 머물고, admin 보호나 role 체계는 별도 작업으로 분리합니다.
+
 ### 3. Drizzle 스키마는 제품보다 실험 루프 중심
 
 초기 모델은 다음 여섯 가지입니다.
@@ -63,14 +68,21 @@
 - 기본 provider는 콘솔이며 `required`입니다.
 - 외부 provider는 필요할 때만 `optional`로 추가합니다.
 
-### 6. UI는 작은 shadcn 스타일 베이스만 공유
+### 6. social auth는 optional starter로만 둔다
+
+- `/auth` route는 Google, Kakao, Naver 로그인을 빠르게 검증하기 위한 demo/starter입니다.
+- Google/Kakao는 Supabase social login provider를, Naver는 별도 OAuth adapter를 사용합니다.
+- starter session은 브라우저 demo 검증을 위한 최소 상태만 저장합니다.
+- 이유: 새 프로젝트에서 자주 반복되는 OAuth wiring은 줄이되, 복잡한 auth product scope는 아직 넣지 않기 위해서입니다.
+
+### 7. UI는 작은 shadcn 스타일 베이스만 공유
 
 - 버튼, 카드, 입력, 배지, 테이블 정도만 공유 패키지로 둡니다.
 - 무거운 디자인 시스템은 만들지 않되, 서비스별 브랜드 변경을 위한 작은 semantic theme layer는 둡니다.
 - shared UI와 app shell은 raw brand color utility 대신 semantic token을 사용합니다.
 - 이유: PMF 실험 보일러플레이트는 미학보다 속도와 가독성이 우선입니다.
 
-### 7. `apps/web`는 Hybrid FSD Lite 구조를 따른다
+### 8. `apps/web`는 Hybrid FSD Lite 구조를 따른다
 
 `apps/web/src/app`에 모든 로직이 몰리기 시작하면 Next 앱은 금방 유지보수가 어려워집니다.
 이 저장소는 아래 구조를 목표로 합니다.
@@ -83,6 +95,7 @@ apps/web/src/
     lead/
     consultation/
     payment/
+    auth/
     admin/
     demo-funnel/
   shared/               # app-local shared UI, hooks, action entrypoint
@@ -107,7 +120,7 @@ apps/web/src/
 - 문서 sync 기준의 canonical source는 `ai/context/doc-sync.md`
 - 이 문서는 현재 저장소 구조를 설명하고, `engineering-*` 문서는 수정 규칙을 설명합니다.
 
-### 8. 책임 분리 규칙
+### 9. 책임 분리 규칙
 
 각 계층은 아래 책임만 가집니다.
 
@@ -132,7 +145,7 @@ apps/web/src/
 - 재사용이 검증되지 않은 코드를 `packages/*`로 이동
 - `utils.ts` 하나에 여러 도메인 함수를 계속 누적
 
-### 9. 의존 방향
+### 10. 의존 방향
 
 의존성은 아래 방향을 넘지 않습니다.
 
@@ -157,7 +170,7 @@ page.tsx
 
 이 package 경계는 현재 monorepo 구조를 위한 것일 뿐 아니라, 미래에 backend를 별도 repo로 추출할 때도 유지되어야 하는 분리 기준입니다.
 
-### 10. 엔터프라이즈급 품질을 위한 최소 기준
+### 11. 엔터프라이즈급 품질을 위한 최소 기준
 
 복잡한 아키텍처를 뜻하지 않습니다. 다음 네 가지를 꾸준히 지키는 것을 뜻합니다.
 
@@ -166,7 +179,7 @@ page.tsx
 - 검증과 저장이 분리된다.
 - 문서와 테스트가 코드 변경을 따라간다.
 
-### 11. 중요한 작업은 역할 기반 문서 산출물로 관리한다
+### 12. 중요한 작업은 역할 기반 문서 산출물로 관리한다
 
 - 기본 진입점은 `product-squad` 오케스트레이터입니다.
 - 역할은 `pm-role`, `pd-role`, `fe-role`, `be-role`로 나눕니다.
@@ -175,7 +188,7 @@ page.tsx
 - 작은 문구 수정, 단일 스타일 수정, 명백한 소규모 버그는 full process를 생략할 수 있습니다.
 - 자세한 운영 규칙은 `docs/product-squad/operating-model.md`를 canonical source로 둡니다.
 
-### 12. Spec-driven 운영은 repo 문서를 기준으로 한다
+### 13. Spec-driven 운영은 repo 문서를 기준으로 한다
 
 - 구현 기준 문서는 repo 안 Markdown입니다.
 - `ai/context/spec-driven.md`는 어떤 작업에 어떤 문서가 먼저 필요한지 정의합니다.
@@ -188,7 +201,7 @@ page.tsx
 
 ### 의도적으로 넣지 않은 것
 
-- 복잡한 인증 플로우
+- 복잡한 인증 플로우와 admin 권한 체계
 - 복잡한 구독/정산/환불 백오피스
 - CMS
 - 큐/백그라운드 잡
@@ -198,6 +211,7 @@ page.tsx
 ### 나중에 붙일 가능성이 높은 것
 
 - Supabase auth 기반 admin 보호
+- user/profile persistence와 server-protected session
 - 실험별 랜딩 템플릿 시스템
 - 이벤트 속성 표준화와 세션 추적
 - 다회차 결제/정산/환불 운영 도구

@@ -280,11 +280,11 @@ function buildUserFlow(feature, prd, targetUser) {
   const flow = [];
 
   if (feature.routes.length > 0) {
-    flow.push(`${targetUser}가 ${feature.routes.join(", ")} 경로로 진입한다.`);
+    flow.push(`핵심 대상 사용자가 ${feature.routes.join(", ")} 경로로 진입한다.`);
   } else if (feature.adminSurface === "yes") {
-    flow.push(`${targetUser}가 admin surface에서 기능을 사용한다.`);
+    flow.push("핵심 대상 사용자가 admin surface에서 기능을 사용한다.");
   } else {
-    flow.push(`${targetUser}가 ${feature.title} 흐름을 시작한다.`);
+    flow.push(`핵심 대상 사용자가 ${feature.title} 흐름을 시작한다.`);
   }
 
   if (feature.summary) {
@@ -1139,11 +1139,6 @@ function checklistFromSection(content) {
 
     if (trimmed.startsWith("- [ ] ")) {
       items.push(trimmed.slice(6).trim());
-      continue;
-    }
-
-    if (trimmed.startsWith("- ")) {
-      items.push(trimmed.slice(2).trim());
     }
   }
 

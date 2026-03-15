@@ -18,6 +18,14 @@ export function SiteHeader() {
         <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
           <TrackedLink href="/">랜딩</TrackedLink>
           <TrackedLink
+            href="/auth"
+            eventProperties={{
+              source: "site_header_auth_demo",
+            }}
+          >
+            소셜 로그인
+          </TrackedLink>
+          <TrackedLink
             href="/demo/funnel"
             eventProperties={{
               source: "site_header_funnel_demo",

@@ -83,6 +83,13 @@ const featureGroups = [
         title: "Data Mode",
         description: appConfig.dataMode,
       },
+      {
+        title: "Auth Starter",
+        description:
+          appConfig.authProviders.length > 0
+            ? appConfig.authProviders.join(", ")
+            : "google / kakao / naver starter ready",
+      },
     ],
   },
   {
@@ -120,6 +127,14 @@ const runtimeEntries = [
       "히어로, 정보 블록, tracked link 기반 CTA 흐름이 이미 연결돼 있습니다.",
     href: "/#live-form",
     cta: "라이브 리드 폼 보기",
+  },
+  {
+    icon: CheckCircle2,
+    title: "소셜 로그인 키트",
+    description:
+      "Google, Kakao, Naver login starter와 callback demo를 바로 검증할 수 있습니다.",
+    href: "/auth",
+    cta: "auth demo 열기",
   },
   {
     icon: FlaskConical,

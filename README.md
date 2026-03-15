@@ -82,6 +82,7 @@ pnpm dev
 2. 사용자 흐름 확인
 
 - `/`: 랜딩 페이지와 리드 폼
+- `/auth`: 소셜 로그인 starter demo
 - `/consult`: 상담 요청 폼
 - `/pay`: 토스 결제 데모 시작
 
@@ -103,6 +104,7 @@ pnpm dev
 
 - 랜딩 페이지와 CTA 추적
 - 리드 캡처 폼
+- Google / Kakao / Naver 소셜 로그인 starter
 - 상담 요청 폼
 - 토스 단건 결제 데모
 - 관리자 대시보드
@@ -126,6 +128,7 @@ pnpm dev
 | 경로 | 용도 |
 | --- | --- |
 | `/` | 랜딩과 리드 수집 |
+| `/auth` | 소셜 로그인 starter demo |
 | `/consult` | 상담 요청 접수 |
 | `/pay` | 결제 데모 시작 |
 | `/pay/result` | 결제 복귀 결과 확인 |
@@ -186,6 +189,14 @@ pnpm ai:sync
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+
+### Auth Starter
+
+- `NEXT_PUBLIC_AUTH_GOOGLE_ENABLED`
+- `NEXT_PUBLIC_AUTH_KAKAO_ENABLED`
+- `NEXT_PUBLIC_NAVER_CLIENT_ID`
+- `NAVER_CLIENT_SECRET`
+- `NEXT_PUBLIC_SITE_URL`
 
 ### 사이트/결제
 
@@ -288,6 +299,22 @@ AGENTS.md               에이전트용 루트 엔트리
 - `lead_form_submitted`
 - `consultation_requested`
 
+## Auth Starter 사용법
+
+- `/auth`에서 provider 상태와 현재 starter session을 확인할 수 있습니다.
+- Google/Kakao는 Supabase social login 설정과 `NEXT_PUBLIC_AUTH_*_ENABLED=true`가 필요합니다.
+- Naver는 `NEXT_PUBLIC_NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `NEXT_PUBLIC_SITE_URL`이 필요합니다.
+- callback route는 `/auth/callback`, Naver code exchange route는 `/api/auth/naver/session`입니다.
+- 이 흐름은 demo/starter 범위이며 `/admin` 보호나 DB user sync는 하지 않습니다.
+
+### Provider 설정 순서
+
+1. `.env.local`에 `NEXT_PUBLIC_SITE_URL`을 현재 앱 주소로 설정합니다.
+2. Google/Kakao를 쓸 경우 Supabase Auth의 Social Providers에서 provider를 활성화하고 callback URL에 `/auth/callback`을 등록합니다.
+3. Google은 `NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=true`, Kakao는 `NEXT_PUBLIC_AUTH_KAKAO_ENABLED=true`를 설정합니다.
+4. Naver를 쓸 경우 네이버 개발자 센터에서 앱을 만들고 `NEXT_PUBLIC_NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`을 채웁니다.
+5. `/auth`에 들어가 provider가 `활성` 상태로 보이는지 확인한 뒤 로그인 흐름을 테스트합니다.
+
 ## 결제 데모 사용법
 
 - `/pay`에서 테스트 결제 요청을 생성합니다.
@@ -335,7 +362,7 @@ pnpm ai:sync
 
 ## 의도적으로 넣지 않은 것
 
-- 복잡한 auth
+- 복잡한 admin auth / role system
 - background jobs
 - CMS
 - 무거운 design system

@@ -12,6 +12,21 @@ export const appConfig = {
   paymentProviders: [
     ...(process.env.TOSS_PAYMENTS_API_KEY ? ["toss"] : []),
   ],
+  authProviders: [
+    ...(process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    process.env.NEXT_PUBLIC_AUTH_GOOGLE_ENABLED === "true"
+      ? ["google"]
+      : []),
+    ...(process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    process.env.NEXT_PUBLIC_AUTH_KAKAO_ENABLED === "true"
+      ? ["kakao"]
+      : []),
+    ...(process.env.NEXT_PUBLIC_NAVER_CLIENT_ID && process.env.NAVER_CLIENT_SECRET
+      ? ["naver"]
+      : []),
+  ],
   marketingProviders: [
     ...(process.env.NEXT_PUBLIC_META_PIXEL_ID ? ["meta-pixel"] : []),
     ...(process.env.NEXT_PUBLIC_KAKAO_PIXEL_ID ? ["kakao-pixel"] : []),

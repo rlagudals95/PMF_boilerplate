@@ -31,7 +31,7 @@
 
 - separate API server, microservice, background job를 추가하지 않는다.
 - 공통성이 확인되기 전에는 패키지 추상화를 늘리지 않는다.
-- admin auth는 미래 작업으로 두되, 구조는 Supabase를 붙이기 쉽게 유지한다.
+- social auth starter는 허용하되, admin auth enforcement와 role 체계는 미래 작업으로 둔다.
 - 제품별 내용은 `apps/web`에, 재사용 가능한 타입/검증/컴포넌트만 `packages/*`로 올린다.
 
 ## Key commands

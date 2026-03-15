@@ -1,5 +1,5 @@
 ---
-title: "새 PRD"
+title: "New PRD"
 status: draft
 owner: ""
 source_url: ""
@@ -39,7 +39,7 @@ updated_at: ""
 - 사용자 행동:
 - 기대 결과:
 
-## JTBD
+## Jobs To Be Done
 
 -
 
@@ -61,18 +61,18 @@ updated_at: ""
 
 ### example-feature
 
-- 요약:
-- 사용자 가치:
-- 주요 모듈:
-- 라우트:
-- 사용자 화면 영향: 예
-- 어드민 화면 영향: 아니오
-- 백엔드 변경: 예
-- 인증 필요 여부: 아니오
-- 결제 필요 여부: 아니오
-- 외부 서비스 영향: 없음
-- 분석 이벤트 필요 여부: 예
-- 추천 여부: 예
+- summary:
+- user_value:
+- primary_module:
+- routes:
+- ui_surface: yes
+- admin_surface: no
+- backend_changes: yes
+- auth_required: no
+- payment_required: no
+- external_provider_impact: none
+- analytics_required: yes
+- recommended: yes
 
 ## Testability Notes
 
@@ -87,9 +87,9 @@ updated_at: ""
 
 Acceptance Criteria 작성 규칙:
 
-- 구현 디테일이 아니라 public behavior 기준으로 적습니다.
-- 구현자가 추가 해석 없이 테스트 가능한 문장으로 적습니다.
-- 중요한 작업이면 어떤 기준을 먼저 failing test로 고정할지 PRD 단계에서 힌트를 남깁니다.
+구현 디테일이 아니라 public behavior 기준으로 적습니다.
+구현자가 추가 해석 없이 테스트 가능한 문장으로 적습니다.
+중요한 작업이면 어떤 기준을 먼저 failing test로 고정할지 PRD 단계에서 힌트를 남깁니다.
 
 ## Analytics Impact
 
@@ -111,7 +111,7 @@ Acceptance Criteria 작성 규칙:
 
 | 날짜 | 유형 | 요약 | 작성자 |
 | --- | --- | --- | --- |
-| YYYY-MM-DD | created | 초기 PRD 작성 | owner |
+| YYYY-MM-DD | created | Initial PRD created. | owner |
 
 History 규칙:
 
