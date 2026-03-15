@@ -57,6 +57,7 @@
 
 - 중요한 작업이면 `docs/product-squad/operating-model.md`를 읽습니다.
 - 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`를 먼저 읽습니다.
+- work item이 아직 없으면 `pnpm work:new <slug> --request "..."`로 scaffold를 만들 수 있습니다.
 - 실험 작업이면 `docs/experiment-playbook.md`와 `docs/templates/experiment-spec.md`를 확인합니다.
 
 ## 어떤 문서가 먼저 필요한가

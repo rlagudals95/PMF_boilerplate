@@ -22,6 +22,8 @@ const checkboxClassName =
   "mt-1 h-4 w-4 rounded border-border text-primary accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/20";
 const selectClassName =
   "flex h-11 w-full rounded-2xl border border-border bg-surface px-4 text-sm text-foreground outline-none ring-offset-background transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/20";
+const submitFailureMessage =
+  "상담 요청 접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.";
 
 export function ConsultationRequestForm() {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
@@ -42,30 +44,35 @@ export function ConsultationRequestForm() {
     setIsPending(true);
 
     startTransition(async () => {
-      const result = await submitConsultationRequestAction(values, {
-        sessionId: getAnalyticsSessionId(),
-      });
-      setIsPending(false);
+      try {
+        const result = await submitConsultationRequestAction(values, {
+          sessionId: getAnalyticsSessionId(),
+        });
 
-      if (!result.ok) {
-        applyActionErrors(setError, result.errors);
+        if (!result.ok) {
+          applyActionErrors(setError, result.errors);
+          setServerMessage(result.message);
+          return;
+        }
+
+        trackMarketingEvent({
+          eventName: "consultation_requested",
+          path: "/consult",
+          properties: {
+            budgetRange: values.budgetRange,
+            consultationType: values.consultationType,
+            productInterest: values.productInterest,
+            rentalPeriod: values.rentalPeriod,
+          },
+        });
+
+        reset(defaultConsultationRequestValues);
         setServerMessage(result.message);
-        return;
+      } catch {
+        setServerMessage(submitFailureMessage);
+      } finally {
+        setIsPending(false);
       }
-
-      trackMarketingEvent({
-        eventName: "consultation_requested",
-        path: "/consult",
-        properties: {
-          budgetRange: values.budgetRange,
-          consultationType: values.consultationType,
-          productInterest: values.productInterest,
-          rentalPeriod: values.rentalPeriod,
-        },
-      });
-
-      reset(defaultConsultationRequestValues);
-      setServerMessage(result.message);
     });
   });
 

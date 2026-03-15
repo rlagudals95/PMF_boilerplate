@@ -7,6 +7,15 @@
 - 기본 형식: `YYYYMMDD-short-slug`
 - 실험 작업: `LP-001-YYYYMMDD-short-slug`
 
+## Quick Start
+
+```bash
+pnpm work:new <short-slug> --request "원 요청 또는 작업 배경"
+```
+
+- 위 명령은 `docs/product-squad/templates/*`를 복사해 새 work item 디렉터리를 만듭니다.
+- 중요한 작업이면 이 scaffold를 만든 뒤 문서를 채우고 구현을 시작합니다.
+
 ## Required files
 
 - `brief.md`

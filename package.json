@@ -13,8 +13,11 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "test:e2e": "playwright test",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test",
+    "verify:full": "pnpm verify && pnpm test:e2e",
     "format": "prettier --write .",
     "ai:sync": "node scripts/sync-ai-context.mjs",
+    "work:new": "node scripts/create-work-item.mjs",
     "db:seed": "pnpm --filter @pmf/db seed",
     "db:generate": "pnpm --filter @pmf/db db:generate",
     "db:migrate": "pnpm --filter @pmf/db db:migrate"

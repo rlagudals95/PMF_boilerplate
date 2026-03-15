@@ -27,6 +27,8 @@
 - `AGENTS.md`
 - `CLAUDE.md`
 - `GEMINI.md`
+- `.github/copilot-instructions.md`
+- `.cursor/rules/*.mdc`
 - `pnpm ai:sync`로 생성하는 `.claude/skills/*/SKILL.md`
 - `pnpm ai:sync`로 생성하는 `.gemini/commands/repo/*`
 - `pnpm ai:sync`로 생성하는 `.gemini/extensions/*/skills/*/SKILL.md`
@@ -51,7 +53,7 @@
 
 ## 추천 로딩 순서
 
-1. platform entry (`AGENTS.md` / `CLAUDE.md` / `GEMINI.md`)
+1. platform entry (`AGENTS.md` / `CLAUDE.md` / `GEMINI.md` / `.github/copilot-instructions.md` / relevant `.cursor/rules/*.mdc`)
 2. `ai/context/project.md`
 3. `ai/context/engineering.md`
 4. `ai/context/engineering-common.md`
@@ -74,6 +76,7 @@
 
 - 같은 규칙을 세 파일에 복붙하지 않습니다.
 - 새 플랫폼을 추가할 때는 `ai/`는 건드리지 않고 진입 문서만 하나 추가합니다.
+- tool-native instruction 파일이 필요하면 `ai/`와 루트 adapter 문서를 source로 삼아 generated adapter를 만듭니다.
 - 한 번 쓰고 끝날 규칙은 스킬로 만들지 않습니다.
 - 공통성이 검증된 워크플로우만 `ai/skills`에 등록합니다.
 - 외부 도구 메모는 입력 채널일 뿐 canonical source가 아닙니다.

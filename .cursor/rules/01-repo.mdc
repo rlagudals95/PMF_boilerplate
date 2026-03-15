@@ -1,0 +1,13 @@
+---
+description: Repository-wide operating rules for PMF Boilerplate
+alwaysApply: true
+---
+
+# PMF Boilerplate Repo Rule
+
+- Read `AGENTS.md`, `ai/context/project.md`, `ai/context/engineering.md`, `ai/context/engineering-common.md`, `ai/context/spec-driven.md`, and `ai/context/doc-sync.md` before substantial work.
+- Keep `apps/web/src/app` thin. Put product logic in `apps/web/src/modules/*`.
+- Promote shared code only in this order: `module -> shared -> package`.
+- For important multi-file work, create or update `docs/work-items/<work-id>/` before coding.
+- Run `pnpm verify` before handoff. Run `pnpm verify:full` when user-facing flows or integrations changed.
+- Refresh generated adapters with `pnpm ai:sync` after changing canonical AI context or adapter-entry docs.

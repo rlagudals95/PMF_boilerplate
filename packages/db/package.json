@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "eslint src --max-warnings=0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
     "seed": "tsx src/seed/run.ts",
     "db:generate": "drizzle-kit generate --config drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config drizzle.config.ts"
@@ -25,6 +26,7 @@
     "drizzle-kit": "^0.31.4",
     "eslint": "^9.39.4",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
   }
 }

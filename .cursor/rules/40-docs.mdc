@@ -1,0 +1,13 @@
+---
+description: Documentation and workflow sync rules
+globs: ["docs/**/*.md","ai/**/*.md","AGENTS.md","CLAUDE.md","GEMINI.md","README.md","scripts/**/*.mjs"]
+alwaysApply: false
+---
+
+# Docs Sync Rule
+
+- Treat repo Markdown as the source of truth for important work.
+- Load `ai/context/doc-sync.md` and `docs/agent-context.md` when changing docs, workflows, or adapters.
+- Update canonical docs first, then regenerate adapter outputs with `pnpm ai:sync`.
+- Do not duplicate full policy text across adapters. Keep adapters short and point them back to canonical docs.
+- If you change workflow commands or templates, update `README.md` and `docs/work-items/README.md` in the same change.

@@ -6,6 +6,9 @@ import { appAnalytics } from "@/lib/analytics";
 import { appErrorLogger } from "@/lib/error-logging";
 import type { ActionResult, AnalyticsContextInput } from "@/shared/types/form-action";
 
+const submitLeadFailureMessage =
+  "문의 접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+
 export const submitLead = async (
   input: LeadCaptureInput,
   analyticsContext?: AnalyticsContextInput,
@@ -56,6 +59,9 @@ export const submitLead = async (
       },
     });
 
-    throw error;
+    return {
+      ok: false,
+      message: submitLeadFailureMessage,
+    };
   }
 };

@@ -42,6 +42,10 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm test:e2e
+pnpm verify
+pnpm verify:full
+pnpm work:new my-task --request "작업 배경"
+pnpm ai:sync
 pnpm db:seed
 ```
 
@@ -74,7 +78,9 @@ pnpm db:seed
 
 - 여러 파일에 걸친 기능 작업, 실험 변경, 폼/어드민/analytics/DB 변경은 먼저 `docs/product-squad/operating-model.md`를 읽는다.
 - 중요한 작업은 `ai/context/spec-driven.md`와 `ai/context/doc-sync.md`도 함께 읽는다.
-- 해당 작업은 `docs/work-items/<work-id>/`에 brief와 role spec을 만든 뒤 구현한다.
+- 해당 작업은 `pnpm work:new <slug> --request "..."` 또는 수동 작성으로 `docs/work-items/<work-id>/`에 brief와 role spec을 만든 뒤 구현한다.
+- 구현 후 기본 검증은 `pnpm verify`, 더 무거운 사용자 흐름 검증은 `pnpm verify:full`을 사용한다.
+- AI 컨텍스트나 adapter entry가 바뀌면 `pnpm ai:sync`를 실행한다.
 - 작은 문구 수정이나 단일 스타일 수정은 full process를 생략할 수 있지만, skip 이유는 남긴다.
 
 ## Documentation source of truth

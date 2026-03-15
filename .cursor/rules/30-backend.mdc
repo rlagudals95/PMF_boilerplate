@@ -1,0 +1,13 @@
+---
+description: Backend rules for schemas, repositories, actions, and integrations
+globs: ["packages/db/src/**/*.ts","packages/core/src/**/*.ts","apps/web/src/modules/**/*.ts","apps/web/src/app/api/**/*.ts"]
+alwaysApply: false
+---
+
+# Backend Rule
+
+- Load `ai/context/engineering-backend.md` for backend, schema, repository, or integration changes.
+- Validate at the boundary. Model and use-case files should orchestrate validated input rather than parse `unknown` directly.
+- Keep repository changes atomic where the product signal depends on multiple writes.
+- External integrations should fail loudly for operator visibility, but optional adapters should not corrupt the core flow.
+- Update analytics, error logging, and tests in the same change when persistence behavior changes.

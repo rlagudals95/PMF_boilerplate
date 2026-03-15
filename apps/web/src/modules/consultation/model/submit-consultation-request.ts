@@ -3,12 +3,15 @@ import {
   createLeadFromInput,
   type ConsultationRequestInput,
 } from "@pmf/core";
-import { createConsultationRequest, createLead } from "@pmf/db";
+import { createLeadWithConsultationRequest } from "@pmf/db";
 import { revalidatePath } from "next/cache";
 
 import { appAnalytics } from "@/lib/analytics";
 import { appErrorLogger } from "@/lib/error-logging";
 import type { ActionResult, AnalyticsContextInput } from "@/shared/types/form-action";
+
+const submitConsultationFailureMessage =
+  "상담 요청 접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.";
 
 export const submitConsultationRequest = async (
   input: ConsultationRequestInput,
@@ -27,8 +30,7 @@ export const submitConsultationRequest = async (
 
     const consultationRequest = createConsultationRequestFromInput(input, lead.id);
 
-    await createLead(lead);
-    await createConsultationRequest(consultationRequest);
+    await createLeadWithConsultationRequest(lead, consultationRequest);
 
     try {
       await appAnalytics.track({
@@ -74,6 +76,9 @@ export const submitConsultationRequest = async (
       },
     });
 
-    throw error;
+    return {
+      ok: false,
+      message: submitConsultationFailureMessage,
+    };
   }
 };

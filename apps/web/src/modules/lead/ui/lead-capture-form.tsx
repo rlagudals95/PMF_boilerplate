@@ -17,6 +17,7 @@ const consentClassName =
   "flex items-start gap-3 rounded-2xl border border-border bg-muted/70 px-4 py-3 text-sm text-muted-foreground";
 const checkboxClassName =
   "mt-1 h-4 w-4 rounded border-border text-primary accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/20";
+const submitFailureMessage = "문의 접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.";
 
 export function LeadCaptureForm() {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
@@ -37,28 +38,33 @@ export function LeadCaptureForm() {
     setIsPending(true);
 
     startTransition(async () => {
-      const result = await submitLeadAction(values, {
-        sessionId: getAnalyticsSessionId(),
-      });
-      setIsPending(false);
+      try {
+        const result = await submitLeadAction(values, {
+          sessionId: getAnalyticsSessionId(),
+        });
 
-      if (!result.ok) {
-        applyActionErrors(setError, result.errors);
+        if (!result.ok) {
+          applyActionErrors(setError, result.errors);
+          setServerMessage(result.message);
+          return;
+        }
+
+        trackMarketingEvent({
+          eventName: "lead_form_submitted",
+          path: "/",
+          properties: {
+            productInterest: values.productInterest,
+            source: values.source,
+          },
+        });
+
+        reset(defaultLeadCaptureValues);
         setServerMessage(result.message);
-        return;
+      } catch {
+        setServerMessage(submitFailureMessage);
+      } finally {
+        setIsPending(false);
       }
-
-      trackMarketingEvent({
-        eventName: "lead_form_submitted",
-        path: "/",
-        properties: {
-          productInterest: values.productInterest,
-          source: values.source,
-        },
-      });
-
-      reset(defaultLeadCaptureValues);
-      setServerMessage(result.message);
     });
   });
 

@@ -24,6 +24,22 @@ test("funnel demo is reachable from landing", async ({ page }) => {
   await expect(page.getByTestId("funnel-demo")).toBeVisible();
 });
 
+test("lead form submits", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByLabel("이름").fill("테스트 사용자");
+  await page.getByLabel("전화번호").fill("010-1234-5678");
+  await page.getByLabel("관심 주제").fill("업무 자동화");
+  await page
+    .getByLabel("개인정보 수집 및 후속 연락에 동의합니다.")
+    .check();
+  await page.getByTestId("lead-submit").click();
+
+  await expect(page.getByTestId("lead-message")).toContainText(
+    "문의가 접수되었습니다",
+  );
+});
+
 test("consultation form submits", async ({ page }) => {
   await page.goto("/consult");
 

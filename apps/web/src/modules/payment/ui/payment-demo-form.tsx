@@ -23,6 +23,9 @@ import { getAnalyticsSessionId } from "@/shared/lib/analytics-session";
 import { applyActionErrors } from "@/shared/lib/apply-action-errors";
 import { FieldError } from "@/shared/ui/field-error";
 
+const submitFailureMessage =
+  "결제 세션 생성 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+
 export function PaymentDemoForm({ isConfigured }: { isConfigured: boolean }) {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -41,24 +44,28 @@ export function PaymentDemoForm({ isConfigured }: { isConfigured: boolean }) {
     setIsPending(true);
 
     startTransition(async () => {
-      const result = await startPaymentAction(values, {
-        sessionId: getAnalyticsSessionId(),
-      });
+      try {
+        const result = await startPaymentAction(values, {
+          sessionId: getAnalyticsSessionId(),
+        });
 
-      if (!result.ok) {
+        if (!result.ok) {
+          applyActionErrors(setError, result.errors);
+          setServerMessage(result.message);
+          return;
+        }
+
+        if (!result.redirectUrl) {
+          setServerMessage("결제 페이지 URL을 받아오지 못했습니다.");
+          return;
+        }
+
+        window.location.assign(result.redirectUrl);
+      } catch {
+        setServerMessage(submitFailureMessage);
+      } finally {
         setIsPending(false);
-        applyActionErrors(setError, result.errors);
-        setServerMessage(result.message);
-        return;
       }
-
-      if (!result.redirectUrl) {
-        setIsPending(false);
-        setServerMessage("결제 페이지 URL을 받아오지 못했습니다.");
-        return;
-      }
-
-      window.location.assign(result.redirectUrl);
     });
   });
 

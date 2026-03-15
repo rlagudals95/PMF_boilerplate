@@ -41,6 +41,8 @@ const defaultSeed = (): LocalDataStore => ({
   payments: mockPayments,
 });
 
+let localStoreOperation = Promise.resolve();
+
 export const resolveLocalDataFile = () => {
   const configuredPath = process.env.LOCAL_DATA_FILE;
 
@@ -53,7 +55,7 @@ export const resolveLocalDataFile = () => {
     : path.resolve(repoRoot, configuredPath);
 };
 
-export const readLocalStore = async (): Promise<LocalDataStore> => {
+const readLocalStoreFile = async (): Promise<LocalDataStore> => {
   const target = resolveLocalDataFile();
 
   try {
@@ -71,17 +73,47 @@ export const readLocalStore = async (): Promise<LocalDataStore> => {
     };
   } catch {
     const seed = defaultSeed();
-    await writeLocalStore(seed);
+    await writeLocalStoreFile(seed);
     return seed;
   }
 };
 
-export const writeLocalStore = async (data: LocalDataStore) => {
+const writeLocalStoreFile = async (data: LocalDataStore) => {
   const target = resolveLocalDataFile();
 
   await fs.mkdir(path.dirname(target), { recursive: true });
   await fs.writeFile(target, JSON.stringify(data, null, 2), "utf8");
 };
+
+const queueLocalStoreOperation = async <T>(operation: () => Promise<T>) => {
+  const task = localStoreOperation.then(operation, operation);
+  localStoreOperation = task.then(
+    () => undefined,
+    () => undefined,
+  );
+
+  return task;
+};
+
+export const readLocalStore = async (): Promise<LocalDataStore> => {
+  await localStoreOperation;
+  return readLocalStoreFile();
+};
+
+export const writeLocalStore = async (data: LocalDataStore) =>
+  queueLocalStoreOperation(async () => {
+    await writeLocalStoreFile(data);
+  });
+
+export const updateLocalStore = async <T>(
+  updater: (data: LocalDataStore) => Promise<T> | T,
+): Promise<T> =>
+  queueLocalStoreOperation(async () => {
+    const store = await readLocalStoreFile();
+    const result = await updater(store);
+    await writeLocalStoreFile(store);
+    return result;
+  });
 
 export const seedLocalStore = async () => {
   const seed = defaultSeed();

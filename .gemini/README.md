@@ -11,7 +11,6 @@ This directory contains two official Gemini adapter forms generated from `ai/ski
 - Refresh these files with `pnpm ai:sync`.
 
 Available generated skills:
-
 - `repo-guardrails`: 새 패키지/새 추상화/새 인프라를 추가하려 할 때
 - `experiment-ops`: 실험 등록, 이벤트 명명, success metric 설계, 종료 기준 판단
 - `product-squad`: 중요한 기능 작업이나 실험 변경을 PM/PD/FE/BE 역할로 나눠서 운영할 때

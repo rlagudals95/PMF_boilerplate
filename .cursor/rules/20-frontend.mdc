@@ -1,0 +1,13 @@
+---
+description: Frontend rules for Next.js routes, modules, and shared UI
+globs: ["apps/web/src/**/*.ts","apps/web/src/**/*.tsx"]
+alwaysApply: false
+---
+
+# Frontend Rule
+
+- Load `ai/context/engineering-frontend.md` for frontend work.
+- Keep `page.tsx`, `layout.tsx`, and `route.ts` files thin. Business logic belongs in modules, not route entry files.
+- Prefer module-local code first. Move code to `shared` or `packages` only after reuse is proven.
+- Keep forms resilient: visible error states, pending cleanup, and non-blocking optional providers.
+- Preserve the existing visual language unless the task explicitly asks for a redesign.

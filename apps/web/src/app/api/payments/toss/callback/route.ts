@@ -47,9 +47,30 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    if (!payment) {
+      await appErrorLogger.report({
+        source: "route.api.payments.toss.callback.POST",
+        message: "Toss callback did not match an existing payment",
+        level: "warning",
+        context: {
+          orderNo: orderNo ?? null,
+          payToken: payToken ?? null,
+          status: status ?? null,
+        },
+      });
+
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "매칭되는 결제 기록을 찾지 못했습니다.",
+        },
+        { status: 404 },
+      );
+    }
+
     return NextResponse.json({
       ok: true,
-      paymentId: payment?.id ?? null,
+      paymentId: payment.id,
     });
   } catch (error) {
     await appErrorLogger.report({

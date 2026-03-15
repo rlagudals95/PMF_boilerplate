@@ -16,7 +16,7 @@ import {
 } from "@pmf/core";
 
 import { getDatabase, isDatabaseConfigured } from "./postgres";
-import { readLocalStore, writeLocalStore } from "./local-store";
+import { readLocalStore, updateLocalStore } from "./local-store";
 import {
   consultationRequests,
   experiments,
@@ -261,10 +261,10 @@ export const findPaymentByPayToken = async (
 
 export const createLead = async (lead: Lead) => {
   if (!isDatabaseConfigured()) {
-    const store = await readLocalStore();
-    store.leads.unshift(lead);
-    await writeLocalStore(store);
-    return lead;
+    return updateLocalStore((store) => {
+      store.leads.unshift(lead);
+      return lead;
+    });
   }
 
   await getDatabase().insert(leads).values(lead);
@@ -275,10 +275,10 @@ export const createConsultationRequest = async (
   consultationRequest: ConsultationRequest,
 ) => {
   if (!isDatabaseConfigured()) {
-    const store = await readLocalStore();
-    store.consultationRequests.unshift(consultationRequest);
-    await writeLocalStore(store);
-    return consultationRequest;
+    return updateLocalStore((store) => {
+      store.consultationRequests.unshift(consultationRequest);
+      return consultationRequest;
+    });
   }
 
   await getDatabase()
@@ -287,12 +287,39 @@ export const createConsultationRequest = async (
   return consultationRequest;
 };
 
+export const createLeadWithConsultationRequest = async (
+  lead: Lead,
+  consultationRequest: ConsultationRequest,
+) => {
+  if (!isDatabaseConfigured()) {
+    return updateLocalStore((store) => {
+      store.leads.unshift(lead);
+      store.consultationRequests.unshift(consultationRequest);
+
+      return {
+        lead,
+        consultationRequest,
+      };
+    });
+  }
+
+  await getDatabase().transaction(async (tx) => {
+    await tx.insert(leads).values(lead);
+    await tx.insert(consultationRequests).values(consultationRequest);
+  });
+
+  return {
+    lead,
+    consultationRequest,
+  };
+};
+
 export const createPageEvent = async (pageEvent: PageEvent) => {
   if (!isDatabaseConfigured()) {
-    const store = await readLocalStore();
-    store.pageEvents.unshift(pageEvent);
-    await writeLocalStore(store);
-    return pageEvent;
+    return updateLocalStore((store) => {
+      store.pageEvents.unshift(pageEvent);
+      return pageEvent;
+    });
   }
 
   await getDatabase().insert(pageEvents).values(pageEvent);
@@ -301,10 +328,10 @@ export const createPageEvent = async (pageEvent: PageEvent) => {
 
 export const createPayment = async (payment: Payment) => {
   if (!isDatabaseConfigured()) {
-    const store = await readLocalStore();
-    store.payments.unshift(payment);
-    await writeLocalStore(store);
-    return payment;
+    return updateLocalStore((store) => {
+      store.payments.unshift(payment);
+      return payment;
+    });
   }
 
   await getDatabase().insert(payments).values(payment);
@@ -316,23 +343,23 @@ export const updatePaymentByOrderNo = async (
   updates: PaymentUpdateInput,
 ) => {
   if (!isDatabaseConfigured()) {
-    const store = await readLocalStore();
-    const index = store.payments.findIndex((payment) => payment.orderNo === orderNo);
+    return updateLocalStore((store) => {
+      const index = store.payments.findIndex((payment) => payment.orderNo === orderNo);
 
-    if (index < 0) {
-      return undefined;
-    }
+      if (index < 0) {
+        return undefined;
+      }
 
-    const current = store.payments[index]!;
-    const next: Payment = {
-      ...current,
-      ...updates,
-      updatedAt: updates.updatedAt ?? current.updatedAt,
-    };
+      const current = store.payments[index]!;
+      const next: Payment = {
+        ...current,
+        ...updates,
+        updatedAt: updates.updatedAt ?? current.updatedAt,
+      };
 
-    store.payments[index] = next;
-    await writeLocalStore(store);
-    return next;
+      store.payments[index] = next;
+      return next;
+    });
   }
 
   await getDatabase()
@@ -348,23 +375,23 @@ export const updatePaymentByPayToken = async (
   updates: PaymentUpdateInput,
 ) => {
   if (!isDatabaseConfigured()) {
-    const store = await readLocalStore();
-    const index = store.payments.findIndex((payment) => payment.payToken === payToken);
+    return updateLocalStore((store) => {
+      const index = store.payments.findIndex((payment) => payment.payToken === payToken);
 
-    if (index < 0) {
-      return undefined;
-    }
+      if (index < 0) {
+        return undefined;
+      }
 
-    const current = store.payments[index]!;
-    const next: Payment = {
-      ...current,
-      ...updates,
-      updatedAt: updates.updatedAt ?? current.updatedAt,
-    };
+      const current = store.payments[index]!;
+      const next: Payment = {
+        ...current,
+        ...updates,
+        updatedAt: updates.updatedAt ?? current.updatedAt,
+      };
 
-    store.payments[index] = next;
-    await writeLocalStore(store);
-    return next;
+      store.payments[index] = next;
+      return next;
+    });
   }
 
   await getDatabase()
