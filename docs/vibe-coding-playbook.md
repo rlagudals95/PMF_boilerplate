@@ -75,8 +75,8 @@
 | 더 무거운 release gate | `pnpm verify:full` | 개선됨 |
 | work item scaffolding | `pnpm work:new` | 개선됨 |
 | 로컬 실행 가능성 | local JSON fallback + smoke E2E | 강함 |
-| hosted AI builder 직접 최적화 | v0/Lovable 전용 산출물 없음 | 부분적 |
-| checkpoint/rollback 자동화 | 툴 내장 기능 의존, repo 자체 자동화 없음 | 부분적 |
+| hosted AI builder 직접 최적화 | v0/Lovable 전용 산출물 없음 | 의도적 제외 |
+| checkpoint/rollback 자동화 | 툴 내장 기능 의존, repo 자체 자동화 없음 | 의도적 제외 |
 
 ## 이 저장소를 바이브 코딩에 잘 맞게 쓰는 권장 흐름
 
@@ -100,23 +100,25 @@
 2. `pnpm ai:sync`로 Copilot, Cursor, Claude, Gemini, Codex adapter를 다시 생성합니다.
 3. `pnpm verify`로 문서/스크립트 drift를 확인합니다.
 
-## 왜 이 저장소가 “상당히 좋지만 아직 완전 최고는 아닌가”
+## 의도적으로 제외한 범위
 
-현재 구조는 “AI가 막 써도 망가지기 어려운 구조”에는 꽤 가깝습니다.  
-하지만 최신 vibe coding 도구들이 강조하는 두 영역은 아직 일부만 커버합니다.
+아래 두 항목은 “남은 부족”이라기보다, 현재 목적 대비 비용이 큰 영역이라 기본 스코프에서 뺐습니다.
 
 - hosted builder 전용 산출물
   - v0/Lovable 전용 project knowledge 파일까지 자동 생성하지는 않습니다.
+  - vendor-neutral canonical context를 우선하기 때문에 특정 builder 하나에 맞춘 export는 기본값으로 두지 않습니다.
 - checkpoint/preview automation
   - Replit 같은 자동 checkpoint 경험은 repo 밖 도구 기능에 더 의존합니다.
+  - 이 저장소는 preview 인프라보다 spec, 구조, 검증 루프를 먼저 표준화하는 쪽을 택합니다.
 
-즉, 이 저장소는 “속도와 품질을 둘 다 잡으려는 개발자”에게는 이미 강한 편이지만, “도구가 거의 다 알아서 해주는 초자동 vibe coding”까지는 의도적으로 가지 않습니다.
+즉, 이 저장소는 “속도와 품질을 둘 다 잡으려는 개발자”에게는 강하지만, “도구별 초전용 자동화”까지 기본 내장하는 방향은 의도적으로 택하지 않습니다.
 
 ## 의도적인 trade-off
 
 - auth, CMS, background jobs 같은 무거운 기능을 넣지 않습니다.
 - 문서와 구조 규칙을 유지하는 대신, 무규칙한 instant prototyping 속도는 일부 포기합니다.
 - vendor-neutral context를 우선하기 때문에 특정 hosted builder 하나에 완전히 맞춘 UX는 덜합니다.
+- checkpoint/preview 자동화는 repo 기본 기능보다 각 도구의 내장 UX에 맡깁니다.
 
 이 trade-off는 PMF 탐색용 보일러플레이트로는 합리적입니다.
 
@@ -125,7 +127,7 @@
 - “AI가 빠르게 코딩하기 좋은가?”: 예
 - “속도만 빠른 게 아니라 품질 가드레일이 있는가?”: 예
 - “최신 vibe coding 도구들의 베스트 패턴을 충분히 흡수했는가?”: 이제는 상당 부분 예
-- “모든 도구에서 최고로 네이티브한 경험인가?”: 아직 부분적으로만 예
+- “모든 도구 전용 기능까지 기본 탑재해야 하는가?”: 아니오, 그건 이 저장소의 목표가 아님
 
 실무적으로는 “매우 강한 AI-native PMF 보일러플레이트”라고 볼 수 있습니다.  
 다만 철학은 여전히 “무제한 자유”가 아니라 “빠르되 무너지지 않게” 쪽입니다.
