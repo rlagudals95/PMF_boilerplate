@@ -6,6 +6,8 @@ PMF를 찾기 위한 실험용 모노레포 보일러플레이트입니다.
 
 `랜딩 -> 리드 수집 -> 상담 요청 -> 결제 의사 확인 -> 어드민 확인 -> 실험 문서화`
 
+현재 앱에는 generic 실험 패키지 `@pmf/ab-test`와 행동 로그 패키지 `@pmf/user-behavior-log`가 실제로 연결되어 있습니다.
+
 ## 기본 작업 워크플로
 
 이 저장소의 기본값은 `spec-driven + selective TDD + verify`입니다.
@@ -81,7 +83,7 @@ pnpm dev
 
 2. 사용자 흐름 확인
 
-- `/`: 랜딩 페이지와 리드 폼
+- `/`: 랜딩 페이지, 리드 폼, sample A/B test cookie assignment와 hero copy variant 확인
 - `/auth`: 소셜 로그인 starter demo
 - `/consult`: 상담 요청 폼
 - `/pay`: 토스 결제 데모 시작
@@ -235,9 +237,33 @@ apps/web/src/
 packages/core           도메인 타입, zod 스키마, fixture
 packages/db             Drizzle 스키마, 저장소, local fallback, seed
 packages/ui             공유 UI 컴포넌트
+packages/ab-test        cookie 기반 variant assignment와 assignment reader
+packages/user-behavior-log  page_view / click / impression logger
 packages/analytics      track() 추상화와 adapter
 packages/error-logging  report() 추상화와 adapter
 ```
+
+## 실험 패키지 사용법
+
+이 보일러플레이트에는 generic package 두 개가 앱에 이미 연결돼 있습니다. 새 제품으로 복제할 때는 아래 파일들부터 보는 것이 가장 빠릅니다.
+
+### A/B test: `@pmf/ab-test`
+
+1. `apps/web/src/modules/landing/model/hero-copy-experiment.ts`에서 `defineAbTestDefinitions(...)`로 실험과 variant weight를 정의합니다.
+2. `apps/web/src/middleware.ts`에서 `applyAbTestMiddleware(...)`를 호출해 cookie assignment를 생성합니다.
+3. `apps/web/src/app/page.tsx`에서 `getAbTestAssignments(cookies(), definitions)`로 현재 assignment를 읽습니다.
+4. `apps/web/src/modules/landing/ui/landing-page.tsx`처럼 server route가 받은 variant를 UI prop으로 넘겨 카피를 분기합니다.
+
+패키지 세부 API와 standalone 예시는 [packages/ab-test/README.md](./packages/ab-test/README.md)에 정리돼 있습니다.
+
+### Behavior log: `@pmf/user-behavior-log`
+
+1. `apps/web/src/shared/lib/app-behavior-logger.ts`에서 sender를 앱 이벤트 taxonomy와 provider bridge에 연결합니다.
+2. `apps/web/src/shared/ui/behavior-logger-provider.tsx`에서 앱 전역 logger를 provider로 주입합니다.
+3. `apps/web/src/shared/ui/page-view-tracker.tsx`에서 `page_view`, `admin_page_viewed`를 route 기준으로 보냅니다.
+4. `apps/web/src/shared/ui/tracked-link.tsx`에서 CTA click을 `cta_clicked`로 기록하고 destination/source metadata를 함께 보냅니다.
+
+패키지 세부 API와 React wrapper 예시는 [packages/user-behavior-log/README.md](./packages/user-behavior-log/README.md)에 정리돼 있습니다.
 
 ### 문서와 AI 컨텍스트
 
@@ -277,6 +303,7 @@ AGENTS.md               에이전트용 루트 엔트리
 - 핵심 이벤트는 내부 `page_events`에 먼저 저장합니다.
 - `session_id`를 저장해 익명 세션 흐름을 이어갑니다.
 - 외부 SaaS는 optional provider입니다.
+- 앱 wiring 기본 위치는 `apps/web/src/shared/lib/app-behavior-logger.ts`입니다.
 
 ### Analytics
 
@@ -295,6 +322,7 @@ AGENTS.md               에이전트용 루트 엔트리
 기본 브리지 이벤트는 다음 네 가지입니다.
 
 - `page_view`
+- `admin_page_viewed`
 - `cta_clicked`
 - `lead_form_submitted`
 - `consultation_requested`
@@ -354,11 +382,13 @@ pnpm ai:sync
 ## 새 제품으로 복제하는 순서
 
 1. `packages/core/src/fixtures/mock-data.ts`에서 제품/실험 seed를 바꿉니다.
-2. `apps/web/src/modules/landing/*`에서 랜딩 카피와 CTA를 수정합니다.
-3. `apps/web/src/modules/lead/*`, `apps/web/src/modules/consultation/*`에서 폼 필드를 조정합니다.
-4. `apps/web/src/lib/app-theme.ts`에서 브랜드 테마를 바꿉니다.
-5. `/admin/experiments`에 노출될 실험 데이터를 함께 갱신합니다.
-6. 운영 단계에 들어가면 `DATABASE_URL`을 연결합니다.
+2. `apps/web/src/modules/landing/model/hero-copy-experiment.ts`에서 sample experiment를 새 카피 실험으로 바꿉니다.
+3. `apps/web/src/modules/landing/*`에서 랜딩 카피와 CTA를 수정합니다.
+4. `apps/web/src/shared/lib/app-behavior-logger.ts`, `apps/web/src/shared/ui/tracked-link.tsx`, `apps/web/src/shared/ui/page-view-tracker.tsx`에서 이벤트명과 metadata taxonomy를 조정합니다.
+5. `apps/web/src/modules/lead/*`, `apps/web/src/modules/consultation/*`에서 폼 필드를 조정합니다.
+6. `apps/web/src/lib/app-theme.ts`에서 브랜드 테마를 바꿉니다.
+7. `/admin/experiments`에 노출될 실험 데이터를 함께 갱신합니다.
+8. 운영 단계에 들어가면 `DATABASE_URL`을 연결합니다.
 
 ## 의도적으로 넣지 않은 것
 

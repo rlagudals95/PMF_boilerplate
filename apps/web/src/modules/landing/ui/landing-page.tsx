@@ -25,6 +25,7 @@ import { brandTheme } from "@/lib/app-theme";
 import { LeadCaptureForm } from "@/modules/lead/ui/lead-capture-form";
 import { appConfig } from "@/lib/app-config";
 import { BrandThemePlayground } from "@/modules/landing/ui/brand-theme-playground";
+import type { LandingHeroVariant } from "@/modules/landing/model/hero-copy-experiment";
 import { TrackedLink } from "@/shared/ui/tracked-link";
 
 const featureGroups = [
@@ -197,6 +198,41 @@ const liveFormFeatures = [
   },
 ] as const;
 
+const integrationGuides = [
+  {
+    eyebrow: "AB Test",
+    title: "샘플 실험을 새 카피 실험으로 바꾸는 순서",
+    description:
+      "실험 정의를 모델에 두고, middleware에서 cookie assignment를 만들고, server route에서 variant를 읽습니다.",
+    files: [
+      "apps/web/src/modules/landing/model/hero-copy-experiment.ts",
+      "apps/web/src/middleware.ts",
+      "apps/web/src/app/page.tsx",
+    ],
+    items: [
+      "defineAbTestDefinitions로 feature key와 variant weight를 등록합니다.",
+      "middleware에서 applyAbTestMiddleware를 호출해 assignment cookie를 생성합니다.",
+      "page route에서 assignment를 읽어 hero variant를 UI prop으로 넘깁니다.",
+    ],
+  },
+  {
+    eyebrow: "Behavior Log",
+    title: "CTA와 page view를 앱 taxonomy에 맞게 보내는 순서",
+    description:
+      "generic logger를 앱 sender에 연결하고, provider와 route/component helper로 필요한 이벤트만 보냅니다.",
+    files: [
+      "apps/web/src/shared/lib/app-behavior-logger.ts",
+      "apps/web/src/shared/ui/page-view-tracker.tsx",
+      "apps/web/src/shared/ui/tracked-link.tsx",
+    ],
+    items: [
+      "sender에서 marketing provider와 trackEventAction payload를 함께 조합합니다.",
+      "PageViewTracker가 page_view와 admin_page_viewed를 route 기준으로 분기합니다.",
+      "TrackedLink가 cta_clicked와 destination/source metadata를 유지합니다.",
+    ],
+  },
+] as const;
+
 const heroHighlights = [
   {
     title: "바로 실행 가능",
@@ -204,7 +240,8 @@ const heroHighlights = [
   },
   {
     title: "실험에 필요한 기본선",
-    description: "analytics, marketing, error logging, fallback 저장이 준비돼 있습니다.",
+    description:
+      "ab-test cookie assignment, page_view/cta_clicked logging, fallback 저장이 준비돼 있습니다.",
   },
   {
     title: "복제 가능한 구조",
@@ -292,11 +329,40 @@ const themeSnippet = [
   "};",
 ].join("\n");
 
-export default function LandingPage() {
+const heroContentByVariant: Record<
+  LandingHeroVariant,
+  { title: string; emphasis: string; description: string; badge: string }
+> = {
+  control: {
+    title: "PMF 실험용 보일러플레이트가",
+    emphasis: "기본으로 제공하는 기능",
+    description:
+      "이 저장소는 특정 도메인 소개 페이지가 아니라, 랜딩, 리드 수집, 상담 요청, 어드민 운영, 추적 wiring, AI 문맥 문서까지 묶어 둔 스타터입니다. 제품 이름보다 무엇이 이미 들어 있는지를 먼저 파악할 수 있게 랜딩 구조를 정리했습니다.",
+    badge: "Hero Copy: control",
+  },
+  benefit: {
+    title: "새 실험을 시작할 때 필요한 기본선이",
+    emphasis: "처음부터 이미 연결돼 있습니다",
+    description:
+      "랜딩, 리드, 상담, 결제 데모, 운영 화면, 추적 wiring, AI 문서까지 한 번에 묶어 둬서 다음 사이드 프로젝트에서도 바로 검증 루프를 돌릴 수 있습니다.",
+    badge: "Hero Copy: benefit",
+  },
+};
+
+export default function LandingPage({
+  heroVariant = "control",
+}: {
+  heroVariant?: LandingHeroVariant;
+}) {
+  const heroContent = heroContentByVariant[heroVariant];
   const starterSnapshot = [
     {
       label: "Runtime",
       value: "landing / lead / consult / pay / admin",
+    },
+    {
+      label: "Experiments",
+      value: "cookie assignment + hero sample",
     },
     {
       label: "Payments",
@@ -321,16 +387,19 @@ export default function LandingPage() {
       <section className="grid gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:items-start">
         <div className="space-y-8">
           <div className="space-y-6">
-            <Badge variant="accent">PMF Boilerplate</Badge>
+            <div className="flex flex-wrap gap-3">
+              <Badge variant="accent">PMF Boilerplate</Badge>
+              <Badge className="border border-border bg-white/80 text-slate-700">
+                {heroContent.badge}
+              </Badge>
+            </div>
             <div className="space-y-4">
               <h1 className="max-w-4xl text-5xl font-semibold leading-tight tracking-tight text-slate-950">
-                PMF 실험용 보일러플레이트가
-                <span className="block text-primary">기본으로 제공하는 기능</span>
+                {heroContent.title}
+                <span className="block text-primary">{heroContent.emphasis}</span>
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-slate-600">
-                이 저장소는 특정 도메인 소개 페이지가 아니라, 랜딩, 리드 수집, 상담 요청, 어드민
-                운영, 추적 wiring, AI 문맥 문서까지 묶어 둔 스타터입니다. 제품 이름보다
-                무엇이 이미 들어 있는지를 먼저 파악할 수 있게 랜딩 구조를 정리했습니다.
+                {heroContent.description}
               </p>
             </div>
 
@@ -520,6 +589,58 @@ export default function LandingPage() {
                     </div>
                   </div>
                 ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section id="package-wiring" className="mt-20 space-y-6">
+        <div className="max-w-3xl space-y-3">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+            Package Wiring
+          </p>
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-950">
+            실제로 어디를 바꾸면 되는지 바로 보이게 정리했습니다
+          </h2>
+          <p className="text-base leading-7 text-slate-600">
+            `@pmf/ab-test`와 `@pmf/user-behavior-log`는 generic package로 두고, 앱에서는 wiring
+            파일만 바꾸는 구조를 기본값으로 둡니다.
+          </p>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+          {integrationGuides.map((guide) => (
+            <Card key={guide.title} className="bg-white/90">
+              <CardHeader className="space-y-4">
+                <Badge variant="accent" className="w-fit">
+                  {guide.eyebrow}
+                </Badge>
+                <div className="space-y-2">
+                  <CardTitle className="text-2xl">{guide.title}</CardTitle>
+                  <CardDescription className="leading-6">{guide.description}</CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div className="space-y-2">
+                  {guide.files.map((file) => (
+                    <div
+                      key={file}
+                      className="rounded-2xl border border-border bg-muted/70 px-4 py-3 font-mono text-xs text-slate-700"
+                    >
+                      {file}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-3">
+                  {guide.items.map((item) => (
+                    <div key={item} className="flex items-start gap-3">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />
+                      <p className="text-sm leading-6 text-slate-700">{item}</p>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           ))}

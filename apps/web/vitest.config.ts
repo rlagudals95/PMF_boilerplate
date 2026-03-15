@@ -11,4 +11,7 @@ export default defineConfig({
       "@": path.resolve(appRoot, "src"),
     },
   },
+  test: {
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+  },
 });
