@@ -30,6 +30,11 @@
 - 위치: `ai/skills/pm-role.md`
 - 사용 시점: 문제정의, 목표, 범위, success metric, acceptance criteria를 고정할 때
 
+### `prd-coach`
+
+- 위치: `ai/skills/prd-coach.md`
+- 사용 시점: 문제, 유저 데이터, 가설, 비즈니스 목표를 바탕으로 PRD 초안을 만들고 짧은 왕복으로 계속 다듬어야 할 때
+
 ### `pd-role`
 
 - 위치: `ai/skills/pd-role.md`
@@ -54,3 +59,8 @@
 
 - 위치: `ai/skills/doc-sync.md`
 - 사용 시점: 구조 변경, 운영 규칙 변경, PR 마무리 시 문서 sync 필요 여부를 판단할 때
+
+### `session-wrap`
+
+- 위치: `ai/skills/session-wrap.md`
+- 사용 시점: 작업 세션을 마무리하며 변경 요약, 문서 영향 점검, 선택적 커밋을 함께 진행할 때

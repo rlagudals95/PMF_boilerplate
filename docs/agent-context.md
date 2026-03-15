@@ -79,6 +79,7 @@
 - tool-native instruction 파일이 필요하면 `ai/`와 루트 adapter 문서를 source로 삼아 generated adapter를 만듭니다.
 - 한 번 쓰고 끝날 규칙은 스킬로 만들지 않습니다.
 - 공통성이 검증된 워크플로우만 `ai/skills`에 등록합니다.
+- 세션 종료 시 반복되는 변경 요약, 문서 영향 점검, 커밋 제안은 `session-wrap` 같은 canonical skill로 관리합니다.
 - 외부 도구 메모는 입력 채널일 뿐 canonical source가 아닙니다.
 - 플랫폼 런타임 포맷이 필요하면 `ai/`를 source로 삼아 generated adapter를 만듭니다.
 - generated adapter는 직접 수정하지 않고 `pnpm ai:sync`로 다시 만듭니다.

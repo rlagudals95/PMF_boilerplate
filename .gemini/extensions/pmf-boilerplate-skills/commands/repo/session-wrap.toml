@@ -1,0 +1,14 @@
+description = "Applies the repository's session-wrap workflow. Use when 작업 세션을 마무리하며 변경 요약, 문서 영향 점검, 선택적 커밋을 함께 진행할 때"
+prompt = '''
+Use the repository workflow below as the authoritative guide for this task.
+
+@{ai/skills/session-wrap.md}
+
+Instructions:
+- Apply the workflow to the current conversation and workspace.
+- If the workflow asks you to load other canonical documents, load them before acting.
+- If command arguments are provided, treat them as the immediate task input.
+
+Task input:
+{{args}}
+'''
