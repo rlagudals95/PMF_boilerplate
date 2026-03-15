@@ -23,6 +23,8 @@ Working rules:
 
 Fast loops:
 - Use `pnpm work:new <slug> --request "..."` to create a work item scaffold.
+- Use `pnpm prd:new <slug>` to scaffold a canonical PRD in `docs/prds/`.
+- Use `pnpm feature:new --prd <slug> [--feature <feature-slug>]` to turn a PRD into a single feature work item plan.
 - Use `pnpm verify` for the default quality gate.
 - Use `pnpm verify:full` before handoff when user-facing flows or integrations changed.
 - Use `pnpm ai:sync` after changing `ai/`, `AGENTS.md`, or other adapter-driving docs.

@@ -27,10 +27,12 @@ description: "Use when route, module, component, client/server 경계, FE 테스
 - 영향을 받는 route와 module path가 적혀 있는가
 - 새 코드를 `app/`가 아니라 `modules/*` 또는 `shared/*`에 두는지 명확한가
 - client/server 경계와 state/event 흐름이 적혀 있는가
-- UI 테스트나 수동 검증 시나리오가 적혀 있는가
+- 먼저 failing test로 고정할 behavior slice가 적혀 있는가
+- UI 테스트나 수동 검증 시나리오가 public behavior 기준으로 적혀 있는가
 - out-of-scope가 분명한가
 
 ## Guardrails
 
 - `page.tsx`를 비대하게 만들지 않는다.
 - cross-feature 공유를 위해 `modules/*` direct import를 만들지 않는다.
+- pixel assertion이나 구현 디테일 mocking을 기본 FE 테스트 전략으로 삼지 않는다.

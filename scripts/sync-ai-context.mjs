@@ -107,6 +107,10 @@ function finalizeSkill(skill) {
 }
 
 function buildSkillBody(skill, sourceBody) {
+  if (hasFrontmatter(sourceBody)) {
+    return `${sourceBody.trim()}\n`;
+  }
+
   const description = `Use when ${skill.useWhen}`;
 
   return [
@@ -118,6 +122,10 @@ function buildSkillBody(skill, sourceBody) {
     sourceBody.trim(),
     "",
   ].join("\n");
+}
+
+function hasFrontmatter(markdown) {
+  return markdown.startsWith("---\n");
 }
 
 async function removeStaleGeneratedFiles(skills) {
@@ -218,7 +226,7 @@ async function writeAdapterReadmes(skills) {
     "",
     generatedNotice,
     "",
-    "This directory contains project-scoped Claude skills generated from `ai/skills/*.md`.",
+    "This directory contains project-scoped Claude skills generated from the canonical skill sources in `ai/skills/`.",
     "",
     "- Project skills live in `.claude/skills/<skill-name>/SKILL.md`.",
     "- Shared project memory stays in the repository root `CLAUDE.md`.",
@@ -234,7 +242,7 @@ async function writeAdapterReadmes(skills) {
     "",
     generatedNotice,
     "",
-    "This directory contains two official Gemini adapter forms generated from `ai/skills/*.md`.",
+    "This directory contains two official Gemini adapter forms generated from the canonical skill sources in `ai/skills/`.",
     "",
     "- Direct project commands live in `.gemini/commands/repo/*.toml` and can be invoked as `/repo:<skill-name>`.",
     `- Installable extension skills live in \`.gemini/extensions/${geminiExtensionName}/skills/<skill-name>/SKILL.md\`.`,
@@ -252,7 +260,7 @@ async function writeAdapterReadmes(skills) {
     "",
     generatedNotice,
     "",
-    "This directory contains repository-scoped Codex skills generated from `ai/skills/*.md`.",
+    "This directory contains repository-scoped Codex skills generated from the canonical skill sources in `ai/skills/`.",
     "",
     "- Skills live in `.codex/skills/<skill-name>/SKILL.md`.",
     "- The repository entrypoint is still the root `AGENTS.md`.",
@@ -306,7 +314,7 @@ async function writeGeminiExtensionFiles(skills) {
     "",
     generatedNotice,
     "",
-    `This extension bundles the repository skills defined in \`ai/skills/*.md\` for \`${repoName}\`.`,
+    `This extension bundles the repository skills defined in \`ai/skills/\` for \`${repoName}\`.`,
     "",
     "Bundled skills:",
     ...skills.map((skill) => `- \`${skill.name}\`: ${skill.useWhen}`),
@@ -341,7 +349,7 @@ async function writeGeminiCommand(skill) {
   const prompt = [
     "Use the repository workflow below as the authoritative guide for this task.",
     "",
-    `@{ai/skills/${skill.name}.md}`,
+    `@{${skill.sourcePath}}`,
     "",
     "Instructions:",
     "- Apply the workflow to the current conversation and workspace.",
@@ -444,7 +452,9 @@ async function writeCopilotInstructions() {
     "- Keep external provider failures from breaking the core user flow unless the provider is the product itself.",
     "",
     "Fast loops:",
-    "- Use `pnpm work:new <slug> --request \"...\"` to create a work item scaffold.",
+    '- Use `pnpm work:new <slug> --request "..."` to create a work item scaffold.',
+    "- Use `pnpm prd:new <slug>` to scaffold a canonical PRD in `docs/prds/`.",
+    "- Use `pnpm feature:new --prd <slug> [--feature <feature-slug>]` to turn a PRD into a single feature work item plan.",
     "- Use `pnpm verify` for the default quality gate.",
     "- Use `pnpm verify:full` before handoff when user-facing flows or integrations changed.",
     "- Use `pnpm ai:sync` after changing `ai/`, `AGENTS.md`, or other adapter-driving docs.",
@@ -475,6 +485,7 @@ async function writeCursorRules() {
         "- Keep `apps/web/src/app` thin. Put product logic in `apps/web/src/modules/*`.",
         "- Promote shared code only in this order: `module -> shared -> package`.",
         "- For important multi-file work, create or update `docs/work-items/<work-id>/` before coding.",
+        "- If a canonical PRD exists, prefer `pnpm feature:new --prd <slug>` before implementation so the feature work item docs stay normalized.",
         "- Run `pnpm verify` before handoff. Run `pnpm verify:full` when user-facing flows or integrations changed.",
         "- Refresh generated adapters with `pnpm ai:sync` after changing canonical AI context or adapter-entry docs.",
       ],
@@ -495,7 +506,8 @@ async function writeCursorRules() {
     },
     {
       fileName: "30-backend.mdc",
-      description: "Backend rules for schemas, repositories, actions, and integrations",
+      description:
+        "Backend rules for schemas, repositories, actions, and integrations",
       globs: [
         "packages/db/src/**/*.ts",
         "packages/core/src/**/*.ts",

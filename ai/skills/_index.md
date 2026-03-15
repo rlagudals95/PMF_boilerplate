@@ -5,7 +5,7 @@
 ## 사용 규칙
 
 - 작업이 아래 스킬과 명확히 맞으면 해당 문서를 먼저 읽습니다.
-- 스킬 본문은 일반 Markdown으로 유지합니다.
+- 스킬 본문은 일반 Markdown 또는 `ai/skills/<name>/SKILL.md` 형태의 skill-native 문서로 유지합니다.
 - 도구별 기능 이름이나 proprietary syntax는 넣지 않습니다.
 
 ## Available skills
@@ -24,6 +24,11 @@
 
 - 위치: `ai/skills/product-squad.md`
 - 사용 시점: 중요한 기능 작업이나 실험 변경을 PM/PD/FE/BE 역할로 나눠서 운영할 때
+
+### `new-feature`
+
+- 위치: `ai/skills/new-feature/SKILL.md`
+- 사용 시점: canonical PRD를 읽고 단일 feature slice의 work item과 spec 문서를 만들 때
 
 ### `pm-role`
 

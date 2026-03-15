@@ -25,6 +25,8 @@ skip_reason: null
 
 -
 
-## Test Plan
+## Boundary / Use Case / Repository Contract Test Plan
 
--
+- 먼저 failing test로 고정할 validation/use case/repository contract
+- adapter failure handling과 fallback 검증 포인트
+- 최종 verify에 남길 통합 확인 항목

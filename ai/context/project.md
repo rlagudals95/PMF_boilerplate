@@ -44,6 +44,8 @@ pnpm test
 pnpm test:e2e
 pnpm verify
 pnpm verify:full
+pnpm prd:new my-prd
+pnpm feature:new --prd my-prd
 pnpm work:new my-task --request "작업 배경"
 pnpm ai:sync
 pnpm db:seed
@@ -62,6 +64,7 @@ pnpm db:seed
 - `packages/analytics`: track abstraction
 - `packages/error-logging`: error report abstraction
 - `docs/product-squad`: 역할 기반 운영 규칙과 work item 템플릿
+- `docs/prds`: canonical PRD 문서
 - `docs/work-items`: 실제 작업별 brief, spec, review 산출물
 - `docs/templates`: feature/experiment spec 템플릿
 - `docs/adr`: 구조와 운영 원칙에 대한 경량 결정 로그
@@ -78,7 +81,10 @@ pnpm db:seed
 
 - 여러 파일에 걸친 기능 작업, 실험 변경, 폼/어드민/analytics/DB 변경은 먼저 `docs/product-squad/operating-model.md`를 읽는다.
 - 중요한 작업은 `ai/context/spec-driven.md`와 `ai/context/doc-sync.md`도 함께 읽는다.
-- 해당 작업은 `pnpm work:new <slug> --request "..."` 또는 수동 작성으로 `docs/work-items/<work-id>/`에 brief와 role spec을 만든 뒤 구현한다.
+- PRD가 있다면 먼저 `docs/prds/<slug>.md`로 정규화하고 `pnpm feature:new --prd <slug>`로 feature work item을 만든다.
+- 해당 작업은 `pnpm work:new <slug> --request "..."` 또는 수동 작성으로 `docs/work-items/<work-id>/`에 brief와 role spec을 만든다.
+- 중요한 작업과 핵심 로직 변경은 구현 단위를 테스트 가능한 behavior slice로 자르고 `spec -> failing test -> minimal implementation -> refactor -> verify` 순서를 기본값으로 둔다.
+- feature/work item 문서에는 어떤 behavior를 먼저 failing test로 고정할지 적고, light work가 아니라면 그 문서를 기준으로 구현한다.
 - 구현 후 기본 검증은 `pnpm verify`, 더 무거운 사용자 흐름 검증은 `pnpm verify:full`을 사용한다.
 - AI 컨텍스트나 adapter entry가 바뀌면 `pnpm ai:sync`를 실행한다.
 - 작은 문구 수정이나 단일 스타일 수정은 full process를 생략할 수 있지만, skip 이유는 남긴다.

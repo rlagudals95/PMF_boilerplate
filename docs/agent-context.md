@@ -16,7 +16,7 @@
 - `ai/context/engineering-backend.md`: domain/backend/integration 규칙
 - `ai/context/doc-sync.md`: 코드-문서 sync 정책과 drift 기준
 - `ai/skills/_index.md`: 사용 가능한 스킬과 트리거 규칙
-- `ai/skills/*.md`: 플랫폼 독립 스킬 문서
+- `ai/skills/*.md`, `ai/skills/*/SKILL.md`: 플랫폼 독립 스킬 문서
 
 이 레이어는 Claude Code, Codex, Gemini 어느 쪽에서도 읽을 수 있는 일반 Markdown만 사용합니다.
 
@@ -44,6 +44,7 @@
 예시:
 
 - `docs/architecture.md`
+- `docs/prds/*.md`
 - `docs/product-squad/operating-model.md`
 - `docs/work-items/<work-id>/*.md`
 - `apps/web/src/modules/README.md`
@@ -89,6 +90,7 @@
 - `spec-driven.md`는 구현 전에 어떤 문서를 읽고 어떤 결정을 먼저 고정해야 하는지 정의합니다.
 - `doc-sync.md`는 어떤 변경이 어떤 문서를 같이 갱신해야 하는지 정의합니다.
 - `product-squad`는 중요한 작업을 위한 역할 기반 task-local 운영 모델입니다.
+- `new-feature`는 canonical PRD를 기존 `product-squad` 흐름으로 정규화하는 상위 오케스트레이터입니다.
 - 외부 노트는 repo 안 Markdown spec으로 정규화한 뒤에만 구현 기준 문서로 사용합니다.
 
 ## Role-Based Operating Mode
@@ -110,6 +112,8 @@
 - full-stack 작업이면 FE/BE 문서를 모두 읽습니다.
 - 중요한 작업이면 `spec-driven.md`와 `doc-sync.md`를 먼저 확인합니다.
 - 중요한 기능 작업이면 `product-squad` 규칙과 활성 work item 문서를 먼저 확인합니다.
+- 중요한 작업과 핵심 로직 변경은 `spec -> failing test -> minimal implementation -> refactor -> verify`를 기본 흐름으로 따릅니다.
+- TDD는 `validation`, `use case`, `route/action 경계`, `adapter 계약`, `상태 전이`에 우선 적용하고 단순 카피/스타일 수정에는 full TDD를 강제하지 않습니다.
 - `packages/*`는 재사용이 검증된 코드만 올립니다.
 - 문서 없는 새 규칙, 새 툴, 새 인프라를 추가하지 않습니다.
 - 코드가 바뀌면 테스트, 타입, 문서 영향도 같이 확인합니다.

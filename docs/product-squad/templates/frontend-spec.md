@@ -25,9 +25,11 @@ skip_reason: null
 
 -
 
-## Test Plan
+## Test-First Plan
 
--
+- 먼저 failing test로 고정할 behavior slice
+- 어떤 module/model/action/route 경계를 검증할지
+- manual verify가 필요한 UI 상태가 무엇인지
 
 ## Out Of Scope
 

@@ -65,34 +65,53 @@
 
 ## 이 저장소의 현재 점수표
 
-| 항목 | 현재 상태 | 평가 |
-| --- | --- | --- |
-| Canonical project context | `ai/context/*`, `AGENTS.md`, `docs/agent-context.md` | 강함 |
-| 중요한 작업 문서화 규칙 | `spec-driven`, `product-squad`, `docs/work-items/*` | 강함 |
-| 도구 네이티브 adapter | Claude, Gemini, Codex + Copilot + Cursor | 개선됨 |
-| 범위별 instruction | Copilot repo-wide, Cursor repo/frontend/backend/docs rules | 개선됨 |
-| 빠른 기본 quality gate | `pnpm verify` | 개선됨 |
-| 더 무거운 release gate | `pnpm verify:full` | 개선됨 |
-| work item scaffolding | `pnpm work:new` | 개선됨 |
-| 로컬 실행 가능성 | local JSON fallback + smoke E2E | 강함 |
-| hosted AI builder 직접 최적화 | v0/Lovable 전용 산출물 없음 | 의도적 제외 |
-| checkpoint/rollback 자동화 | 툴 내장 기능 의존, repo 자체 자동화 없음 | 의도적 제외 |
+| 항목                          | 현재 상태                                                        | 평가        |
+| ----------------------------- | ---------------------------------------------------------------- | ----------- |
+| Canonical project context     | `ai/context/*`, `AGENTS.md`, `docs/agent-context.md`             | 강함        |
+| 중요한 작업 문서화 규칙       | `spec-driven`, `product-squad`, `docs/work-items/*`              | 강함        |
+| 도구 네이티브 adapter         | Claude, Gemini, Codex + Copilot + Cursor                         | 개선됨      |
+| 범위별 instruction            | Copilot repo-wide, Cursor repo/frontend/backend/docs rules       | 개선됨      |
+| 빠른 기본 quality gate        | `pnpm verify`                                                    | 개선됨      |
+| 더 무거운 release gate        | `pnpm verify:full`                                               | 개선됨      |
+| work item scaffolding         | `pnpm work:new`                                                  | 개선됨      |
+| PRD -> feature planning       | `docs/prds/*`, `pnpm prd:new`, `pnpm feature:new`, `new-feature` | 개선됨      |
+| 로컬 실행 가능성              | local JSON fallback + smoke E2E                                  | 강함        |
+| hosted AI builder 직접 최적화 | v0/Lovable 전용 산출물 없음                                      | 의도적 제외 |
+| checkpoint/rollback 자동화    | 툴 내장 기능 의존, repo 자체 자동화 없음                         | 의도적 제외 |
 
 ## 이 저장소를 바이브 코딩에 잘 맞게 쓰는 권장 흐름
+
+### Selective TDD default
+
+- 중요한 작업과 핵심 로직 변경은 `spec -> failing test -> minimal implementation -> refactor -> verify`를 기본값으로 둡니다.
+- full TDD는 모든 작업에 강제하지 않고 `validation`, `use case`, `server action/route 경계`, `adapter 계약`, `상태 전이`에 우선 적용합니다.
+- 단순 카피 수정, 시맨틱 변화 없는 스타일 수정, 명백한 소규모 버그 수정은 기존 quick fix 흐름을 유지합니다.
+- 목표는 테스트 파일 순서 자체가 아니라 public behavior를 먼저 고정하는 것입니다.
 
 ### Quick fix
 
 1. `AGENTS.md`와 관련 canonical doc만 읽습니다.
 2. 작은 수정이면 full work item 없이 진행합니다.
-3. 구현 후 `pnpm verify`를 돌립니다.
+3. validation, 상태 전이, action/route 경계, adapter 계약 변경이 아니면 full TDD를 생략할 수 있습니다.
+4. 구현 후 `pnpm verify`를 돌립니다.
 
 ### Important change
 
 1. `pnpm work:new <slug> --request "<원 요청>"`로 work item을 만듭니다.
 2. `brief.md`와 필요한 role spec을 채웁니다.
-3. 구현은 그 문서를 기준으로 진행합니다.
-4. 구조나 운영 규칙이 바뀌면 canonical doc을 같이 갱신합니다.
-5. `pnpm verify:full`로 종료합니다.
+3. 구현 단위를 테스트 가능한 behavior slice로 자릅니다.
+4. 각 slice마다 먼저 failing test로 public behavior를 고정합니다.
+5. 테스트를 통과시키는 최소 구현만 추가하고 필요 시 리팩터링합니다.
+6. 구조나 운영 규칙이 바뀌면 canonical doc을 같이 갱신합니다.
+7. 마지막에 `pnpm verify:full`로 종료합니다.
+
+### PRD-driven feature
+
+1. 외부 PRD가 있으면 먼저 `docs/prds/<slug>.md`로 정규화합니다.
+2. `pnpm prd:new <slug>`로 scaffold를 만들거나 기존 PRD를 보완합니다.
+3. `pnpm feature:new --prd <slug>` 또는 `new-feature` 스킬로 단일 feature slice의 work item 문서를 생성합니다.
+4. 생성된 `feature-spec.md`와 role spec이 blocked 없이 채워졌는지 확인합니다.
+5. 그 문서를 기준으로 구현과 검증을 진행합니다.
 
 ### AI context change
 

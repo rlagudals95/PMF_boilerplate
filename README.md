@@ -1,71 +1,75 @@
 # PMF Boilerplate
 
-PMF를 찾기 위한 실험용 모노레포 보일러플레이트입니다.  
-첫 제품은 `모두의렌탈`이지만, 구조 자체는 다음 사이드 프로젝트에도 그대로 복제할 수 있도록 설계했습니다.
+PMF를 찾기 위한 실험용 모노레포 보일러플레이트입니다.
 
-이 저장소의 핵심은 단순 랜딩 템플릿이 아닙니다.  
-`랜딩 -> 리드 -> 상담 -> 결제 의사 -> 어드민 확인 -> 실험 문서화`까지 이어지는 초기 검증 루프를 바로 실행할 수 있게 만드는 것이 목적입니다.
+첫 제품은 `모두의렌탈`이지만, 저장소의 목적은 특정 서비스 하나를 완성하는 것이 아니라 다음 사이드 프로젝트에서도 그대로 복제 가능한 초기 검증 루프를 제공하는 데 있습니다.
 
-## 한눈에 보기
+이 레포는 아래 흐름을 바로 실행할 수 있게 설계되어 있습니다.
 
-- 단일 `Next.js App Router` 앱에서 랜딩, 폼, 결제 데모, 어드민을 모두 처리합니다.
-- `modules / shared / lib / packages` 경계를 가진 modular monolith 구조를 사용합니다.
-- 기본 저장소는 `local-data.json` fallback이며, 운영 시 `Supabase/Postgres + Drizzle`로 전환할 수 있습니다.
+`랜딩 -> 리드 수집 -> 상담 요청 -> 결제 의사 확인 -> 어드민 확인 -> 실험 문서화`
+
+## 기본 작업 워크플로
+
+이 저장소의 기본값은 `spec-driven + selective TDD + verify`입니다.
+
+### 1. 언제 어떤 플로우가 발동되나
+
+| 상황 | 발동 플로우 | 기준 |
+| --- | --- | --- |
+| 오탈자, 단순 카피 수정, 시맨틱 변화 없는 스타일 수정, 명백한 소규모 버그 수정 | `Quick fix` | full work item 없이 바로 수정 가능 |
+| 여러 파일에 걸친 기능 작업, 폼/어드민/analytics/DB 변경, 핵심 로직 변경 | `Important change` | `docs/work-items/*` 문서를 먼저 만들고 진행 |
+| PRD가 이미 있는 기능 작업 | `PRD-driven feature` | `docs/prds/*`를 source로 `feature work item` 생성 |
+| AI 규칙, 문서 구조, adapter 규칙 변경 | `AI context change` | 문서 수정 후 `pnpm ai:sync`까지 실행 |
+
+### 2. 실제로 어떤 로직으로 실행되나
+
+#### Quick fix
+
+1. 관련 canonical 문서만 읽습니다.
+2. light work인지 확인합니다.
+3. validation, 상태 전이, route/action 경계, adapter 계약 변경이 아니면 full TDD를 생략할 수 있습니다.
+4. 바로 수정합니다.
+5. 마지막에 `pnpm verify`를 실행합니다.
+
+#### Important change
+
+1. `pnpm work:new <slug> --request "..."`로 work item을 만듭니다.
+2. `brief.md`와 필요한 role spec을 채웁니다.
+3. 구현 단위를 테스트 가능한 `behavior slice`로 나눕니다.
+4. 각 slice마다 먼저 failing test로 public behavior를 고정합니다.
+5. 테스트를 통과시키는 최소 구현만 추가합니다.
+6. 필요하면 리팩터링하고 slice 테스트를 다시 통과시킵니다.
+7. 마지막에 `pnpm verify`, 필요하면 `pnpm verify:full`을 실행합니다.
+
+#### PRD-driven feature
+
+1. PRD를 `docs/prds/<slug>.md`에 둡니다.
+2. `pnpm feature:new --prd <slug>`로 feature work item을 생성합니다.
+3. `feature-spec.md`, `frontend-spec.md`, `backend-spec.md`에 어떤 behavior를 먼저 failing test로 고정할지 적습니다.
+4. 그 문서를 기준으로 구현합니다.
+5. 마지막에 `pnpm verify`, 필요하면 `pnpm verify:full`을 실행합니다.
+
+### 3. 핵심 판단 규칙
+
+- 기본 철학은 “테스트 파일을 먼저 만든다”가 아니라 “public behavior를 먼저 고정한다”입니다.
+- full TDD는 모든 작업에 강제하지 않고 `validation`, `use case`, `server action/route 경계`, `adapter 계약`, `상태 전이`에 우선 적용합니다.
+- spec과 코드가 충돌하면 코드를 먼저 밀지 말고 문서를 먼저 갱신합니다.
+- 중요한 작업은 `spec -> failing test -> minimal implementation -> refactor -> verify` 순서를 기본값으로 둡니다.
+
+## 이 레포로 할 수 있는 것
+
+- 단일 `Next.js` 앱에서 랜딩, 폼, 결제 데모, 어드민을 함께 운영할 수 있습니다.
+- `local-data.json` fallback으로 DB 없이도 바로 개발과 데모를 시작할 수 있습니다.
+- `Supabase/Postgres + Drizzle`로 자연스럽게 확장할 수 있습니다.
 - 리드와 상담 요청을 분리해 관심 신호와 실행 신호를 다르게 해석할 수 있습니다.
-- analytics, marketing, error logging은 optional provider를 붙일 수 있는 얇은 adapter 구조입니다.
-- 문서와 AI 컨텍스트를 repo 안에 함께 두어 spec-driven 방식으로 작업할 수 있습니다.
+- 내부 이벤트 저장을 기준으로 두고, Mixpanel/광고 스크립트는 선택적으로 붙일 수 있습니다.
+- AI 에이전트가 읽을 컨텍스트와 작업 문서를 repo 안에 함께 유지할 수 있습니다.
 
-## 포함된 기능
+## 5분 체험 순서
 
-### 실행 가능한 제품 흐름
+처음 보는 사람은 아래 순서대로 보면 가장 빠릅니다.
 
-- 랜딩 페이지와 CTA 추적
-- 리드 캡처 폼
-- 상담 요청 폼
-- 토스 결제 데모 플로우
-- 리드 / 제품 / 실험 / 결제 어드민 화면
-- 모바일 퍼널 데모
-
-### 기본 인프라
-
-- Next.js App Router 기반 단일 웹 앱
-- pnpm workspace + Turborepo 모노레포
-- Supabase/Postgres 지향 Drizzle 스키마
-- 로컬 개발용 `packages/db/local-data.json` fallback 저장소
-- analytics / marketing script / error logging 기본 wiring
-- 공유 UI, 도메인 타입, Zod 스키마
-
-### 품질과 운영
-
-- Vitest unit test
-- Playwright smoke E2E
-- AI 도구 공통 컨텍스트 레이어
-- Copilot / Cursor / Claude / Gemini / Codex adapter sync
-- architecture / spec-driven / doc-sync 문서
-- 역할 기반 work item 문서 운영 규칙
-
-## 바로 확인할 수 있는 화면
-
-| 경로                 | 설명                  |
-| -------------------- | --------------------- |
-| `/`                  | 랜딩 + 라이브 리드 폼 |
-| `/consult`           | 상담 요청 플로우      |
-| `/pay`               | 토스 결제 데모        |
-| `/admin`             | 운영 개요             |
-| `/admin/leads`       | 리드 inbox            |
-| `/admin/products`    | 제품 목록             |
-| `/admin/experiments` | 실험 목록             |
-| `/admin/payments`    | 결제 목록             |
-| `/demo/funnel`       | 모바일 퍼널 예시      |
-
-## 빠른 시작
-
-### 요구사항
-
-- Node 22+
-- pnpm 10+
-
-### 실행
+1. 개발 서버 실행
 
 ```bash
 corepack enable
@@ -75,9 +79,85 @@ pnpm db:seed
 pnpm dev
 ```
 
-기본 실행 주소는 `http://localhost:3000` 입니다.
+기본 주소는 `http://localhost:3000`입니다.
 
-## 자주 쓰는 명령어
+2. 사용자 흐름 확인
+
+- `/`: 랜딩 페이지와 리드 폼
+- `/consult`: 상담 요청 폼
+- `/pay`: 토스 결제 데모 시작
+
+3. 운영 화면 확인
+
+- `/admin`: 전체 개요
+- `/admin/leads`: 리드/상담 요청 inbox
+- `/admin/experiments`: 실험 목록
+- `/admin/payments`: 결제 상태
+
+4. 저장 방식 확인
+
+- `DATABASE_URL`이 없으면 `packages/db/local-data.json`에 저장됩니다.
+- `DATABASE_URL`이 있으면 Postgres/Drizzle 경로를 사용합니다.
+
+## 포함된 기능
+
+### 제품 흐름
+
+- 랜딩 페이지와 CTA 추적
+- 리드 캡처 폼
+- 상담 요청 폼
+- 토스 단건 결제 데모
+- 관리자 대시보드
+- 모바일 퍼널 데모
+
+### 운영/분석 기반
+
+- `leads`, `consultation_requests`, `products`, `experiments`, `page_events`, `payments` 기본 모델
+- 내부 이벤트 저장 + optional analytics provider
+- optional marketing pixel script 로딩
+- optional error logging adapter
+
+### AI 드리븐 작업 기반
+
+- repo 내부 Markdown 기반 spec-driven 작업 방식
+- PRD/work item 스캐폴딩 스크립트
+- Copilot/Cursor/Claude/Gemini/Codex용 컨텍스트 동기화
+
+## 주요 화면
+
+| 경로 | 용도 |
+| --- | --- |
+| `/` | 랜딩과 리드 수집 |
+| `/consult` | 상담 요청 접수 |
+| `/pay` | 결제 데모 시작 |
+| `/pay/result` | 결제 복귀 결과 확인 |
+| `/pay/cancel` | 결제 취소 복귀 |
+| `/admin` | 운영 개요 |
+| `/admin/leads` | 리드/상담 요청 확인 |
+| `/admin/products` | 제품 목록 |
+| `/admin/experiments` | 실험 상태 확인 |
+| `/admin/payments` | 결제 상태 확인 |
+| `/demo/funnel` | 모바일 퍼널 데모 |
+| `/health` | 헬스체크 |
+
+## 빠른 시작
+
+### 요구사항
+
+- Node `22+`
+- pnpm `10+`
+
+### 설치 및 실행
+
+```bash
+corepack enable
+pnpm install
+cp .env.example .env.local
+pnpm db:seed
+pnpm dev
+```
+
+### 자주 쓰는 명령어
 
 ```bash
 pnpm dev
@@ -91,114 +171,17 @@ pnpm verify:full
 pnpm db:seed
 pnpm db:generate
 pnpm db:migrate
+pnpm prd:new my-prd
+pnpm feature:new --prd my-prd
 pnpm work:new my-task --request "작업 배경"
-pnpm format
 pnpm ai:sync
 ```
 
-## 구조 요약
-
-### 앱 구조
-
-```text
-apps/web/src/
-  app/        route entry, layout, page, route.ts
-  modules/    도메인별 feature slice
-  shared/     app-local shared UI, hooks, shared action
-  lib/        앱 전역 wiring, env, provider setup
-```
-
-### 워크스페이스 패키지
-
-```text
-packages/core           도메인 타입, zod 스키마, fixture, mapper
-packages/db             Drizzle 스키마, 저장소, 로컬 fallback, seed
-packages/ui             공유 UI 컴포넌트
-packages/analytics      벤더 중립 track() 추상화
-packages/error-logging  벤더 중립 report() 추상화
-```
-
-### 문서와 AI 컨텍스트
-
-```text
-docs/                   아키텍처, 실험 운영, work item 문서
-ai/context/             프로젝트/엔지니어링/spec-driven canonical context
-ai/skills/              저장소 로컬 스킬 레지스트리
-AGENTS.md               Codex/에이전트용 루트 엔트리
-CLAUDE.md               Claude adapter entry
-GEMINI.md               Gemini adapter entry
-.github/                Copilot instruction output
-.cursor/                Cursor rule output
-```
-
-## 아키텍처 핵심 원칙
-
-- `apps/web` 하나에서 랜딩, 폼, 어드민, 결제 데모를 모두 처리합니다.
-- `app/`은 얇게 유지하고, 기능 코드는 `modules/*`에 둡니다.
-- 공용 코드는 `module -> shared -> package` 순서로만 승격합니다.
-- 입력 검증은 boundary에서 하고, model/use case는 orchestration에 집중합니다.
-- 외부 provider 실패가 핵심 사용자 흐름을 깨지 않게 설계합니다.
-- 중요한 작업은 구현보다 먼저 repo 안 Markdown 문서로 결정을 고정합니다.
-
-## 데이터 전략
-
-- 기본값은 `packages/db/local-data.json` 기반 로컬 저장소입니다.
-- `DATABASE_URL`이 설정되면 Drizzle + Postgres로 전환됩니다.
-- 초기 PMF 실험 단계에서는 설치 장벽보다 반복 속도가 중요하기 때문에 fallback을 유지합니다.
-
-### 저장되는 기본 엔티티
-
-- `leads`
-- `consultation_requests`
-- `products`
-- `experiments`
-- `page_events`
-- `payments`
-
-### 왜 리드와 상담 요청을 분리하나
-
-- 랜딩 리드는 약한 관심 신호입니다.
-- 상담 요청은 더 강한 실행 신호입니다.
-- 둘을 분리해야 후속 인터뷰 우선순위와 신호 품질을 다르게 해석할 수 있습니다.
-
-## 이벤트와 provider
-
-### 기본 추적
-
-- 내부 저장소 `page_events`에는 기본 이벤트가 항상 기록됩니다.
-- 브라우저의 `session_id`를 저장해 anonymous session continuity를 유지합니다.
-
-### Analytics
-
-- 기본 provider는 `console`, `store` 입니다.
-- `MIXPANEL_PROJECT_TOKEN`이 있으면 같은 이벤트를 Mixpanel에도 전송합니다.
-- Mixpanel 실패는 optional provider 실패로 처리되어 핵심 사용자 흐름은 유지됩니다.
-
-### Marketing
-
-- `NEXT_PUBLIC_META_PIXEL_ID`
-- `NEXT_PUBLIC_KAKAO_PIXEL_ID`
-- `NEXT_PUBLIC_GOOGLE_ADS_ID`
-
-위 값이 있으면 브라우저에 provider script를 로드합니다.
-
-기본 브리지 대상 이벤트:
-
-- `page_view`
-- `cta_clicked`
-- `lead_form_submitted`
-- `consultation_requested`
-
-### Error logging
-
-- 기본 error logger는 console adapter입니다.
-- 외부 provider는 필요할 때만 붙이는 방향을 전제로 합니다.
-
 ## 환경 변수
 
-자세한 값은 [`.env.example`](./.env.example)을 기준으로 보면 됩니다.
+전체 목록은 [`.env.example`](./.env.example)을 보면 됩니다.
 
-### 데이터 / 인프라
+### 데이터
 
 - `DATABASE_URL`
 - `LOCAL_DATA_FILE`
@@ -206,7 +189,7 @@ GEMINI.md               Gemini adapter entry
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
-### 사이트 / 결제
+### 사이트/결제
 
 - `NEXT_PUBLIC_SITE_URL`
 - `TOSS_PAYMENTS_API_KEY`
@@ -225,16 +208,134 @@ GEMINI.md               Gemini adapter entry
 - `MIXPANEL_API_HOST`
 - `MIXPANEL_DEBUG`
 
+## 저장소 구조
+
+### 앱 구조
+
+```text
+apps/web/src/
+  app/        route entry, layout, page, route.ts
+  modules/    도메인별 feature slice
+  shared/     app-local shared UI, hooks, shared action
+  lib/        앱 전역 wiring, env, provider setup
+```
+
+### 워크스페이스 패키지
+
+```text
+packages/core           도메인 타입, zod 스키마, fixture
+packages/db             Drizzle 스키마, 저장소, local fallback, seed
+packages/ui             공유 UI 컴포넌트
+packages/analytics      track() 추상화와 adapter
+packages/error-logging  report() 추상화와 adapter
+```
+
+### 문서와 AI 컨텍스트
+
+```text
+ai/context/             프로젝트/엔지니어링/spec-driven canonical context
+ai/skills/              저장소 로컬 스킬
+docs/                   아키텍처, 실험 운영, PRD, work item 문서
+AGENTS.md               에이전트용 루트 엔트리
+```
+
+## 아키텍처 핵심
+
+- `apps/web` 하나에서 랜딩, 폼, 어드민, 결제 데모를 모두 처리합니다.
+- `app/`은 얇게 두고 기능 코드는 `modules/*`에 둡니다.
+- 공용화는 `module -> shared -> package` 순서로만 올립니다.
+- 입력 검증은 boundary에서, 유스케이스는 `model`, 저장은 `packages/db`에서 처리합니다.
+- 외부 provider 장애가 핵심 흐름을 깨뜨리지 않게 설계합니다.
+
+자세한 배경과 트레이드오프는 [아키텍처 문서](./docs/architecture.md)에 정리되어 있습니다.
+
+## 데이터 전략
+
+- 기본 개발 모드는 `packages/db/local-data.json` 기반입니다.
+- 운영 환경에서는 `DATABASE_URL`을 설정해 Postgres/Drizzle로 전환합니다.
+- seed를 넣으면 랜딩, 어드민, 실험 목록, 결제 목록을 바로 데모할 수 있습니다.
+
+### 왜 리드와 상담 요청을 분리하나
+
+- 리드 제출은 약한 관심 신호입니다.
+- 상담 요청은 더 강한 실행 신호입니다.
+- 둘을 분리해야 후속 연락 우선순위와 실험 품질을 다르게 해석할 수 있습니다.
+
+## 이벤트와 외부 provider
+
+### 기본 원칙
+
+- 핵심 이벤트는 내부 `page_events`에 먼저 저장합니다.
+- `session_id`를 저장해 익명 세션 흐름을 이어갑니다.
+- 외부 SaaS는 optional provider입니다.
+
+### Analytics
+
+- 기본 provider는 `console`, `store`입니다.
+- `MIXPANEL_PROJECT_TOKEN`이 있으면 Mixpanel 전송을 추가합니다.
+- Mixpanel 실패는 경고로 취급하고 사용자 흐름은 유지합니다.
+
+### Marketing
+
+다음 값이 있으면 해당 스크립트를 브라우저에 로드합니다.
+
+- `NEXT_PUBLIC_META_PIXEL_ID`
+- `NEXT_PUBLIC_KAKAO_PIXEL_ID`
+- `NEXT_PUBLIC_GOOGLE_ADS_ID`
+
+기본 브리지 이벤트는 다음 네 가지입니다.
+
+- `page_view`
+- `cta_clicked`
+- `lead_form_submitted`
+- `consultation_requested`
+
+## 결제 데모 사용법
+
+- `/pay`에서 테스트 결제 요청을 생성합니다.
+- 브라우저 복귀는 `/pay/result`, 취소는 `/pay/cancel`로 들어옵니다.
+- 서버 callback은 `/api/payments/toss/callback`에서 받습니다.
+- 저장된 결제 상태는 `/admin/payments`에서 확인합니다.
+
+로컬에서도 브라우저 복귀 테스트는 가능하지만, Toss `resultCallback`은 외부에서 호출되므로 로컬만으로는 완전히 재현되지 않을 수 있습니다. 자세한 내용은 [결제 데모 문서](./docs/toss-payment.md)를 보면 됩니다.
+
+## AI 드리븐 작업 방식
+
+이 저장소는 코드를 AI로 빠르게 생성하더라도 규칙과 문서가 먼저 남도록 설계되어 있습니다.
+
+### 기본 원칙
+
+- source of truth는 repo 안 Markdown입니다.
+- 중요한 작업은 구현 전에 문서로 범위와 결정을 고정합니다.
+- 구조 규칙은 `ai/context/*`, 작업별 결정은 `docs/work-items/*`에 둡니다.
+
+### 스캐폴딩 명령어
+
+```bash
+pnpm prd:new my-prd
+pnpm feature:new --prd my-prd
+pnpm work:new my-task --request "작업 배경"
+pnpm ai:sync
+```
+
+### 언제 무엇을 읽으면 좋은가
+
+- 구조 이해: [docs/architecture.md](./docs/architecture.md)
+- 실험 운영: [docs/experiment-playbook.md](./docs/experiment-playbook.md)
+- AI 작업 규칙: [docs/agent-context.md](./docs/agent-context.md), [AGENTS.md](./AGENTS.md)
+- spec-driven 흐름: [docs/spec-lifecycle.md](./docs/spec-lifecycle.md)
+- vibe coding 운영 기준: [docs/vibe-coding-playbook.md](./docs/vibe-coding-playbook.md)
+
 ## 새 제품으로 복제하는 순서
 
-1. `packages/core/src/fixtures/mock-data.ts`에서 제품 seed와 실험 seed를 바꿉니다.
-2. 랜딩 카피와 CTA는 `apps/web/src/modules/landing/*`에서 수정합니다.
-3. 리드 폼과 상담 폼 필드는 `apps/web/src/modules/lead/*`, `apps/web/src/modules/consultation/*`에서 조정합니다.
-4. 브랜드 색상은 `apps/web/src/lib/app-theme.ts`에서 바꿉니다.
-5. 새 제품 가설은 `/admin/experiments`에 보이도록 seed와 스키마 데이터를 갱신합니다.
-6. 운영 단계로 넘어가면 `DATABASE_URL`을 Supabase/Postgres로 연결합니다.
+1. `packages/core/src/fixtures/mock-data.ts`에서 제품/실험 seed를 바꿉니다.
+2. `apps/web/src/modules/landing/*`에서 랜딩 카피와 CTA를 수정합니다.
+3. `apps/web/src/modules/lead/*`, `apps/web/src/modules/consultation/*`에서 폼 필드를 조정합니다.
+4. `apps/web/src/lib/app-theme.ts`에서 브랜드 테마를 바꿉니다.
+5. `/admin/experiments`에 노출될 실험 데이터를 함께 갱신합니다.
+6. 운영 단계에 들어가면 `DATABASE_URL`을 연결합니다.
 
-## 이 저장소가 의도적으로 넣지 않은 것
+## 의도적으로 넣지 않은 것
 
 - 복잡한 auth
 - background jobs
@@ -243,54 +344,4 @@ GEMINI.md               Gemini adapter entry
 - vendor lock-in analytics
 - 과한 repository abstraction
 
-PMF를 찾기 전에는 구현 속도와 신호 품질이 더 중요하다는 전제를 둡니다.
-
-## AI 컨텍스트와 spec-driven 작업 방식
-
-이 저장소는 특정 AI 도구 하나에 종속되지 않도록 `ai/` 폴더에 공통 컨텍스트와 스킬을 둡니다.
-
-### 구성
-
-- `ai/context/*`: 프로젝트 목적, 엔지니어링 규칙, spec-driven, doc-sync
-- `ai/skills/*`: 반복 작업용 저장소 로컬 스킬
-- `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`: 각 도구용 얇은 adapter entry
-- `.github/copilot-instructions.md`, `.cursor/rules/*.mdc`, `.claude/skills/*/SKILL.md`, `.gemini/commands/repo/*`, `.gemini/extensions/*/skills/*/SKILL.md`, `.codex/skills/*/SKILL.md`: `pnpm ai:sync`로 생성되는 adapter 산출물
-
-### 작업 원칙
-
-- 중요한 작업은 구현 전에 repo 안 Markdown 문서로 기준을 먼저 고정합니다.
-- 여러 파일에 걸친 기능 변경은 `docs/work-items/<work-id>/` 문서를 기준으로 진행합니다.
-- PM / PD / FE / BE 역할 문서를 나눠서 남길 수 있습니다.
-- source of truth는 외부 문서가 아니라 repo 안 Markdown입니다.
-
-## 바이브 코딩 운영 가이드
-
-- 중요한 작업은 `pnpm work:new <slug> --request "..."`로 work item을 먼저 만듭니다.
-- 기본 품질 게이트는 `pnpm verify` 입니다.
-- 사용자 흐름, 결제, integration이 바뀌면 `pnpm verify:full`까지 돌립니다.
-- AI 컨텍스트를 바꿨다면 `pnpm ai:sync`로 Copilot, Cursor, Claude, Gemini, Codex adapter를 다시 생성합니다.
-- 이 저장소가 왜 바이브 코딩에 맞는지, 어디까지 강하고 어디가 trade-off인지 보려면 [vibe coding playbook](./docs/vibe-coding-playbook.md)을 읽으면 됩니다.
-
-## 문서를 어디부터 읽으면 좋은가
-
-### 구조를 이해하고 싶을 때
-
-- [아키텍처 결정과 트레이드오프](./docs/architecture.md)
-- [실험 운영 플레이북](./docs/experiment-playbook.md)
-
-### AI 작업 규칙을 보고 싶을 때
-
-- [AI 컨텍스트 운영 규칙](./docs/agent-context.md)
-- [에이전트 작업 규칙](./AGENTS.md)
-- [vibe coding playbook](./docs/vibe-coding-playbook.md)
-- [`ai/context/project.md`](./ai/context/project.md)
-
-### 중요한 작업을 시작할 때
-
-- [product-squad operating model](./docs/product-squad/operating-model.md)
-- [work items 안내](./docs/work-items/README.md)
-- [spec lifecycle](./docs/spec-lifecycle.md)
-
-### 결제 데모를 볼 때
-
-- [Toss 결제 데모 문서](./docs/toss-payment.md)
+PMF 이전 단계에서는 구현 속도와 신호 품질이 더 중요하다는 전제를 유지합니다.

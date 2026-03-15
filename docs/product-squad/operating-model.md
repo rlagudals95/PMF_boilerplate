@@ -8,6 +8,7 @@
 ## 기본 원칙
 
 - 기본 진입점은 `product-squad`다.
+- canonical PRD가 있으면 `new-feature`가 `product-squad` 앞단에서 work item 생성기를 담당할 수 있다.
 - 중요한 작업은 먼저 문서 산출물을 만든다.
 - 최신 `brief.md`가 구현 전 기준 문서다.
 - 작은 수정은 full process를 생략할 수 있지만 `skip_reason`은 남긴다.
@@ -25,9 +26,17 @@
 ## 어떤 작업은 light work 인가
 
 - 오탈자 수정
-- 단일 스타일 수정
+- 시맨틱 변화 없는 스타일 수정
+- 단순 카피 수정
 - 명백한 소규모 버그 수정
 - 기존 spec 범위 안의 단순 리팩터링
+
+단, 아래 변경은 light work라도 TDD 적용을 우선 검토합니다.
+
+- validation 조건 변경
+- action/route/use case 경계 변경
+- 상태 전이 또는 실패 처리 규칙 변경
+- adapter 호출 계약 변경
 
 ## 역할
 
@@ -39,17 +48,30 @@
   - 문제 정의
   - 목표, 비범위, success metric
   - acceptance criteria
+  - 테스트 가능한 public behavior 문장 검토
 - `pd-role`
   - 카피, IA, CTA/폼 흐름
   - happy path와 edge state 검토
+  - acceptance criteria와 상태 문구가 테스트 가능한지 검토
 - `fe-role`
   - route, module, component 경계
   - client/server 상태 흐름
-  - FE 테스트 전략
+  - state flow, action/route 경계, 모델 단위 behavior test-first 계획
 - `be-role`
   - validation, use case, repository
   - analytics/event 영향
-  - failure mode와 테스트 전략
+  - failure mode와 boundary/use case/repository contract test-first 계획
+
+## 역할별 TDD 기대치
+
+- `pm-role`
+  - acceptance criteria를 구현자가 추가 해석 없이 테스트 가능한 문장으로 고정합니다.
+- `pd-role`
+  - happy path, edge state, 오류 문구가 public behavior 기준으로 검증 가능하도록 정리합니다.
+- `fe-role`
+  - `modules/*/model`, `actions`, `route` 경계의 핵심 상태 전이와 입력 처리를 먼저 실패시키는 계획을 적습니다.
+- `be-role`
+  - validation, use case, repository contract, adapter failure handling 중 무엇을 먼저 failing test로 고정할지 적습니다.
 
 ## 역할 선택 규칙
 
@@ -75,6 +97,7 @@
 ```txt
 docs/work-items/<work-id>/
   brief.md
+  feature-spec.md
   ux-review.md
   frontend-spec.md
   backend-spec.md
@@ -104,9 +127,10 @@ docs/work-items/<work-id>/
 3. `brief.md`를 먼저 만든다.
 4. 필요한 역할 문서를 만든다.
 5. 필요 없는 문서는 `skipped`로 남긴다.
-6. 구현은 필요한 문서가 준비된 뒤에만 시작한다.
-7. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
-8. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인한다.
+6. 구현 단위를 테스트 가능한 behavior slice로 자른다.
+7. 중요한 작업과 핵심 로직 변경은 각 slice를 failing test로 먼저 고정한 뒤 최소 구현과 리팩터링을 진행한다.
+8. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
+9. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인하고 `pnpm verify` 또는 `pnpm verify:full`을 실행한다.
 
 ## PD 범위 제한
 

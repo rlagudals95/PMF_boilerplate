@@ -22,6 +22,7 @@
 - 카피 변경이 목표와 일치하는가
 - happy path와 edge state가 분리되어 있는가
 - 상태/오류/빈값이 사용자에게 어떻게 보이는지 적혀 있는가
+- happy path와 edge state가 테스트 가능한 public behavior 문장과 모순되지 않는가
 - 접근성 확인 항목이 포함되어 있는가
 
 ## Guardrails

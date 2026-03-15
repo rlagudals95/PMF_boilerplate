@@ -9,5 +9,6 @@ alwaysApply: true
 - Keep `apps/web/src/app` thin. Put product logic in `apps/web/src/modules/*`.
 - Promote shared code only in this order: `module -> shared -> package`.
 - For important multi-file work, create or update `docs/work-items/<work-id>/` before coding.
+- If a canonical PRD exists, prefer `pnpm feature:new --prd <slug>` before implementation so the feature work item docs stay normalized.
 - Run `pnpm verify` before handoff. Run `pnpm verify:full` when user-facing flows or integrations changed.
 - Refresh generated adapters with `pnpm ai:sync` after changing canonical AI context or adapter-entry docs.

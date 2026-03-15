@@ -44,6 +44,7 @@
 - `packages/ui`: 공유 UI
 - `packages/analytics`: track 추상화
 - `packages/error-logging`: error report abstraction
+- `docs/prds`: canonical PRD source of truth
 - `ai/`: 벤더 중립 컨텍스트와 스킬
 
 ## 네이밍 규칙
@@ -71,6 +72,7 @@
 
 - 코드 수정 전에는 관련 문서와 영향 파일을 먼저 읽는다.
 - 중요한 작업이면 spec 존재 여부와 source of truth 문서를 먼저 확인한다.
+- PRD 기반 기능 작업이면 먼저 `docs/prds/<slug>.md`를 확인하고 `pnpm feature:new --prd <slug>`로 work item 문서를 정규화한다.
 - FE 작업이면 `engineering-frontend.md`, DB/schema/repository/integration 작업이면 `engineering-backend.md`를 읽는다.
 - `page.tsx`나 `route.ts`에 비즈니스 로직을 넣지 않는다.
 - `app/actions.ts`처럼 모든 흐름을 한 액션 파일에 모으지 않는다.

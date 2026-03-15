@@ -42,6 +42,11 @@
 - 코드 변경 시 타입, 테스트, 문서 영향을 같이 검토한다.
 - 가능한 범위에서 lint, typecheck, 관련 테스트를 확인한다.
 - 테스트는 구현 디테일보다 public behavior와 경계를 검증해야 한다.
+- 중요한 작업과 핵심 로직 변경은 가능하면 failing test로 시작한다.
+- 기본 흐름은 `spec -> failing test -> minimal implementation -> refactor -> verify`다.
+- TDD 적용 우선순위는 `domain/use case/boundary -> adapter -> route/action -> UI`다.
+- 단순 카피 수정, 시맨틱 변화 없는 스타일 수정, 명백한 소규모 버그 수정에는 full TDD를 강제하지 않는다.
+- snapshot 위주의 취약한 테스트나 implementation detail mocking에만 의존하는 테스트를 기본 전략으로 삼지 않는다.
 
 ## 문서화 원칙
 

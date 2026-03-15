@@ -17,6 +17,8 @@
     "verify:full": "pnpm verify && pnpm test:e2e",
     "format": "prettier --write .",
     "ai:sync": "node scripts/sync-ai-context.mjs",
+    "prd:new": "node scripts/create-prd.mjs",
+    "feature:new": "node scripts/create-feature-from-prd.mjs",
     "work:new": "node scripts/create-work-item.mjs",
     "db:seed": "pnpm --filter @pmf/db seed",
     "db:generate": "pnpm --filter @pmf/db db:generate",

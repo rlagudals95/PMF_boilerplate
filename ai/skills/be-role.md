@@ -23,9 +23,11 @@
 - application/use case와 repository 책임이 분리되어 있는가
 - analytics, error logging, external provider 영향이 명시되어 있는가
 - failure mode와 fallback이 정리되어 있는가
-- 테스트 범위와 검증 명령이 적혀 있는가
+- 어떤 validation/use case/repository contract를 먼저 failing test로 고정할지 적혀 있는가
+- 테스트 범위와 검증 명령이 public behavior 기준으로 적혀 있는가
 
 ## Guardrails
 
 - domain 규칙에 Next runtime 전제를 넣지 않는다.
 - validation, business rule, persistence를 한 함수에 몰아넣지 않는다.
+- implementation detail mocking만으로 성립하는 테스트 계획을 기본값으로 두지 않는다.

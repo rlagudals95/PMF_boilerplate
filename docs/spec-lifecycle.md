@@ -31,12 +31,16 @@
 ### 3. Implement
 
 - 구현은 approved된 spec 또는 brief를 기준으로 진행합니다.
+- 중요한 작업과 핵심 로직 변경은 작은 behavior slice 단위의 red-green-refactor를 기본으로 합니다.
+- 각 slice는 가능하면 먼저 failing test로 public behavior를 고정한 뒤 최소 구현으로 통과시킵니다.
 - 구현 중 결정이 바뀌면 문서를 먼저 또는 함께 갱신합니다.
 - spec과 다른 방향으로 코드가 먼저 앞서가면 drift로 취급합니다.
 
 ### 4. Verify
 
 - 결과가 acceptance criteria를 충족하는지 확인합니다.
+- slice 단위 테스트가 통과한 뒤 최종 `pnpm verify` 또는 필요 시 `pnpm verify:full`로 마무리합니다.
+- 최종 verify는 구현 중간의 TDD 루프를 대체하지 않고, release gate 역할을 합니다.
 - test, type, docs 영향이 반영되었는지 확인합니다.
 - 필요한 경우 work item 상태를 갱신합니다.
 
@@ -67,6 +71,8 @@
 
 - 중요한 작업은 spec 없이 바로 구현하지 않습니다.
 - 작은 수정은 full process를 생략할 수 있지만 생략 근거가 있어야 합니다.
+- 단순 카피 수정, 시맨틱 변화 없는 스타일 수정, 명백한 소규모 버그 수정에는 full TDD를 강제하지 않습니다.
+- validation, action/route 경계, 상태 전이, adapter 계약이 바뀌면 light work라도 TDD 적용을 우선 검토합니다.
 - spec은 구현 복붙 문서가 아니라 결정 문서여야 합니다.
 - canonical context는 반복 규칙만, task-local doc은 현재 작업 결정만 담습니다.
 

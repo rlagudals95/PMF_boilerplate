@@ -22,6 +22,7 @@
 - 목표와 비범위가 동시에 적혀 있는가
 - success metric이 구현량이 아니라 사용자/사업 신호 기준인가
 - acceptance criteria가 구현자에게 추가 판단을 남기지 않는가
+- acceptance criteria가 테스트 가능한 public behavior 문장으로 적혀 있는가
 - 열린 질문과 가정이 문서에 명시되어 있는가
 
 ## Guardrails
