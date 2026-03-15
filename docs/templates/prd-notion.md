@@ -2,15 +2,15 @@
 
 ## Meta
 
-- Title:
-- Status:
-- Owner:
+- 제목:
+- 상태:
+- 담당자:
 - Canonical PRD:
-- Source URL:
-- Created At:
-- Updated At:
+- 참고 링크:
+- 작성일:
+- 수정일:
 
-## Summary
+## 요약
 
 -
 
@@ -34,17 +34,17 @@
 
 ### Primary
 
-- Situation:
-- User action:
-- Expected outcome:
+- 상황:
+- 사용자 행동:
+- 기대 결과:
 
 ### Secondary
 
-- Situation:
-- User action:
-- Expected outcome:
+- 상황:
+- 사용자 행동:
+- 기대 결과:
 
-## Jobs To Be Done
+## JTBD
 
 -
 
@@ -66,35 +66,35 @@
 
 ### example-feature
 
-- Summary:
-- User value:
-- Primary module:
-- Routes:
-- UI surface:
-- Admin surface:
-- Backend changes:
-- Auth required:
-- Payment required:
-- External provider impact:
-- Analytics required:
-- Recommended:
+- 요약:
+- 사용자 가치:
+- 주요 모듈:
+- 라우트:
+- 사용자 화면 영향:
+- 어드민 화면 영향:
+- 백엔드 변경:
+- 인증 필요 여부:
+- 결제 필요 여부:
+- 외부 서비스 영향:
+- 분석 이벤트 필요 여부:
+- 추천 여부:
 
 ## Testability Notes
 
-- Which acceptance criteria should be locked first with automated tests:
-- Is this a light work exception or a test-first core logic change:
-- What behavior slices should be handed off into the feature work item first:
+- 어떤 Acceptance Criteria를 먼저 automated test로 고정할지:
+- light work 예외인지, test-first가 필요한 핵심 로직 변경인지:
+- feature work item으로 내려갈 때 어떤 behavior slice부터 나눌지:
 
 ## Acceptance Criteria
 
-- [ ] First public behavior
-- [ ] Second public behavior
+- [ ] 첫 번째 public behavior 기준
+- [ ] 두 번째 public behavior 기준
 
-Acceptance criteria writing rules:
+Acceptance Criteria 작성 규칙:
 
-- Write them as public behavior, not implementation detail.
-- Write them so the implementer can turn them into tests without extra interpretation.
-- For important work, leave a hint about which behavior should become the first failing test.
+- 구현 디테일이 아니라 사용자 관점의 public behavior로 적습니다.
+- 구현자가 추가 해석 없이 바로 테스트로 옮길 수 있게 적습니다.
+- 중요한 작업이면 어떤 항목을 첫 failing test로 잡을지 힌트를 남깁니다.
 
 ## Analytics Impact
 
@@ -114,13 +114,13 @@ Acceptance criteria writing rules:
 
 ## Document History
 
-| Date | Type | Summary | Author |
+| 날짜 | 유형 | 요약 | 작성자 |
 | --- | --- | --- | --- |
-| YYYY-MM-DD | created | Initial PRD created. | owner |
+| YYYY-MM-DD | created | 초기 PRD 작성 | owner |
 
 Notion mirror rules:
 
 - 이 문서는 공유와 리뷰용 복사본입니다.
 - canonical source of truth는 항상 repo 안 `docs/prds/<prd-slug>.md`입니다.
 - Notion에서 수정이 생기면 repo PRD에도 같은 변경을 반영해야 합니다.
-- 히스토리는 기존 행을 덮어쓰지 않고 최하단에 append-only로 추가합니다.
+- 히스토리는 기존 행을 덮어쓰지 않고 최하단에 이어서 추가합니다.
