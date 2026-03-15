@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Button, Card, CardContent, CardHeader, CardTitle } from "@pmf/ui";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import {
   completeNaverSocialLogin,
@@ -28,21 +28,32 @@ type CallbackState =
       message: string;
     };
 
-export function AuthCallbackPage() {
+type AuthCallbackPageProps = {
+  provider?: string;
+  code?: string;
+  state?: string;
+  error?: string;
+  errorDescription?: string;
+  next?: string;
+};
+
+export function AuthCallbackPage({
+  provider,
+  code,
+  state: naverState,
+  error,
+  errorDescription,
+  next,
+}: AuthCallbackPageProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [state, setState] = useState<CallbackState>({
     status: "loading",
     message: "로그인 callback을 처리하고 있습니다.",
   });
 
   useEffect(() => {
-    const provider = searchParams.get("provider");
-    const code = searchParams.get("code");
-    const stateParam = searchParams.get("state");
-    const providerError =
-      searchParams.get("error_description") ?? searchParams.get("error");
-    const nextPath = sanitizeNextPath(searchParams.get("next") ?? "/auth");
+    const providerError = errorDescription ?? error;
+    const nextPath = sanitizeNextPath(next ?? "/auth");
 
     if (providerError) {
       setState({
@@ -63,10 +74,10 @@ export function AuthCallbackPage() {
     const handleCallback = async () => {
       const result =
         provider === "naver"
-          ? code && stateParam
+          ? code && naverState
             ? await completeNaverSocialLogin({
                 code,
-                state: stateParam,
+                state: naverState,
               })
             : {
                 ok: false,
@@ -94,7 +105,7 @@ export function AuthCallbackPage() {
     };
 
     void handleCallback();
-  }, [router, searchParams]);
+  }, [code, error, errorDescription, naverState, next, provider, router]);
 
   return (
     <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-6 py-16">
