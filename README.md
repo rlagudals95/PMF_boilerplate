@@ -14,12 +14,12 @@ PMF를 찾기 위한 실험용 모노레포 보일러플레이트입니다.
 
 ### 1. 언제 어떤 플로우가 발동되나
 
-| 상황 | 발동 플로우 | 기준 |
-| --- | --- | --- |
-| 오탈자, 단순 카피 수정, 시맨틱 변화 없는 스타일 수정, 명백한 소규모 버그 수정 | `Quick fix` | full work item 없이 바로 수정 가능 |
-| 여러 파일에 걸친 기능 작업, 폼/어드민/analytics/DB 변경, 핵심 로직 변경 | `Important change` | `docs/work-items/*` 문서를 먼저 만들고 진행 |
-| PRD가 이미 있는 기능 작업 | `PRD-driven feature` | `docs/prds/*`를 source로 `feature work item` 생성 |
-| AI 규칙, 문서 구조, adapter 규칙 변경 | `AI context change` | 문서 수정 후 `pnpm ai:sync`까지 실행 |
+| 상황                                                                          | 발동 플로우          | 기준                                              |
+| ----------------------------------------------------------------------------- | -------------------- | ------------------------------------------------- |
+| 오탈자, 단순 카피 수정, 시맨틱 변화 없는 스타일 수정, 명백한 소규모 버그 수정 | `Quick fix`          | full work item 없이 바로 수정 가능                |
+| 여러 파일에 걸친 기능 작업, 폼/어드민/analytics/DB 변경, 핵심 로직 변경       | `Important change`   | `docs/work-items/*` 문서를 먼저 만들고 진행       |
+| PRD가 이미 있는 기능 작업                                                     | `PRD-driven feature` | `docs/prds/*`를 source로 `feature work item` 생성 |
+| AI 규칙, 문서 구조, adapter 규칙 변경                                         | `AI context change`  | 문서 수정 후 `pnpm ai:sync`까지 실행              |
 
 ### 2. 실제로 어떤 로직으로 실행되나
 
@@ -34,18 +34,20 @@ PMF를 찾기 위한 실험용 모노레포 보일러플레이트입니다.
 #### Important change
 
 1. `pnpm work:new <slug> --request "..."`로 work item을 만듭니다.
-2. `brief.md`와 필요한 role spec을 채웁니다.
-3. 구현 단위를 테스트 가능한 `behavior slice`로 나눕니다.
-4. 각 slice마다 먼저 failing test로 public behavior를 고정합니다.
-5. 테스트를 통과시키는 최소 구현만 추가합니다.
-6. 필요하면 리팩터링하고 slice 테스트를 다시 통과시킵니다.
-7. 마지막에 `pnpm verify`, 필요하면 `pnpm verify:full`을 실행합니다.
+2. `brief.md`, `team-plan.md`, 필요한 role spec, `quality-scorecard.md`를 채웁니다.
+3. `pnpm squad:check [work-id]`로 문서가 템플릿 상태를 벗어났는지 확인합니다.
+4. 구현 단위를 테스트 가능한 `behavior slice`로 나눕니다.
+5. 각 slice마다 먼저 failing test로 public behavior를 고정합니다.
+6. 테스트를 통과시키는 최소 구현만 추가합니다.
+7. 필요하면 리팩터링하고 slice 테스트를 다시 통과시킵니다.
+8. user-facing 작업이면 browser QA evidence와 ship 판단을 `quality-scorecard.md`에 남깁니다.
+9. 마지막에 `pnpm verify`, 필요하면 `pnpm verify:full`을 실행합니다.
 
 #### PRD-driven feature
 
 1. PRD를 `docs/prds/<slug>.md`에 둡니다.
 2. `pnpm feature:new --prd <slug>`로 feature work item을 생성합니다.
-3. `feature-spec.md`, `frontend-spec.md`, `backend-spec.md`에 어떤 behavior를 먼저 failing test로 고정할지 적습니다.
+3. `feature-spec.md`, `frontend-spec.md`, `backend-spec.md`, `quality-scorecard.md`에 구현/검증/ship 판단 기준을 적습니다.
 4. 그 문서를 기준으로 구현합니다.
 5. 마지막에 `pnpm verify`, 필요하면 `pnpm verify:full`을 실행합니다.
 
@@ -123,25 +125,28 @@ pnpm dev
 
 - repo 내부 Markdown 기반 spec-driven 작업 방식
 - PRD/work item 스캐폴딩 스크립트
+- business goal을 role debate와 browser QA로 연결하는 goal-driven delivery 루프
+- subagent/agent-team/단일 에이전트 역할 시뮬레이션을 같은 artifact로 묶는 team delivery 루프
+- Claude project subagent, Codex skill, Gemini command 같은 platform acceleration을 canonical source에서 generated adapter로 관리
 - Copilot/Cursor/Claude/Gemini/Codex용 컨텍스트 동기화
 
 ## 주요 화면
 
-| 경로 | 용도 |
-| --- | --- |
-| `/` | 랜딩과 리드 수집 |
-| `/auth` | 소셜 로그인 starter demo |
-| `/consult` | 상담 요청 접수 |
-| `/pay` | 결제 데모 시작 |
-| `/pay/result` | 결제 복귀 결과 확인 |
-| `/pay/cancel` | 결제 취소 복귀 |
-| `/admin` | 운영 개요 |
-| `/admin/leads` | 리드/상담 요청 확인 |
-| `/admin/products` | 제품 목록 |
-| `/admin/experiments` | 실험 상태 확인 |
-| `/admin/payments` | 결제 상태 확인 |
-| `/demo/funnel` | 모바일 퍼널 데모 |
-| `/health` | 헬스체크 |
+| 경로                 | 용도                     |
+| -------------------- | ------------------------ |
+| `/`                  | 랜딩과 리드 수집         |
+| `/auth`              | 소셜 로그인 starter demo |
+| `/consult`           | 상담 요청 접수           |
+| `/pay`               | 결제 데모 시작           |
+| `/pay/result`        | 결제 복귀 결과 확인      |
+| `/pay/cancel`        | 결제 취소 복귀           |
+| `/admin`             | 운영 개요                |
+| `/admin/leads`       | 리드/상담 요청 확인      |
+| `/admin/products`    | 제품 목록                |
+| `/admin/experiments` | 실험 상태 확인           |
+| `/admin/payments`    | 결제 상태 확인           |
+| `/demo/funnel`       | 모바일 퍼널 데모         |
+| `/health`            | 헬스체크                 |
 
 ## 빠른 시작
 
@@ -177,6 +182,7 @@ pnpm db:migrate
 pnpm prd:new my-prd
 pnpm feature:new --prd my-prd
 pnpm work:new my-task --request "작업 배경"
+pnpm squad:check
 pnpm ai:sync
 ```
 

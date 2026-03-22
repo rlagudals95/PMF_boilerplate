@@ -190,6 +190,8 @@ page.tsx
 - 기본 진입점은 `product-squad` 오케스트레이터입니다.
 - 역할은 `pm-role`, `pd-role`, `fe-role`, `be-role`로 나눕니다.
 - 중요한 작업은 구현 전에 `docs/work-items/<work-id>/`에 brief와 role spec을 먼저 만듭니다.
+- business goal 중심 제품 작업은 `docs/product-squad/goal-driven-delivery.md` 기준으로 role debate, browser QA, quality scorecard까지 남깁니다.
+- 역할 간 handoff나 병렬 탐색이 필요한 경우 `docs/product-squad/agent-team-delivery.md` 기준으로 `team-plan.md`를 같이 만듭니다.
 - 이 문서 산출물은 외부 PM 툴이 아니라 repo 안의 source of truth로 취급합니다.
 - 작은 문구 수정, 단일 스타일 수정, 명백한 소규모 버그는 full process를 생략할 수 있습니다.
 - 자세한 운영 규칙은 `docs/product-squad/operating-model.md`를 canonical source로 둡니다.

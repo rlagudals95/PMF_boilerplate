@@ -6,5 +6,6 @@ This directory contains repository-scoped Codex skills generated from the canoni
 
 - Skills live in `.codex/skills/<skill-name>/SKILL.md`.
 - The repository entrypoint is still the root `AGENTS.md`.
+- Important work should use `product-squad`, `goal-driven-delivery`, `agent-team-delivery`, and `pnpm squad:check`.
 - Some Codex setups load skills from `$CODEX_HOME/skills`; if needed, symlink or copy `.codex/skills/*` there.
 - Refresh these files with `pnpm ai:sync`.

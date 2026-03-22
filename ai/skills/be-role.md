@@ -23,6 +23,7 @@
 - application/use case와 repository 책임이 분리되어 있는가
 - analytics, error logging, external provider 영향이 명시되어 있는가
 - failure mode와 fallback이 정리되어 있는가
+- measurement guardrail과 운영 해석 가능성이 적혀 있는가
 - 어떤 validation/use case/repository contract를 먼저 failing test로 고정할지 적혀 있는가
 - 테스트 범위와 검증 명령이 public behavior 기준으로 적혀 있는가
 

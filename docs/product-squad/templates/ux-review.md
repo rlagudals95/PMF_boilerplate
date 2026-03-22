@@ -9,6 +9,10 @@ skip_reason: null
 
 # UX Review
 
+## Goal Alignment
+
+-
+
 ## Entry Points
 
 -
@@ -21,6 +25,10 @@ skip_reason: null
 
 -
 
+## Primary CTA And Trust
+
+-
+
 ## Happy Path
 
 -
@@ -30,5 +38,9 @@ skip_reason: null
 -
 
 ## Accessibility Checks
+
+-
+
+## Browser QA Plan
 
 -

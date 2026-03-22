@@ -25,6 +25,10 @@ skip_reason: null
 
 -
 
+## Measurement Guardrails
+
+-
+
 ## Boundary / Use Case / Repository Contract Test Plan
 
 - 먼저 failing test로 고정할 validation/use case/repository contract

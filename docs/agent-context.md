@@ -15,8 +15,10 @@
 - `ai/context/engineering-frontend.md`: `apps/web` FE 규칙
 - `ai/context/engineering-backend.md`: domain/backend/integration 규칙
 - `ai/context/doc-sync.md`: 코드-문서 sync 정책과 drift 기준
+- `ai/context/platform-optimization.md`: 플랫폼별 adapter 최적화 기준
 - `ai/skills/_index.md`: 사용 가능한 스킬과 트리거 규칙
 - `ai/skills/*.md`, `ai/skills/*/SKILL.md`: 플랫폼 독립 스킬 문서
+- `ai/agents/*.md`: platform-native delegation용 canonical agent prompt
 
 이 레이어는 Claude Code, Codex, Gemini 어느 쪽에서도 읽을 수 있는 일반 Markdown만 사용합니다.
 
@@ -30,6 +32,8 @@
 - `.github/copilot-instructions.md`
 - `.cursor/rules/*.mdc`
 - `pnpm ai:sync`로 생성하는 `.claude/skills/*/SKILL.md`
+- `pnpm ai:sync`로 생성하는 `.claude/agents/*.md`
+- `pnpm ai:sync`로 생성하는 `.claude/settings.json`
 - `pnpm ai:sync`로 생성하는 `.gemini/commands/repo/*`
 - `pnpm ai:sync`로 생성하는 `.gemini/extensions/*/skills/*/SKILL.md`
 - `pnpm ai:sync`로 생성하는 `.codex/skills/*/SKILL.md`
@@ -46,6 +50,8 @@
 - `docs/architecture.md`
 - `docs/prds/*.md`
 - `docs/product-squad/operating-model.md`
+- `docs/product-squad/goal-driven-delivery.md`
+- `docs/product-squad/agent-team-delivery.md`
 - `docs/work-items/<work-id>/*.md`
 - `apps/web/src/modules/README.md`
 - `apps/web/src/shared/README.md`
@@ -61,11 +67,14 @@
 5. `ai/context/spec-driven.md`
 6. 현재 작업에 맞는 FE/BE 문서 하나 또는 둘 다
 7. `ai/context/doc-sync.md`
-8. `ai/skills/_index.md`
-9. 현재 작업에 맞는 스킬 문서
-10. 중요한 작업이면 `docs/product-squad/operating-model.md`
-11. 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`
-12. task-local 문서
+8. adapter나 multi-agent acceleration 작업이면 `ai/context/platform-optimization.md`
+9. `ai/skills/_index.md`
+10. 현재 작업에 맞는 스킬 문서
+11. 중요한 작업이면 `docs/product-squad/operating-model.md`
+12. 비즈니스 목표 중심 제품 작업이면 `docs/product-squad/goal-driven-delivery.md`
+13. 역할 handoff나 병렬 탐색이 중요하면 `docs/product-squad/agent-team-delivery.md`
+14. 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`
+15. task-local 문서
 
 ## 왜 이 구조가 필요한가
 
@@ -90,6 +99,9 @@
 - `spec-driven.md`는 구현 전에 어떤 문서를 읽고 어떤 결정을 먼저 고정해야 하는지 정의합니다.
 - `doc-sync.md`는 어떤 변경이 어떤 문서를 같이 갱신해야 하는지 정의합니다.
 - `product-squad`는 중요한 작업을 위한 역할 기반 task-local 운영 모델입니다.
+- `goal-driven-delivery`는 business goal을 역할별 논의, browser QA, quality scorecard로 연결하는 운영 루프입니다.
+- `agent-team-delivery`는 subagent, agent team, 단일 세션 역할 시뮬레이션을 같은 artifact와 handoff 규칙으로 묶는 운영 루프입니다.
+- `ai/agents/*`는 Claude 같은 platform-native delegation 기능을 더 잘 활용하기 위한 canonical agent prompt 레이어입니다.
 - `new-feature`는 canonical PRD를 기존 `product-squad` 흐름으로 정규화하는 상위 오케스트레이터입니다.
 - 외부 노트는 repo 안 Markdown spec으로 정규화한 뒤에만 구현 기준 문서로 사용합니다.
 
@@ -100,6 +112,9 @@
 - 기본 오케스트레이터는 `product-squad`입니다.
 - 세부 역할은 `pm-role`, `pd-role`, `fe-role`, `be-role`입니다.
 - 중요한 작업은 먼저 `docs/work-items/<work-id>/`에 문서 산출물을 만들고, 그 문서를 입력으로 구현합니다.
+- 팀처럼 움직여야 하는 작업은 `team-plan.md`를 shared task list와 handoff source로 사용합니다.
+- user-facing 또는 business-goal-critical 작업은 `quality-scorecard.md`까지 채워야 review loop가 닫힙니다.
+- 중요한 작업 문서가 실제로 채워졌는지는 `pnpm squad:check [work-id]`로 점검할 수 있습니다.
 - 작은 수정은 full process를 생략할 수 있지만, 생략 사유를 기록할 수 있어야 합니다.
 
 ## Mandatory Working Mode

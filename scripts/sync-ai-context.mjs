@@ -19,13 +19,14 @@ async function main() {
   const skillIndexPath = path.join(rootDir, "ai/skills/_index.md");
   const skillIndex = await readFile(skillIndexPath, "utf8");
   const skills = parseSkillIndex(skillIndex);
+  const agents = await loadCanonicalAgents();
 
   if (skills.length === 0) {
     throw new Error("No skills found in ai/skills/_index.md");
   }
 
-  await removeStaleGeneratedFiles(skills);
-  await writeAdapterReadmes(skills);
+  await removeStaleGeneratedFiles(skills, agents);
+  await writeAdapterReadmes(skills, agents);
   await writeGeminiExtensionFiles(skills);
 
   for (const skill of skills) {
@@ -39,6 +40,11 @@ async function main() {
     await writeCodexSkill(skill, skillBody);
   }
 
+  for (const agent of agents) {
+    await writeClaudeAgent(agent);
+  }
+
+  await writeClaudeSettings();
   await writeCodexIndex(skills);
   await writeCopilotInstructions();
   await writeCursorRules();
@@ -47,6 +53,7 @@ async function main() {
     [
       "Synced AI context adapters:",
       `- Claude skills: ${skills.length}`,
+      `- Claude agents: ${agents.length}`,
       `- Gemini commands: ${skills.length}`,
       `- Gemini extension skills: ${skills.length}`,
       `- Codex skills: ${skills.length}`,
@@ -106,6 +113,47 @@ function finalizeSkill(skill) {
   return skill;
 }
 
+async function loadCanonicalAgents() {
+  const agentsDir = path.join(rootDir, "ai", "agents");
+
+  try {
+    const entries = await readdir(agentsDir, { withFileTypes: true });
+    const files = entries
+      .filter(
+        (entry) =>
+          entry.isFile() &&
+          entry.name.endsWith(".md") &&
+          entry.name !== "README.md",
+      )
+      .sort((left, right) => left.name.localeCompare(right.name));
+
+    const agents = [];
+
+    for (const file of files) {
+      const sourcePath = path.join("ai", "agents", file.name);
+      const body = await readFile(path.join(rootDir, sourcePath), "utf8");
+      const frontmatter = parseFrontmatter(body);
+      const name = frontmatter.name ?? path.basename(file.name, ".md");
+      const description = frontmatter.description ?? "";
+
+      agents.push({
+        name,
+        description,
+        sourcePath,
+        body: `${body.trim()}\n`,
+      });
+    }
+
+    return agents;
+  } catch (error) {
+    if (isMissingPathError(error)) {
+      return [];
+    }
+
+    throw error;
+  }
+}
+
 function buildSkillBody(skill, sourceBody) {
   if (hasFrontmatter(sourceBody)) {
     return `${sourceBody.trim()}\n`;
@@ -128,12 +176,43 @@ function hasFrontmatter(markdown) {
   return markdown.startsWith("---\n");
 }
 
-async function removeStaleGeneratedFiles(skills) {
+function parseFrontmatter(markdown) {
+  if (!hasFrontmatter(markdown)) {
+    return {};
+  }
+
+  const match = markdown.match(/^---\n([\s\S]*?)\n---/);
+
+  if (!match) {
+    return {};
+  }
+
+  const frontmatter = {};
+
+  for (const line of match[1].split("\n")) {
+    const parsed = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+
+    if (!parsed) {
+      continue;
+    }
+
+    frontmatter[parsed[1]] = parsed[2].replace(/^['"]|['"]$/g, "");
+  }
+
+  return frontmatter;
+}
+
+async function removeStaleGeneratedFiles(skills, agents) {
   const skillNames = new Set(skills.map((skill) => skill.name));
+  const agentNames = new Set(agents.map((agent) => agent.name));
 
   await removeStaleSkillDirectories(
     path.join(rootDir, ".claude", "skills"),
     skillNames,
+  );
+  await removeStaleAgentFiles(
+    path.join(rootDir, ".claude", "agents"),
+    agentNames,
   );
   await removeStaleSkillDirectories(
     path.join(rootDir, ".codex", "skills"),
@@ -166,6 +245,13 @@ async function removeStaleSkillDirectories(skillsDir, skillNames) {
       throw error;
     }
   }
+}
+
+async function removeStaleAgentFiles(agentsDir, agentNames) {
+  await removeStaleFiles(
+    agentsDir,
+    (name) => name.endsWith(".md") && !agentNames.has(name.slice(0, -3)),
+  );
 }
 
 async function removeLegacyCodexFiles() {
@@ -220,20 +306,28 @@ function isMissingPathError(error) {
   );
 }
 
-async function writeAdapterReadmes(skills) {
+async function writeAdapterReadmes(skills, agents) {
   const claudeReadme = [
     "# Claude Adapter",
     "",
     generatedNotice,
     "",
-    "This directory contains project-scoped Claude skills generated from the canonical skill sources in `ai/skills/`.",
+    "This directory contains project-scoped Claude skills, project subagents, and settings generated from the canonical sources in `ai/`.",
     "",
     "- Project skills live in `.claude/skills/<skill-name>/SKILL.md`.",
+    "- Project subagents live in `.claude/agents/*.md`.",
+    "- Project settings live in `.claude/settings.json`.",
     "- Shared project memory stays in the repository root `CLAUDE.md`.",
+    "- Use `pnpm squad:check [work-id]` before handoff on important work.",
     "- Refresh these files with `pnpm ai:sync`.",
     "",
     "Available generated skills:",
     ...skills.map((skill) => `- \`${skill.name}\`: ${skill.useWhen}`),
+    "",
+    "Available generated subagents:",
+    ...(agents.length > 0
+      ? agents.map((agent) => `- \`${agent.name}\`: ${agent.description}`)
+      : ["- none"]),
     "",
   ].join("\n");
 
@@ -248,6 +342,7 @@ async function writeAdapterReadmes(skills) {
     `- Installable extension skills live in \`.gemini/extensions/${geminiExtensionName}/skills/<skill-name>/SKILL.md\`.`,
     `- To register the bundled extension, run \`gemini extensions link .gemini/extensions/${geminiExtensionName}\` from the repository root.`,
     "- Shared project memory stays in the repository root `GEMINI.md`.",
+    "- Use `pnpm squad:check [work-id]` before handoff on important work.",
     "- Refresh these files with `pnpm ai:sync`.",
     "",
     "Available generated skills:",
@@ -264,6 +359,7 @@ async function writeAdapterReadmes(skills) {
     "",
     "- Skills live in `.codex/skills/<skill-name>/SKILL.md`.",
     "- The repository entrypoint is still the root `AGENTS.md`.",
+    "- Important work should use `product-squad`, `goal-driven-delivery`, `agent-team-delivery`, and `pnpm squad:check`.",
     "- Some Codex setups load skills from `$CODEX_HOME/skills`; if needed, symlink or copy `.codex/skills/*` there.",
     "- Refresh these files with `pnpm ai:sync`.",
     "",
@@ -340,6 +436,37 @@ async function writeClaudeSkill(skill, skillBody) {
 
   await mkdir(skillDir, { recursive: true });
   await writeFile(path.join(skillDir, "SKILL.md"), skillBody);
+}
+
+async function writeClaudeAgent(agent) {
+  const agentDir = path.join(rootDir, ".claude", "agents");
+
+  await mkdir(agentDir, { recursive: true });
+  await writeFile(path.join(agentDir, `${agent.name}.md`), agent.body);
+}
+
+async function writeClaudeSettings() {
+  const settings = {
+    hooks: {
+      UserPromptSubmit: [
+        {
+          hooks: [
+            {
+              type: "command",
+              command:
+                'node "$CLAUDE_PROJECT_DIR"/scripts/claude-hooks/user-prompt-submit.mjs',
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  await mkdir(path.join(rootDir, ".claude"), { recursive: true });
+  await writeFile(
+    path.join(rootDir, ".claude", "settings.json"),
+    `${JSON.stringify(settings, null, 2)}\n`,
+  );
 }
 
 async function writeGeminiCommand(skill) {
@@ -447,7 +574,8 @@ async function writeCopilotInstructions() {
     "- Keep `apps/web/src/app` thin. Put domain behavior in `apps/web/src/modules/*`.",
     "- Promote reuse only in this order: `module -> shared -> package`.",
     "- Validate inputs at the boundary. Keep model/use case files focused on orchestration.",
-    "- For important multi-file work, create or update `docs/work-items/<work-id>/` before implementation.",
+    "- For important multi-file work, use `product-squad`, `goal-driven-delivery`, and `agent-team-delivery`.",
+    "- Create or update `docs/work-items/<work-id>/brief.md`, `team-plan.md`, and `quality-scorecard.md` before or alongside implementation.",
     "- When structure or workflow rules change, update the canonical Markdown docs in the same change.",
     "- Keep external provider failures from breaking the core user flow unless the provider is the product itself.",
     "",
@@ -455,6 +583,7 @@ async function writeCopilotInstructions() {
     '- Use `pnpm work:new <slug> --request "..."` to create a work item scaffold.',
     "- Use `pnpm prd:new <slug>` to scaffold a canonical PRD in `docs/prds/`.",
     "- Use `pnpm feature:new --prd <slug> [--feature <feature-slug>]` to turn a PRD into a single feature work item plan.",
+    "- Use `pnpm squad:check [work-id]` to validate that a work item is filled beyond template placeholders.",
     "- Use `pnpm verify` for the default quality gate.",
     "- Use `pnpm verify:full` before handoff when user-facing flows or integrations changed.",
     "- Use `pnpm ai:sync` after changing `ai/`, `AGENTS.md`, or other adapter-driving docs.",
@@ -484,8 +613,10 @@ async function writeCursorRules() {
         "- Read `AGENTS.md`, `ai/context/project.md`, `ai/context/engineering.md`, `ai/context/engineering-common.md`, `ai/context/spec-driven.md`, and `ai/context/doc-sync.md` before substantial work.",
         "- Keep `apps/web/src/app` thin. Put product logic in `apps/web/src/modules/*`.",
         "- Promote shared code only in this order: `module -> shared -> package`.",
-        "- For important multi-file work, create or update `docs/work-items/<work-id>/` before coding.",
+        "- For important multi-file or business-goal-driven work, use `product-squad`, `goal-driven-delivery`, and `agent-team-delivery`.",
+        "- Create or update `docs/work-items/<work-id>/brief.md`, `team-plan.md`, and `quality-scorecard.md` before or alongside coding.",
         "- If a canonical PRD exists, prefer `pnpm feature:new --prd <slug>` before implementation so the feature work item docs stay normalized.",
+        "- Run `pnpm squad:check [work-id]` before handoff on important work.",
         "- Run `pnpm verify` before handoff. Run `pnpm verify:full` when user-facing flows or integrations changed.",
         "- Refresh generated adapters with `pnpm ai:sync` after changing canonical AI context or adapter-entry docs.",
       ],

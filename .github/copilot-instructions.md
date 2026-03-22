@@ -17,7 +17,8 @@ Working rules:
 - Keep `apps/web/src/app` thin. Put domain behavior in `apps/web/src/modules/*`.
 - Promote reuse only in this order: `module -> shared -> package`.
 - Validate inputs at the boundary. Keep model/use case files focused on orchestration.
-- For important multi-file work, create or update `docs/work-items/<work-id>/` before implementation.
+- For important multi-file work, use `product-squad`, `goal-driven-delivery`, and `agent-team-delivery`.
+- Create or update `docs/work-items/<work-id>/brief.md`, `team-plan.md`, and `quality-scorecard.md` before or alongside implementation.
 - When structure or workflow rules change, update the canonical Markdown docs in the same change.
 - Keep external provider failures from breaking the core user flow unless the provider is the product itself.
 
@@ -25,6 +26,7 @@ Fast loops:
 - Use `pnpm work:new <slug> --request "..."` to create a work item scaffold.
 - Use `pnpm prd:new <slug>` to scaffold a canonical PRD in `docs/prds/`.
 - Use `pnpm feature:new --prd <slug> [--feature <feature-slug>]` to turn a PRD into a single feature work item plan.
+- Use `pnpm squad:check [work-id]` to validate that a work item is filled beyond template placeholders.
 - Use `pnpm verify` for the default quality gate.
 - Use `pnpm verify:full` before handoff when user-facing flows or integrations changed.
 - Use `pnpm ai:sync` after changing `ai/`, `AGENTS.md`, or other adapter-driving docs.

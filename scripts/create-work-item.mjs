@@ -8,9 +8,11 @@ const templatesDir = path.join(rootDir, "docs", "product-squad", "templates");
 const workItemsDir = path.join(rootDir, "docs", "work-items");
 const templateFiles = [
   "brief.md",
+  "team-plan.md",
   "ux-review.md",
   "frontend-spec.md",
   "backend-spec.md",
+  "quality-scorecard.md",
 ];
 
 async function main() {
@@ -26,7 +28,10 @@ async function main() {
     const destinationPath = path.join(targetDir, fileName);
     const template = await readFile(templatePath, "utf8");
     const contents = request
-      ? template.replace('source_request: ""', `source_request: ${JSON.stringify(request)}`)
+      ? template.replace(
+          'source_request: ""',
+          `source_request: ${JSON.stringify(request)}`,
+        )
       : template;
 
     await writeFile(destinationPath, contents);
@@ -69,7 +74,7 @@ function parseArgs(args) {
 
   if (!slug) {
     throw new Error(
-      "Usage: pnpm work:new <short-slug> [--request \"original request\"] [--force]",
+      'Usage: pnpm work:new <short-slug> [--request "original request"] [--force]',
     );
   }
 
@@ -88,7 +93,9 @@ function normalizeSlug(value) {
     .replace(/^-+|-+$/g, "");
 
   if (!slug) {
-    throw new Error("The work item slug must contain at least one letter or number.");
+    throw new Error(
+      "The work item slug must contain at least one letter or number.",
+    );
   }
 
   return slug;

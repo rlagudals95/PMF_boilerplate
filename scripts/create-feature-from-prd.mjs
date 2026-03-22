@@ -22,6 +22,10 @@ async function main() {
   await Promise.all([
     writeFile(path.join(targetDir, "brief.md"), renderBrief(workId, planning)),
     writeFile(
+      path.join(targetDir, "team-plan.md"),
+      renderTeamPlan(workId, planning),
+    ),
+    writeFile(
       path.join(targetDir, "feature-spec.md"),
       renderFeatureSpec(workId, planning),
     ),
@@ -36,6 +40,10 @@ async function main() {
     writeFile(
       path.join(targetDir, "backend-spec.md"),
       renderBackendSpec(workId, planning),
+    ),
+    writeFile(
+      path.join(targetDir, "quality-scorecard.md"),
+      renderQualityScorecard(workId, planning),
     ),
   ]);
 
@@ -186,6 +194,7 @@ function buildPlanningContext(prd, feature) {
   );
   const analyticsImpact = listFromSection(prd.sections["Analytics Impact"]);
   const dataImpact = listFromSection(prd.sections["Data Impact"]);
+  const constraints = listFromSection(prd.sections["Constraints"]);
   const dependencies = listFromSection(prd.sections["Dependencies"]);
   const existingOpenQuestions = listFromSection(prd.sections["Open Questions"]);
   const successMetric = listFromSection(prd.sections["Success Metric"]);
@@ -262,6 +271,7 @@ function buildPlanningContext(prd, feature) {
     acceptanceCriteria,
     analyticsImpact,
     dataImpact,
+    constraints,
     dependencies,
     affectedPaths,
     docsToUpdate,
@@ -280,7 +290,9 @@ function buildUserFlow(feature, prd, targetUser) {
   const flow = [];
 
   if (feature.routes.length > 0) {
-    flow.push(`핵심 대상 사용자가 ${feature.routes.join(", ")} 경로로 진입한다.`);
+    flow.push(
+      `핵심 대상 사용자가 ${feature.routes.join(", ")} 경로로 진입한다.`,
+    );
   } else if (feature.adminSurface === "yes") {
     flow.push("핵심 대상 사용자가 admin surface에서 기능을 사용한다.");
   } else {
@@ -392,6 +404,10 @@ function renderBrief(workId, planning) {
     "",
     renderParagraph(planning.goal),
     "",
+    "## Constraints",
+    "",
+    ...renderBulletList(planning.constraints),
+    "",
     "## Non-Goals",
     "",
     ...renderBulletList(planning.outOfScope),
@@ -438,6 +454,10 @@ function renderFeatureSpec(workId, planning) {
     "",
     renderParagraph(planning.goal),
     "",
+    "## Business Goal Mapping",
+    "",
+    ...renderBulletList(buildBusinessGoalMapping(planning)),
+    "",
     "## In Scope",
     "",
     ...renderBulletList(planning.inScope),
@@ -474,6 +494,10 @@ function renderFeatureSpec(workId, planning) {
     "",
     ...renderBulletList(buildTestStrategy(planning)),
     "",
+    "## Quality Gates",
+    "",
+    ...renderBulletList(buildQualityGates(planning)),
+    "",
     "## Docs To Update",
     "",
     ...renderBulletList(
@@ -495,6 +519,56 @@ function renderFeatureSpec(workId, planning) {
   ].join("\n");
 }
 
+function renderTeamPlan(workId, planning) {
+  return [
+    renderFrontmatter({
+      status: planning.readiness === "blocked" ? "blocked" : "draft",
+      owner_role: "product-squad",
+      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+      affected_paths: planning.affectedPaths,
+      dependencies: uniqueItems([
+        `docs/work-items/${workId}/brief.md`,
+        `docs/work-items/${workId}/feature-spec.md`,
+      ]),
+      skip_reason: null,
+    }),
+    "# Team Plan",
+    "",
+    "## Mission",
+    "",
+    renderParagraph(planning.featureSummary),
+    "",
+    "## Execution Mode",
+    "",
+    ...renderBulletList(buildExecutionMode(planning)),
+    "",
+    "## Team Topology",
+    "",
+    ...renderBulletList(buildTeamTopology(planning)),
+    "",
+    "## Shared Context Pack",
+    "",
+    ...renderBulletList(buildSharedContextPack(workId, planning)),
+    "",
+    "## Shared Task List",
+    "",
+    ...renderBulletList(buildSharedTaskList(planning)),
+    "",
+    "## File Ownership Plan",
+    "",
+    ...renderBulletList(buildFileOwnershipPlan(planning)),
+    "",
+    "## Handoff Log",
+    "",
+    ...renderBulletList(buildInitialHandoffLog(planning)),
+    "",
+    "## Escalations",
+    "",
+    ...renderBulletList(buildEscalations(planning)),
+    "",
+  ].join("\n");
+}
+
 function renderUxReview(workId, planning) {
   if (!planning.uxRequired) {
     return renderSkippedRoleDoc({
@@ -505,6 +579,10 @@ function renderUxReview(workId, planning) {
       affectedPaths: planning.affectedPaths,
       dependencies: buildDependencies(workId, planning, true),
       sections: [
+        "## Goal Alignment",
+        "",
+        "-",
+        "",
         "## Entry Points",
         "",
         "-",
@@ -517,6 +595,10 @@ function renderUxReview(workId, planning) {
         "",
         "-",
         "",
+        "## Primary CTA And Trust",
+        "",
+        "-",
+        "",
         "## Happy Path",
         "",
         "-",
@@ -526,6 +608,10 @@ function renderUxReview(workId, planning) {
         "-",
         "",
         "## Accessibility Checks",
+        "",
+        "-",
+        "",
+        "## Browser QA Plan",
         "",
         "-",
         "",
@@ -543,6 +629,10 @@ function renderUxReview(workId, planning) {
       skip_reason: null,
     }),
     "# UX Review",
+    "",
+    "## Goal Alignment",
+    "",
+    ...renderBulletList(buildGoalAlignment(planning)),
     "",
     "## Entry Points",
     "",
@@ -568,6 +658,10 @@ function renderUxReview(workId, planning) {
         : ["No major IA change beyond the primary feature route is expected."],
     ),
     "",
+    "## Primary CTA And Trust",
+    "",
+    ...renderBulletList(buildPrimaryCtaAndTrust(planning)),
+    "",
     "## Happy Path",
     "",
     ...renderBulletList(planning.userFlow),
@@ -583,6 +677,10 @@ function renderUxReview(workId, planning) {
       "Form labels, helper text, and error messaging are explicit.",
       "Status feedback is visible without relying on color alone.",
     ]),
+    "",
+    "## Browser QA Plan",
+    "",
+    ...renderBulletList(buildBrowserQaPlan(planning)),
     "",
   ].join("\n");
 }
@@ -614,7 +712,15 @@ function renderFrontendSpec(workId, planning) {
         "",
         "-",
         "",
-        "## Test Plan",
+        "## Instrumentation Hooks",
+        "",
+        "-",
+        "",
+        "## Test-First Plan",
+        "",
+        "-",
+        "",
+        "## Manual Browser QA",
         "",
         "-",
         "",
@@ -661,9 +767,17 @@ function renderFrontendSpec(workId, planning) {
     "",
     ...renderBulletList(buildFrontendStatePlan(planning)),
     "",
-    "## Test Plan",
+    "## Instrumentation Hooks",
+    "",
+    ...renderBulletList(buildInstrumentationHooks(planning)),
+    "",
+    "## Test-First Plan",
     "",
     ...renderBulletList(buildFrontendTests(planning)),
+    "",
+    "## Manual Browser QA",
+    "",
+    ...renderBulletList(buildBrowserQaPlan(planning)),
     "",
     "## Out Of Scope",
     "",
@@ -699,7 +813,11 @@ function renderBackendSpec(workId, planning) {
         "",
         "-",
         "",
-        "## Test Plan",
+        "## Measurement Guardrails",
+        "",
+        "-",
+        "",
+        "## Boundary / Use Case / Repository Contract Test Plan",
         "",
         "-",
         "",
@@ -738,9 +856,63 @@ function renderBackendSpec(workId, planning) {
     "",
     ...renderBulletList(buildFailureModes(planning)),
     "",
-    "## Test Plan",
+    "## Measurement Guardrails",
+    "",
+    ...renderBulletList(buildMeasurementGuardrails(planning)),
+    "",
+    "## Boundary / Use Case / Repository Contract Test Plan",
     "",
     ...renderBulletList(buildBackendTests(planning)),
+    "",
+  ].join("\n");
+}
+
+function renderQualityScorecard(workId, planning) {
+  return [
+    renderFrontmatter({
+      status: planning.readiness === "blocked" ? "blocked" : "draft",
+      owner_role: "product-squad",
+      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+      affected_paths: planning.affectedPaths,
+      dependencies: uniqueItems(
+        [
+          `docs/work-items/${workId}/brief.md`,
+          `docs/work-items/${workId}/team-plan.md`,
+          `docs/work-items/${workId}/feature-spec.md`,
+          `docs/work-items/${workId}/ux-review.md`,
+          `docs/work-items/${workId}/frontend-spec.md`,
+          planning.backendRequired
+            ? `docs/work-items/${workId}/backend-spec.md`
+            : null,
+        ].filter(Boolean),
+      ),
+      skip_reason: null,
+    }),
+    "# Quality Scorecard",
+    "",
+    "## Goal Fit",
+    "",
+    ...renderBulletList(buildGoalAlignment(planning)),
+    "",
+    "## Product Risks To Kill",
+    "",
+    ...renderBulletList(buildQualityRisks(planning)),
+    "",
+    "## Review Checklist",
+    "",
+    ...renderChecklist(buildQualityChecklist(planning)),
+    "",
+    "## Browser QA Evidence",
+    "",
+    ...renderBulletList(buildBrowserQaPlan(planning)),
+    "",
+    "## Measurement And Ops Checks",
+    "",
+    ...renderBulletList(buildMeasurementGuardrails(planning)),
+    "",
+    "## Release Recommendation",
+    "",
+    ...renderBulletList(buildReleaseRecommendation(planning)),
     "",
   ].join("\n");
 }
@@ -799,7 +971,222 @@ function buildTestStrategy(planning) {
     "변경 범위에 맞춰 `pnpm verify` 또는 `pnpm verify:full`을 선택한다.",
   );
 
+  if (planning.frontendRequired) {
+    tests.push(
+      "user-facing surface면 browser QA evidence와 quality scorecard를 함께 남긴다.",
+    );
+  }
+
   return tests;
+}
+
+function buildBusinessGoalMapping(planning) {
+  const mapping = [`이 작업의 목표: ${planning.goal}`];
+
+  if (planning.successMetric.length > 0) {
+    mapping.push(`주요 success signal: ${planning.successMetric.join(", ")}`);
+  }
+
+  mapping.push("사용자 행동 변화와 운영 해석 가능성이 동시에 확보되어야 한다.");
+
+  return uniqueItems(mapping);
+}
+
+function buildQualityGates(planning) {
+  const gates = [
+    "goal, success metric, acceptance criteria가 문서에 고정되어 있다.",
+    "team-plan에 execution mode, task graph, file ownership이 정리되어 있다.",
+    "테스트 가능한 behavior slice와 verify 계획이 있다.",
+  ];
+
+  if (planning.frontendRequired) {
+    gates.push(
+      "browser QA evidence와 responsive/accessibility 확인 기준이 있다.",
+    );
+  }
+
+  if (planning.analyticsImpact.length > 0 || planning.backendRequired) {
+    gates.push(
+      "measurement와 운영 해석에 필요한 event/data visibility가 있다.",
+    );
+  }
+
+  gates.push("최종 ship / iterate / stop 판단을 quality scorecard에 남긴다.");
+
+  return gates;
+}
+
+function buildGoalAlignment(planning) {
+  const items = [`이 작업의 목표: ${planning.goal}`];
+
+  if (planning.successMetric.length > 0) {
+    items.push(`주요 success signal: ${planning.successMetric.join(", ")}`);
+  }
+
+  items.push(
+    "사용자 행동 변화와 business signal을 함께 관찰할 수 있어야 한다.",
+  );
+
+  return items;
+}
+
+function buildPrimaryCtaAndTrust(planning) {
+  const items = [
+    "가장 중요한 CTA 하나를 기준으로 hierarchy를 정리한다.",
+    "첫 화면에서 사용자가 왜 지금 행동해야 하는지 설명한다.",
+  ];
+
+  if (planning.backendRequired) {
+    items.push(
+      "신뢰에 영향을 주는 입력, 저장, 후속 연락 기대치를 분명히 드러낸다.",
+    );
+  }
+
+  return items;
+}
+
+function buildExecutionMode(planning) {
+  const mode =
+    planning.frontendRequired && planning.backendRequired
+      ? "agent-team 또는 subagent fan-out을 검토하되, platform capability가 불명확하면 single-agent sequential을 기본으로 둔다."
+      : "single-agent sequential을 기본으로 둔다.";
+
+  return [mode, "병렬 구현보다 병렬 research/review를 먼저 수행한다."];
+}
+
+function buildTeamTopology(planning) {
+  const topology = [
+    "lead: product-squad",
+    "pm: brief와 acceptance criteria 담당",
+  ];
+
+  if (planning.uxRequired) {
+    topology.push("pd: CTA, IA, trust, browser QA 담당");
+  }
+
+  if (planning.frontendRequired) {
+    topology.push("fe: route/module/state/instrumentation 담당");
+  }
+
+  if (planning.backendRequired) {
+    topology.push("be: validation/persistence/analytics/admin visibility 담당");
+  }
+
+  topology.push("quality review: quality-scorecard와 ship 판단 담당");
+
+  return topology;
+}
+
+function buildSharedContextPack(workId, planning) {
+  return uniqueItems(
+    [
+      `docs/prds/${planning.prd.slug}.md`,
+      `docs/work-items/${workId}/brief.md`,
+      `docs/work-items/${workId}/feature-spec.md`,
+      planning.uxRequired ? `docs/work-items/${workId}/ux-review.md` : null,
+      planning.frontendRequired
+        ? `docs/work-items/${workId}/frontend-spec.md`
+        : null,
+      planning.backendRequired
+        ? `docs/work-items/${workId}/backend-spec.md`
+        : null,
+    ].filter(Boolean),
+  );
+}
+
+function buildSharedTaskList(planning) {
+  const tasks = [
+    "T-01 lead: goal packet과 scope를 brief로 고정한다.",
+    "T-02 lead: execution mode, task graph, file ownership을 team-plan에 정리한다.",
+  ];
+
+  if (planning.uxRequired) {
+    tasks.push("T-03 pd: CTA, trust, edge state, browser QA 계획을 정리한다.");
+  }
+
+  if (planning.frontendRequired) {
+    tasks.push(
+      "T-04 fe: UI thin slice, instrumentation, test-first plan을 정리한다.",
+    );
+  }
+
+  if (planning.backendRequired) {
+    tasks.push(
+      "T-05 be: validation, persistence, analytics, failure mode를 정리한다.",
+    );
+  }
+
+  tasks.push("T-06 lead: 역할 산출물을 수렴해 quality-scorecard를 채운다.");
+
+  return tasks;
+}
+
+function buildFileOwnershipPlan(planning) {
+  return planning.affectedPaths.map((path) => `owner to assign: ${path}`);
+}
+
+function buildInitialHandoffLog(planning) {
+  const log = [
+    "lead -> pm: mission, success metric, non-goals, constraints를 고정한다.",
+  ];
+
+  if (planning.uxRequired) {
+    log.push(
+      "pm -> pd: target moment, primary CTA, trust question을 handoff한다.",
+    );
+  }
+
+  if (planning.frontendRequired) {
+    log.push(
+      "pd -> fe: happy path, edge state, browser QA focus를 handoff한다.",
+    );
+  }
+
+  if (planning.backendRequired) {
+    log.push("fe -> be: instrumentation과 data dependency를 handoff한다.");
+  }
+
+  log.push(
+    "all roles -> lead: open questions, proof, risks를 scorecard로 수렴한다.",
+  );
+
+  return log;
+}
+
+function buildEscalations(planning) {
+  const escalations = [
+    "goal 또는 success metric이 흔들리면 구현보다 문서 갱신을 우선한다.",
+    "같은 파일을 둘 이상 수정해야 하면 병렬 구현을 중단하고 owner를 재배정한다.",
+  ];
+
+  if (planning.frontendRequired) {
+    escalations.push(
+      "browser QA evidence가 비면 ship 대신 iterate를 기본값으로 둔다.",
+    );
+  }
+
+  return escalations;
+}
+
+function buildBrowserQaPlan(planning) {
+  const items = [
+    "desktop viewport에서 happy path와 CTA hierarchy를 확인한다.",
+    "mobile viewport에서 첫 스크린 메시지, 폼 길이, sticky CTA 필요 여부를 확인한다.",
+    "error / empty / pending state를 실제 브라우저에서 확인한다.",
+    "focus order, label, helper text, contrast를 점검한다.",
+  ];
+
+  if (planning.feature.routes.length > 0) {
+    items.push(
+      `핵심 경로 ${planning.feature.routes.join(", ")} 기준으로 recorded flow 또는 manual proof를 남긴다.`,
+    );
+  }
+
+  items.push(
+    "회귀 우려가 큰 화면이면 screenshot diff 또는 visual regression을 검토한다.",
+  );
+
+  return items;
 }
 
 function buildEdgeStates(planning) {
@@ -867,6 +1254,22 @@ function buildFrontendStatePlan(planning) {
   }
 
   return items;
+}
+
+function buildInstrumentationHooks(planning) {
+  const items = [
+    "핵심 CTA, submit, state transition에만 measurement hook를 둔다.",
+  ];
+
+  if (planning.analyticsImpact.length > 0) {
+    items.push(...planning.analyticsImpact);
+  } else {
+    items.push(
+      "추가 event가 없다면 어떤 기존 signal로 효과를 해석할지 적는다.",
+    );
+  }
+
+  return uniqueItems(items);
 }
 
 function buildFrontendTests(planning) {
@@ -959,6 +1362,77 @@ function buildBackendTests(planning) {
   }
 
   return tests;
+}
+
+function buildMeasurementGuardrails(planning) {
+  const items = [];
+
+  if (planning.analyticsImpact.length > 0) {
+    items.push(...planning.analyticsImpact);
+  }
+
+  if (planning.dataImpact.length > 0) {
+    items.push(
+      "운영자가 후속 액션을 정할 수 있게 저장/조회 데이터가 남아야 한다.",
+    );
+  }
+
+  items.push(
+    "optional provider 실패가 핵심 business signal 수집을 막지 않게 한다.",
+  );
+
+  return uniqueItems(items);
+}
+
+function buildQualityRisks(planning) {
+  const risks = [
+    "business goal과 직접 연결되지 않는 부가 UI 변경이 scope를 흐릴 수 있다.",
+    "measurement 또는 admin visibility가 부족하면 결과 해석이 불가능해질 수 있다.",
+  ];
+
+  if (planning.frontendRequired) {
+    risks.push(
+      "happy path는 좋아 보여도 mobile/edge state에서 전환이 무너질 수 있다.",
+    );
+  }
+
+  return uniqueItems([...risks, ...planning.openQuestions]);
+}
+
+function buildQualityChecklist(planning) {
+  const items = [
+    "primary business goal과 success metric이 이 변경과 연결된다",
+    "사용자에게 가장 중요한 CTA와 value proposition이 분명하다",
+    "trust, error, empty, pending state가 검토되었다",
+  ];
+
+  if (planning.analyticsImpact.length > 0 || planning.backendRequired) {
+    items.push("analytics/admin visibility가 있어 결과를 해석할 수 있다");
+  }
+
+  if (planning.frontendRequired) {
+    items.push("responsive + accessibility + browser QA evidence가 있다");
+  }
+
+  return items;
+}
+
+function buildReleaseRecommendation(planning) {
+  const items = [
+    "구현 후 `ship`, `iterate`, `stop` 중 하나를 선택하고 근거를 남긴다.",
+  ];
+
+  if (planning.readiness === "blocked") {
+    items.push(
+      "현재는 open question 해소 전이라 구현/ship 판단을 내리지 않는다.",
+    );
+  } else {
+    items.push(
+      "browser evidence와 measurement check가 비면 ship 대신 iterate를 기본값으로 둔다.",
+    );
+  }
+
+  return items;
 }
 
 function collectSystemQuestions(feature) {

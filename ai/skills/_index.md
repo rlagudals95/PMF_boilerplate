@@ -15,6 +15,11 @@
 - 위치: `ai/skills/repo-guardrails.md`
 - 사용 시점: 새 패키지/새 추상화/새 인프라를 추가하려 할 때
 
+### `upstream-to-pmf-boilerplate`
+
+- 위치: `ai/skills/upstream-to-pmf-boilerplate.md`
+- 사용 시점: pmf-boilerplate 기반 다른 서비스에서 만든 재사용 가능한 기능이나 패턴을 현재 보일러플레이트로 역이식할 때
+
 ### `experiment-ops`
 
 - 위치: `ai/skills/experiment-ops.md`
@@ -24,6 +29,16 @@
 
 - 위치: `ai/skills/product-squad.md`
 - 사용 시점: 중요한 기능 작업이나 실험 변경을 PM/PD/FE/BE 역할로 나눠서 운영할 때
+
+### `goal-driven-delivery`
+
+- 위치: `ai/skills/goal-driven-delivery.md`
+- 사용 시점: 비즈니스 목표를 제품 결정, 역할별 논의, browser QA, release 판단까지 연결해야 할 때
+
+### `agent-team-delivery`
+
+- 위치: `ai/skills/agent-team-delivery.md`
+- 사용 시점: subagent, agent team, 단일 에이전트 역할 시뮬레이션을 같은 canonical workflow로 운영해야 할 때
 
 ### `new-feature`
 

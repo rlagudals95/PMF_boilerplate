@@ -1,0 +1,14 @@
+description = "Applies the repository's upstream-to-pmf-boilerplate workflow. Use when pmf-boilerplate 기반 다른 서비스에서 만든 재사용 가능한 기능이나 패턴을 현재 보일러플레이트로 역이식할 때"
+prompt = '''
+Use the repository workflow below as the authoritative guide for this task.
+
+@{ai/skills/upstream-to-pmf-boilerplate.md}
+
+Instructions:
+- Apply the workflow to the current conversation and workspace.
+- If the workflow asks you to load other canonical documents, load them before acting.
+- If command arguments are provided, treat them as the immediate task input.
+
+Task input:
+{{args}}
+'''

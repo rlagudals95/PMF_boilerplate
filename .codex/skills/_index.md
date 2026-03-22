@@ -4,8 +4,11 @@
 
 Available generated skills:
 - [repo-guardrails](./repo-guardrails/SKILL.md): 새 패키지/새 추상화/새 인프라를 추가하려 할 때 (source: `ai/skills/repo-guardrails.md`)
+- [upstream-to-pmf-boilerplate](./upstream-to-pmf-boilerplate/SKILL.md): pmf-boilerplate 기반 다른 서비스에서 만든 재사용 가능한 기능이나 패턴을 현재 보일러플레이트로 역이식할 때 (source: `ai/skills/upstream-to-pmf-boilerplate.md`)
 - [experiment-ops](./experiment-ops/SKILL.md): 실험 등록, 이벤트 명명, success metric 설계, 종료 기준 판단 (source: `ai/skills/experiment-ops.md`)
 - [product-squad](./product-squad/SKILL.md): 중요한 기능 작업이나 실험 변경을 PM/PD/FE/BE 역할로 나눠서 운영할 때 (source: `ai/skills/product-squad.md`)
+- [goal-driven-delivery](./goal-driven-delivery/SKILL.md): 비즈니스 목표를 제품 결정, 역할별 논의, browser QA, release 판단까지 연결해야 할 때 (source: `ai/skills/goal-driven-delivery.md`)
+- [agent-team-delivery](./agent-team-delivery/SKILL.md): subagent, agent team, 단일 에이전트 역할 시뮬레이션을 같은 canonical workflow로 운영해야 할 때 (source: `ai/skills/agent-team-delivery.md`)
 - [new-feature](./new-feature/SKILL.md): canonical PRD를 읽고 단일 feature slice의 work item과 spec 문서를 만들 때 (source: `ai/skills/new-feature/SKILL.md`)
 - [pm-role](./pm-role/SKILL.md): 문제정의, 목표, 범위, success metric, acceptance criteria를 고정할 때 (source: `ai/skills/pm-role.md`)
 - [prd-coach](./prd-coach/SKILL.md): 문제, 유저 데이터, 가설, 비즈니스 목표를 바탕으로 PRD 초안을 만들고 짧은 왕복으로 계속 다듬어야 할 때 (source: `ai/skills/prd-coach.md`)

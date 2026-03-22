@@ -11,6 +11,8 @@
 - canonical PRD가 있으면 `new-feature`가 `product-squad` 앞단에서 work item 생성기를 담당할 수 있다.
 - 중요한 작업은 먼저 문서 산출물을 만든다.
 - 최신 `brief.md`가 구현 전 기준 문서다.
+- user-facing 또는 goal-critical 작업은 `goal-driven-delivery` 기준으로 browser evidence와 quality scorecard까지 남긴다.
+- 역할 handoff나 병렬 탐색이 있으면 `agent-team-delivery` 기준으로 `team-plan.md`를 coordination source로 사용한다.
 - 작은 수정은 full process를 생략할 수 있지만 `skip_reason`은 남긴다.
 - spec-driven 기준은 `ai/context/spec-driven.md`를 따른다.
 - 문서 sync 기준은 `ai/context/doc-sync.md`를 따른다.
@@ -98,9 +100,11 @@
 docs/work-items/<work-id>/
   brief.md
   feature-spec.md
+  team-plan.md
   ux-review.md
   frontend-spec.md
   backend-spec.md
+  quality-scorecard.md
 ```
 
 ## Frontmatter 계약
@@ -125,12 +129,22 @@ docs/work-items/<work-id>/
 1. 요청을 `gated work` 또는 `light work`로 분류한다.
 2. gated work면 `work-id`를 만든다.
 3. `brief.md`를 먼저 만든다.
-4. 필요한 역할 문서를 만든다.
-5. 필요 없는 문서는 `skipped`로 남긴다.
-6. 구현 단위를 테스트 가능한 behavior slice로 자른다.
-7. 중요한 작업과 핵심 로직 변경은 각 slice를 failing test로 먼저 고정한 뒤 최소 구현과 리팩터링을 진행한다.
-8. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
-9. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인하고 `pnpm verify` 또는 `pnpm verify:full`을 실행한다.
+4. `team-plan.md`로 execution mode와 task graph를 먼저 정한다.
+5. 필요한 역할 문서를 만든다.
+6. 필요 없는 문서는 `skipped`로 남긴다.
+7. 구현 단위를 테스트 가능한 behavior slice로 자른다.
+8. 중요한 작업과 핵심 로직 변경은 각 slice를 failing test로 먼저 고정한 뒤 최소 구현과 리팩터링을 진행한다.
+9. user-facing 작업이면 browser QA evidence와 measurement check를 `quality-scorecard.md`에 남긴다.
+10. 작업 종료 전에는 `pnpm squad:check [work-id]`로 문서가 placeholder 상태가 아닌지 확인한다.
+11. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
+12. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인하고 `pnpm verify` 또는 `pnpm verify:full`을 실행한다.
+
+## Goal-Driven Review Loop
+
+- 기능 아이디어보다 business goal을 먼저 고정합니다.
+- role spec은 병렬 문서가 아니라 같은 문제를 다른 관점으로 검토하는 장치입니다.
+- 최종 판단은 `quality-scorecard.md`에 `ship | iterate | stop` 형태로 남깁니다.
+- user-facing 변경은 browser QA evidence 없이 완료로 보지 않습니다.
 
 ## PD 범위 제한
 

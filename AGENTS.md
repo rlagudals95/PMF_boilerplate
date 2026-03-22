@@ -20,6 +20,7 @@
 8. `docs/agent-context.md`
 9. 현재 작업과 관련된 `docs/*` 또는 패키지 문서
 10. 실험 관련 작업이면 `docs/experiment-playbook.md`
+11. AI 어댑터/멀티에이전트 운영을 바꾸는 작업이면 `ai/context/platform-optimization.md`
 
 ## 아키텍처 원칙
 
@@ -98,4 +99,5 @@
 - Claude Code, Codex, Gemini용 문서를 따로 두더라도 내용 본문은 복제하지 않는다.
 - Notion 같은 외부 도구는 optional integration이며 repo Markdown이 canonical source다.
 - 실제 런타임 어댑터 산출물은 `pnpm ai:sync`로 `.github/copilot-instructions.md`, `.cursor/rules/*.mdc`, `.claude/skills/*/SKILL.md`, `.gemini/commands/repo/*`, `.gemini/extensions/*/skills/*/SKILL.md`, `.codex/skills/*/SKILL.md`에 생성한다.
+- Claude project subagent와 hook 같은 platform acceleration도 canonical source를 바탕으로 `pnpm ai:sync`가 생성한다.
 - 생성된 어댑터 파일은 파생 산출물이고 source of truth는 계속 `ai/`와 이 루트 엔트리 문서다.

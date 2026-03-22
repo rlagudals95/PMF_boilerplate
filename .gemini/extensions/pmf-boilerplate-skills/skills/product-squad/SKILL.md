@@ -14,16 +14,20 @@ description: "Use when 중요한 기능 작업이나 실험 변경을 PM/PD/FE/B
 ## Read first
 
 1. `docs/product-squad/operating-model.md`
-2. 활성 work item이 있으면 `docs/work-items/<work-id>/brief.md`
-3. 작업이 FE/BE를 걸치면 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md`
+2. `docs/product-squad/goal-driven-delivery.md`
+3. `docs/product-squad/agent-team-delivery.md`
+4. 활성 work item이 있으면 `docs/work-items/<work-id>/brief.md`
+5. 작업이 FE/BE를 걸치면 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md`
 
 ## Workflow
 
 1. 요청을 `gated work` 또는 `light work`로 분류한다.
 2. gated work면 `work-id`를 정하고 `docs/work-items/<work-id>/` 산출물을 기준으로 삼는다.
 3. 먼저 `brief.md`를 고정한다.
-4. 역할 선택 규칙에 따라 `ux-review.md`, `frontend-spec.md`, `backend-spec.md`를 만들거나 `skipped`로 남긴다.
-5. 구현은 필요한 문서가 모두 준비된 뒤에만 시작한다.
+4. 역할 선택 규칙에 따라 `team-plan.md`, `ux-review.md`, `frontend-spec.md`, `backend-spec.md`, `quality-scorecard.md`를 준비한다.
+5. team-plan에 execution mode, task graph, file ownership을 먼저 적는다.
+6. user-facing 작업이면 browser QA와 release 판단까지 scorecard에 남길 계획을 적는다.
+7. 구현은 필요한 문서가 모두 준비된 뒤에만 시작한다.
 
 ## Role selection
 
@@ -37,4 +41,5 @@ description: "Use when 중요한 기능 작업이나 실험 변경을 PM/PD/FE/B
 - 기본 진입점은 항상 `product-squad`다.
 - PD는 가벼운 UX 리뷰 역할로 제한한다.
 - 최신 `brief.md`가 구현 전 source of truth다.
+- `quality-scorecard.md`는 중요한 작업의 최종 ship/iterate 판단 문서다.
 - 외부 툴, 백그라운드 에이전트, 별도 오케스트레이션 서비스는 v1 범위 밖이다.

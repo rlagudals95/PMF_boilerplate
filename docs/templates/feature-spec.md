@@ -23,6 +23,12 @@
 
 사용자 또는 운영 관점에서 기대하는 결과를 적습니다.
 
+## Business Goal Mapping
+
+- 어떤 business outcome을 움직이려는지
+- 그 결과를 위해 어떤 사용자 행동을 바꾸려는지
+- success를 어떤 evidence로 판단할지
+
 ## In Scope
 
 이번 feature에서 실제로 다루는 범위를 bullet로 적습니다.
@@ -50,6 +56,13 @@ happy path와 핵심 전환 단계를 적습니다.
 - 먼저 failing test로 고정할 핵심 behavior slice
 - TDD 적용 범위와 생략 근거
 - FE/BE public behavior 검증 포인트
+
+## Quality Gates
+
+- spec 승인 기준
+- browser QA evidence 기준
+- measurement / admin visibility 기준
+- ship / iterate / stop 판단 기준
 
 ## Analytics Impact
 

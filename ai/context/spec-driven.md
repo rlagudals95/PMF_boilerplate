@@ -58,6 +58,9 @@
 추가 규칙:
 
 - 중요한 작업이면 `docs/product-squad/operating-model.md`를 읽습니다.
+- 비즈니스 목표가 먼저 주어지는 제품 작업이면 `docs/product-squad/goal-driven-delivery.md`도 함께 읽습니다.
+- 역할 handoff와 팀 작업 방식이 중요하면 `docs/product-squad/agent-team-delivery.md`도 함께 읽습니다.
+- AI adapter나 platform-specific acceleration을 바꾸는 작업이면 `ai/context/platform-optimization.md`도 함께 읽습니다.
 - 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`를 먼저 읽습니다.
 - PRD가 있으면 먼저 `docs/prds/<slug>.md`를 읽고 `pnpm feature:new --prd <slug>`로 work item을 정규화할 수 있습니다.
 - work item이 아직 없으면 `pnpm work:new <slug> --request "..."`로 scaffold를 만들 수 있습니다.
@@ -123,6 +126,7 @@
 - 중요한 작업의 spec에는 test-first로 풀 핵심 behavior slice를 적습니다.
 - 구현은 작은 slice 단위로 `failing test -> minimal implementation -> refactor` 순서를 기본값으로 둡니다.
 - `pnpm verify`, `pnpm verify:full`은 최종 검증 게이트이며, TDD 루프를 대체하지 않습니다.
+- 중요한 작업은 handoff 전에 `pnpm squad:check [work-id]`로 work item 문서가 placeholder 상태가 아닌지 확인할 수 있습니다.
 - `product-squad`는 역할 분리를 위한 운영 모델이고, 이 문서는 그 상위의 spec-driven 기준입니다.
 - work item 문서는 task-local source of truth이며, canonical 규칙을 대체하지 않습니다.
 

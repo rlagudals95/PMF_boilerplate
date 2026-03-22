@@ -29,5 +29,5 @@ pnpm feature:new --prd <slug> --feature <feature-slug>
 
 ## 구현 진입
 
-- PRD를 만든 뒤에는 `pnpm feature:new --prd <slug>`로 work item과 `feature-spec.md`를 생성합니다.
+- PRD를 만든 뒤에는 `pnpm feature:new --prd <slug>`로 work item, `feature-spec.md`, `quality-scorecard.md`를 생성합니다.
 - PRD 정보가 부족하면 generator는 open questions를 만들고 구현 준비 상태를 `blocked`로 남깁니다.

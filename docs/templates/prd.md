@@ -17,6 +17,10 @@ updated_at: ""
 
 -
 
+## Constraints
+
+-
+
 ## Non-Goals
 
 -
@@ -109,9 +113,9 @@ Acceptance Criteria 작성 규칙:
 
 ## Document History
 
-| 날짜 | 유형 | 요약 | 작성자 |
-| --- | --- | --- | --- |
-| YYYY-MM-DD | created | Initial PRD created. | owner |
+| 날짜       | 유형    | 요약                 | 작성자 |
+| ---------- | ------- | -------------------- | ------ |
+| YYYY-MM-DD | created | Initial PRD created. | owner  |
 
 History 규칙:
 
