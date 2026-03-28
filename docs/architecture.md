@@ -17,15 +17,17 @@
 - `apps/web`는 하나의 제품 앱이면서 동시에 modular monolith의 host 역할을 합니다.
 - FE와 BE를 모두 이 앱 안에서 처리하되, 프레임워크 계층과 도메인 계층은 분리합니다.
 
-### 2. Supabase/Postgres 지향 + 로컬 JSON fallback
+### 2. Neon/Postgres 권장 + 로컬 JSON fallback
 
-- 실제 운영 대상 DB는 Supabase/Postgres 입니다.
+- 운영 DB 기본 권장값은 Neon/Postgres 입니다.
+- 런타임 계약은 `DATABASE_URL` 하나로 유지하며, Neon 외 다른 Postgres도 사용할 수 있습니다.
 - 하지만 초기 개발과 테스트는 `packages/db/local-data.json` 기반으로 동작합니다.
 - 이유: 로컬에서 바로 폼 제출과 어드민 확인이 가능해야 실험 iteration 속도가 납니다.
 
 추가 기준:
 
-- Supabase는 DB 전환뿐 아니라 Google/Kakao social login starter를 붙일 때도 우선 선택지로 둡니다.
+- DB provider 선택과 auth provider 선택은 분리합니다.
+- social auth가 필요하면 Google/Kakao용 optional Supabase Auth starter를 붙일 수 있습니다.
 - 다만 auth는 lightweight starter 범위에 머물고, admin 보호나 role 체계는 별도 작업으로 분리합니다.
 
 ### 3. Drizzle 스키마는 제품보다 실험 루프 중심
@@ -77,8 +79,9 @@
 ### 6. social auth는 optional starter로만 둔다
 
 - `/auth` route는 Google, Kakao, Naver 로그인을 빠르게 검증하기 위한 demo/starter입니다.
-- Google/Kakao는 Supabase social login provider를, Naver는 별도 OAuth adapter를 사용합니다.
+- Google/Kakao는 optional Supabase Auth starter를, Naver는 별도 OAuth adapter를 사용합니다.
 - starter session은 브라우저 demo 검증을 위한 최소 상태만 저장합니다.
+- 이 starter는 Neon 같은 managed Postgres 선택과 독립적으로 켜고 끌 수 있어야 합니다.
 - 이유: 새 프로젝트에서 자주 반복되는 OAuth wiring은 줄이되, 복잡한 auth product scope는 아직 넣지 않기 위해서입니다.
 
 ### 7. UI는 작은 shadcn 스타일 베이스만 공유
@@ -219,7 +222,7 @@ page.tsx
 
 ### 나중에 붙일 가능성이 높은 것
 
-- Supabase auth 기반 admin 보호
+- optional managed auth 기반 admin 보호
 - user/profile persistence와 server-protected session
 - 실험별 랜딩 템플릿 시스템
 - 이벤트 속성 표준화와 세션 추적

@@ -43,8 +43,8 @@ export const getAuthProviderStatuses = (
       kind: "supabase",
       isEnabled: hasSupabaseClient && isEnabledFlag(env.NEXT_PUBLIC_AUTH_GOOGLE_ENABLED),
       setupHint: hasSupabaseClient
-        ? "NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=true 와 Supabase Google provider 설정이 필요합니다."
-        : "NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY가 필요합니다.",
+        ? "Optional Supabase Auth starter입니다. Google을 활성화하려면 NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=true 와 Supabase Google provider 설정이 필요합니다."
+        : "Optional Supabase Auth starter입니다. NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY를 설정하면 Google 로그인을 켤 수 있습니다.",
     },
     {
       id: "kakao",
@@ -52,15 +52,16 @@ export const getAuthProviderStatuses = (
       kind: "supabase",
       isEnabled: hasSupabaseClient && isEnabledFlag(env.NEXT_PUBLIC_AUTH_KAKAO_ENABLED),
       setupHint: hasSupabaseClient
-        ? "NEXT_PUBLIC_AUTH_KAKAO_ENABLED=true 와 Supabase Kakao provider 설정이 필요합니다."
-        : "NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY가 필요합니다.",
+        ? "Optional Supabase Auth starter입니다. Kakao를 활성화하려면 NEXT_PUBLIC_AUTH_KAKAO_ENABLED=true 와 Supabase Kakao provider 설정이 필요합니다."
+        : "Optional Supabase Auth starter입니다. NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY를 설정하면 Kakao 로그인을 켤 수 있습니다.",
     },
     {
       id: "naver",
       label: "Naver",
       kind: "oauth",
       isEnabled: hasNaverConfig,
-      setupHint: "NEXT_PUBLIC_NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 설정이 필요합니다.",
+      setupHint:
+        "Optional OAuth starter입니다. NEXT_PUBLIC_NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 설정이 필요합니다.",
     },
   ];
 };

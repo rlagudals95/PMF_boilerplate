@@ -59,8 +59,8 @@ export function AuthDemoPage({
           Google, Kakao, Naver 로그인 kit
         </h1>
         <p className="text-base text-muted-foreground md:text-lg">
-          이 화면은 production auth 시스템이 아니라 새 프로젝트에 그대로 복제할 수
-          있는 social login starter를 검증하기 위한 demo입니다.
+          이 화면은 production auth 시스템이 아니라, DB 선택과 분리해서 필요할 때만
+          붙일 수 있는 optional social login starter를 검증하기 위한 demo입니다.
         </p>
       </div>
 
@@ -133,12 +133,15 @@ export function AuthDemoPage({
         <CardHeader>
           <CardTitle>Setup Note</CardTitle>
           <CardDescription>
-            Google/Kakao는 Supabase dashboard의 social provider 설정을, Naver는 앱
-            client id/secret 구성을 전제로 합니다.
+            Google/Kakao는 optional Supabase Auth starter를, Naver는 앱
+            client id/secret 기반 OAuth starter를 전제로 합니다.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <p>`NEXT_PUBLIC_SITE_URL`은 callback URL 기준값으로 사용됩니다.</p>
+          <p>
+            이 starter는 Neon 같은 managed Postgres 선택과 별개로 켜고 끌 수 있습니다.
+          </p>
           <p>
             이 kit는 `/admin` 보호나 DB user sync를 하지 않습니다. 그런 요구가 생기면
             별도 auth 작업으로 분리하는 편이 맞습니다.

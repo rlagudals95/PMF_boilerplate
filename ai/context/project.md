@@ -3,14 +3,15 @@
 ## Purpose
 
 이 저장소는 PMF를 찾기 위한 실험용 보일러플레이트입니다.
-과거 예시 use case로 `모두의렌탈`을 다뤘지만, 기본값은 특정 업종이 아니라 다음 사이드 프로젝트에도 바로 재사용 가능한 범용 MVP kit를 지향합니다.
+기본값은 특정 업종이 아니라 다음 사이드 프로젝트에도 바로 재사용 가능한 범용 MVP kit를 지향합니다.
 
 ## Working rules
 
 - Node 22
 - pnpm workspace + Turborepo
 - Next.js App Router + TypeScript
-- Supabase + Postgres + Drizzle
+- Neon/Postgres + Drizzle + local JSON fallback
+- Optional Supabase Auth starter
 - Tailwind CSS + shadcn 스타일 UI
 - React Hook Form + Zod
 - Vitest + Playwright
@@ -75,6 +76,7 @@ pnpm db:seed
 - `docs/templates`: feature/experiment spec 템플릿
 - `docs/adr`: 구조와 운영 원칙에 대한 경량 결정 로그
 - `ai/agents`: platform-native delegation용 canonical agent prompt
+- `docs/ai-starter-prompt-pack.md`: tool-neutral starter prompt와 output contract
 - `docs/start-your-mvp.md`: 서비스 제작자 관점의 prompt-first 시작 가이드
 
 ## How to add a new experiment
@@ -93,7 +95,9 @@ pnpm db:seed
 - 역할 간 handoff나 병렬 탐색이 필요한 작업이면 `docs/product-squad/agent-team-delivery.md`도 함께 읽는다.
 - AI adapter나 platform-specific acceleration을 바꾸는 작업이면 `ai/context/platform-optimization.md`도 함께 읽는다.
 - 중요한 작업은 `ai/context/spec-driven.md`와 `ai/context/doc-sync.md`도 함께 읽는다.
-- 비즈니스 요구가 자연어 한 문장이라면 `pnpm mvp:new <slug> --prompt "..."`로 PRD 초안, recipe, active flows, 첫 feature work item을 같이 만든다.
+- AI 코딩 툴이 raw business request를 받았다면 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)를 기준으로 repo를 먼저 읽고, 필요한 경우에만 1~3개의 질문으로 목표를 확인한 뒤 MVP를 적용한다.
+- 이때 먼저 `apps/web/src/lib/product-config.ts`와 관련 product-facing surface를 맞추고, existing block으로 표현되지 않는 요구일 때만 deeper code를 건드린다.
+- repo-local PRD/work item scaffold가 먼저 필요하다면 `pnpm mvp:new <slug> --prompt "..."`로 PRD 초안, recipe, active flows, 첫 feature work item을 같이 만든다.
 - prompt보다 구조화된 입력이 더 편하면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용한다.
 - PRD가 있다면 먼저 `docs/prds/<slug>.md`로 정규화하고 `pnpm feature:new --prd <slug>`로 feature work item을 만든다.
 - 해당 작업은 `pnpm work:new <slug> --request "..."` 또는 수동 작성으로 `docs/work-items/<work-id>/`에 brief와 role spec을 만든다.

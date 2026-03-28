@@ -13,7 +13,7 @@
 - 중요한 작업을 바로 문서화할 수 있는 scaffolding
 - 빠른 기본 quality gate와 더 무거운 release gate의 분리
 
-이 문서와 함께 추가된 `pnpm mvp:new`, `pnpm work:new`, `pnpm verify`, `pnpm verify:full`, `pnpm ai:sync` 기반 adapter 생성은 그 간극을 메우기 위한 개선입니다.
+이 문서와 함께 추가된 tool-neutral prompt pack, `pnpm mvp:new`, `pnpm work:new`, `pnpm verify`, `pnpm verify:full`, `pnpm ai:sync` 기반 adapter 생성은 그 간극을 메우기 위한 개선입니다.
 
 ## 최근 도구들이 공통으로 강조하는 패턴
 
@@ -74,7 +74,7 @@
 | 빠른 기본 quality gate        | `pnpm verify`                                                                    | 개선됨      |
 | 더 무거운 release gate        | `pnpm verify:full`                                                               | 개선됨      |
 | work item scaffolding         | `pnpm work:new`                                                                  | 개선됨      |
-| PRD -> feature planning       | `docs/prds/*`, `pnpm mvp:new`, `pnpm prd:new`, `pnpm feature:new`, `new-feature` | 개선됨      |
+| PRD -> feature planning       | `docs/ai-starter-prompt-pack.md`, `docs/prds/*`, `pnpm mvp:new`, `pnpm prd:new`, `pnpm feature:new`, `new-feature` | 개선됨      |
 | 로컬 실행 가능성              | local JSON fallback + smoke E2E                                                  | 강함        |
 | hosted AI builder 직접 최적화 | v0/Lovable 전용 산출물 없음                                                      | 의도적 제외 |
 | checkpoint/rollback 자동화    | 툴 내장 기능 의존, repo 자체 자동화 없음                                         | 의도적 제외 |
@@ -107,13 +107,14 @@
 
 ### PRD-driven feature
 
-1. 비즈니스 요구가 자연어 한 문장이라면 `pnpm mvp:new <slug> --prompt "..."`로 recipe와 active flow까지 포함된 PRD/work item 초안을 만듭니다.
-2. prompt보다 구조화된 입력이 더 편하면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용합니다.
-3. 외부 PRD가 더 자세히 있다면 `docs/prds/<slug>.md`로 정규화합니다.
-4. `pnpm prd:new <slug>`로 자유도가 높은 scaffold를 만들거나 기존 PRD를 보완합니다.
-5. `pnpm feature:new --prd <slug>` 또는 `new-feature` 스킬로 단일 feature slice의 work item 문서를 생성합니다.
-6. 생성된 `feature-spec.md`와 role spec이 blocked 없이 채워졌는지 확인합니다.
-7. 그 문서를 기준으로 구현과 검증을 진행합니다.
+1. 기본값은 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)로 AI가 repo를 읽고, 1~3개 이하의 질문으로 목표를 확인한 뒤 MVP shape를 고르게 합니다.
+2. repo-local scaffold가 먼저 필요하면 `pnpm mvp:new <slug> --prompt "..."`로 recipe와 active flow까지 포함된 PRD/work item 초안을 만듭니다.
+3. prompt보다 구조화된 입력이 더 편하면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용합니다.
+4. 외부 PRD가 더 자세히 있다면 `docs/prds/<slug>.md`로 정규화합니다.
+5. `pnpm prd:new <slug>`로 자유도가 높은 scaffold를 만들거나 기존 PRD를 보완합니다.
+6. `pnpm feature:new --prd <slug>` 또는 `new-feature` 스킬로 단일 feature slice의 work item 문서를 생성합니다.
+7. 생성된 `feature-spec.md`와 role spec이 blocked 없이 채워졌는지 확인합니다.
+8. 그 문서를 기준으로 구현과 검증을 진행합니다.
 
 ### AI context change
 

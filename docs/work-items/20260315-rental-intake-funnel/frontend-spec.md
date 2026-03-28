@@ -1,7 +1,7 @@
 ---
 status: "draft"
 owner_role: "fe"
-source_request: "PRD: docs/prds/modurent-demand-validation.md"
+source_request: "PRD: docs/prds/rental-demand-validation-example.md"
 affected_paths:
   - "apps/web/src/app/page.tsx"
   - "apps/web/src/app/consult/*"
@@ -14,7 +14,7 @@ affected_paths:
   - "packages/analytics/*"
   - "apps/web/src/lib/analytics.ts"
 dependencies:
-  - "docs/prds/modurent-demand-validation.md"
+  - "docs/prds/rental-demand-validation-example.md"
 skip_reason: null
 ---
 

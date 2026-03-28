@@ -1,5 +1,5 @@
 ---
-title: "모두의렌탈 수요 검증"
+title: "렌탈 수요 검증 예시"
 status: draft
 owner: "Founder"
 source_url: ""
@@ -12,12 +12,12 @@ updated_at: "2026-03-15"
 ## Problem
 
 - 렌탈이 필요한 사용자는 블로그, 카페, 오픈마켓, 카카오 상담을 오가며 정보를 비교하지만, 자신의 조건을 한 번에 정리해 상담으로 연결할 간단한 진입점이 부족하다.
-- 현재 저장소에는 리드 수집, 상담 요청, 결제 데모, 어드민이 이미 있지만 사용자-facing 카피와 입력 항목이 아직 `모두의렌탈` 도메인에 최적화되어 있지 않아 실제 렌탈 수요 신호를 측정하기 어렵다.
+- 현재 저장소에는 리드 수집, 상담 요청, 결제 데모, 어드민이 이미 있지만 사용자-facing 카피와 입력 항목이 아직 렌탈 도메인에 최적화되어 있지 않아 실제 렌탈 수요 신호를 측정하기 어렵다.
 - 따라서 첫 실제 제품 use case로서 "렌탈 의도가 있는 사용자가 카테고리/긴급도/연락 선호를 남기고 상담으로 이어지는가"를 검증해야 한다.
 
 ## Goal
 
-- `모두의렌탈`을 단순 스타터 데모가 아니라 실제 렌탈 수요 검증용 제품으로 전환한다.
+- 현재 스타터를 단순 데모가 아니라 실제 렌탈 수요 검증용 제품 예시로 전환한다.
 - 랜딩에서 리드, 리드에서 상담 요청까지 이어지는 핵심 퍼널이 카테고리 기반 rental intake 흐름으로 작동하는지 확인한다.
 - 운영자가 어떤 카테고리, 어떤 유입 메시지, 어떤 연락 방식이 강한 신호로 이어지는지 어드민에서 바로 해석할 수 있게 만든다.
 
@@ -67,7 +67,7 @@ updated_at: "2026-03-15"
 
 ### In Scope
 
-- `모두의렌탈` 기준의 렌탈 도메인 카피와 CTA로 랜딩을 재작성한다.
+- 렌탈 도메인 카피와 CTA로 랜딩을 재작성한다.
 - 리드 폼에서 카테고리, 사용 맥락, 긴급도, 선호 연락 방식을 수집한다.
 - 상담 요청 플로우에서 리드의 핵심 맥락을 이어받아 더 강한 신호를 수집한다.
 - 어드민에서 새 qualification 필드를 확인할 수 있게 한다.
@@ -85,7 +85,7 @@ updated_at: "2026-03-15"
 
 ### Rental Intake Funnel
 
-- summary: 랜딩과 리드 폼을 `모두의렌탈` 카피와 렌탈 intake 질문으로 바꾸고, 카테고리/긴급도/연락 선호를 구조화해 저장한다.
+- summary: 랜딩과 리드 폼을 렌탈 도메인 카피와 렌탈 intake 질문으로 바꾸고, 카테고리/긴급도/연락 선호를 구조화해 저장한다.
 - user_value: 사용자는 어떤 렌탈이 필요한지 짧은 입력만으로 전달하고 적절한 후속 상담을 기대할 수 있다.
 - primary_module: lead
 - routes: /,/consult,/admin,/admin/leads
@@ -136,7 +136,7 @@ updated_at: "2026-03-15"
 
 ## Acceptance Criteria
 
-- [ ] 사용자가 `/`에서 `모두의렌탈` 기준의 렌탈 카피와 CTA를 보고, generic boilerplate/B2B SaaS 예시 없이 리드 폼을 이해할 수 있다.
+- [ ] 사용자가 `/`에서 렌탈 도메인 카피와 CTA를 보고, generic boilerplate/B2B SaaS 예시 없이 리드 폼을 이해할 수 있다.
 - [ ] 사용자가 필수 qualification 항목을 채워 리드를 제출하면 category, urgency, preferred contact가 함께 저장되고 성공 메시지를 본다.
 - [ ] 운영자가 `/admin` 또는 `/admin/leads`에서 새 qualification 필드를 확인해 후속 연락 우선순위를 판단할 수 있다.
 - [ ] 핵심 이벤트는 일반 page view와 구분되어 rental lead submission 및 consult request 신호로 기록된다.
@@ -183,7 +183,7 @@ Acceptance Criteria 작성 규칙:
 | 날짜 | 유형 | 요약 | 작성자 |
 | --- | --- | --- | --- |
 | 2026-03-15 | created | Initial PRD created. | TBD |
-| 2026-03-15 | updated | 모두의렌탈 첫 실제 제품 PRD와 feature candidates를 채움. | Codex |
+| 2026-03-15 | updated | 렌탈 수요 검증 예시 PRD와 feature candidates를 채움. | Codex |
 
 History 규칙:
 

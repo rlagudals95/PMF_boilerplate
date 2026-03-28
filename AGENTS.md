@@ -5,7 +5,7 @@
 ## 프로젝트 목적
 
 - PMF를 찾기 위한 실험용 보일러플레이트
-- 첫 사용 사례는 `모두의렌탈`
+- 특정 업종에 묶이지 않는 범용 MVP kit
 - 다음 사이드 프로젝트에서도 재사용 가능해야 함
 
 ## 먼저 읽을 것
@@ -30,7 +30,8 @@
 - 기능별 코드는 우선 `apps/web/src/modules/*`에 둠
 - app-local 공용 코드는 `apps/web/src/shared/*`에 둠
 - 공통 타입/검증/DB/UI만 `packages/*`로 분리
-- DB 기본 방향은 Supabase/Postgres이지만 로컬 fallback을 유지
+- DB 기본 방향은 Neon/Postgres 권장을 두되 로컬 fallback을 유지
+- Supabase Auth starter는 optional capability로 둠
 - 구현보다 실험 루프와 신호 품질을 우선
 
 ## 폴더 규칙

@@ -77,7 +77,7 @@ export const startSupabaseSocialLogin = async (
     return {
       ok: false,
       message:
-        "Supabase 브라우저 설정이 비어 있습니다. NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해 주세요.",
+        "Optional Supabase Auth starter 설정이 비어 있습니다. NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해 주세요.",
     };
   }
 
@@ -148,7 +148,7 @@ export const completeSupabaseSocialLogin = async (
     return {
       ok: false,
       message:
-        "Supabase 브라우저 설정이 비어 있습니다. NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해 주세요.",
+        "Optional Supabase Auth starter 설정이 비어 있습니다. NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해 주세요.",
     };
   }
 

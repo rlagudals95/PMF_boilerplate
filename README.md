@@ -1,18 +1,185 @@
 # PMF Boilerplate
 
-PMF를 찾기 위한 실험용 모노레포 보일러플레이트입니다.
+PMF를 찾기 위한 실험용 모노레포 MVP kit입니다.
 
-이 레포는 아래 흐름을 바로 실행할 수 있게 설계되어 있습니다.
+이 저장소는 아래 흐름을 가장 빠르게 열 수 있게 설계되어 있습니다.
 
 `랜딩 -> 리드 수집 -> 상담 요청 -> 결제 의사 확인 -> 어드민 확인 -> 실험 문서화`
 
-현재 앱에는 generic 실험 패키지 `@pmf/ab-test`와 행동 로그 패키지 `@pmf/user-behavior-log`가 실제로 연결되어 있습니다.
+## One-Shot으로 시작하기
 
-## Start Your MVP
+이 레포의 기본 온보딩은 명령어보다 `AI tool + one-shot prompt`입니다.
 
-이 저장소를 받을 때는 포함 기능보다 `내 비즈니스를 어떤 MVP 흐름으로 시작할지` 먼저 정하는 게 좋습니다.
+좋은 시작은 아래처럼 움직입니다.
 
-가장 빠른 시작 명령:
+1. AI가 먼저 `AGENTS.md`, `ai/context/*`, 관련 `docs/*`를 읽습니다.
+2. 꼭 필요할 때만 1~3개의 짧은 질문으로 목표를 확인합니다.
+3. 기존 `landing / lead / consultation / payment / admin / auth` 블록 안에서 가장 얇은 MVP shape를 고릅니다.
+4. 먼저 [`apps/web/src/lib/product-config.ts`](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/apps/web/src/lib/product-config.ts)를 중심으로 product-facing surface를 맞춥니다.
+5. 마지막에 active flows, deferred flows, env requirements, verification result를 요약합니다.
+
+아래 프롬프트를 Codex, Cursor, Claude Code 같은 AI 코딩 툴에 그대로 붙여 넣는 것을 권장합니다.
+
+```text
+이 repo를 PMF 탐색용 MVP kit로 사용해서 아래 사업 아이디어에 맞는 첫 데모 가능한 버전을 세팅해줘.
+
+사업 아이디어:
+[여기에 설명]
+
+반드시 아래 순서로 진행해줘.
+1. AGENTS.md와 관련 ai/context/docs를 읽어 이 repo 구조와 existing building block을 먼저 이해한다.
+2. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal, target user, 핵심 전환을 확인한다.
+3. 아이디어를 goal / audience / offer / signal로 정리한다.
+4. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
+5. active flows와 deferred flows를 정한다.
+6. 먼저 `apps/web/src/lib/product-config.ts`와 관련 product-facing surface를 맞춘다.
+7. 기존 블록으로 표현되지 않는 요구일 때만 deeper code를 변경한다.
+8. auth와 payment는 비즈니스 목표가 필요로 할 때만 노출한다.
+9. 필요한 env vars와 optional capability 상태를 정리한다.
+10. 마지막에 적절한 verify 명령을 실행한다.
+
+최종 요약에는 반드시 아래를 포함해줘.
+- selected MVP shape
+- active flows
+- deferred flows
+- major copy/product changes applied
+- required env vars for enabled capabilities
+- verification result
+- remaining manual follow-ups
+```
+
+더 짧은 프롬프트와 follow-up prompt는 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)에 있습니다.
+
+### 예시 프롬프트
+
+위 프롬프트의 `사업 아이디어:` 자리에 아래처럼 넣으면 바로 시작할 수 있습니다.
+
+```text
+가전렌탈 비교 사이트를 만들고 싶어.
+사용자가 TV, 냉장고, 정수기 같은 렌탈 상품을 비교하고 내게 맞는 옵션을 찾게 하고 싶어.
+첫 MVP 목표는 상담 신청이나 제휴 파트너 연결이야.
+```
+
+```text
+소상공인 AI 도입 진단 사이트를 만들고 싶어.
+업종과 현재 업무 방식을 입력하면 어떤 자동화부터 시작해야 하는지 보여주고 싶어.
+첫 MVP 목표는 진단 신청서 제출과 상담 예약이야.
+```
+
+```text
+출시 전 영어 회화 코치 앱의 대기자 명단 페이지를 만들고 싶어.
+누가 어떤 문제 때문에 기다리는지와 유료 의사가 어느 정도 있는지 확인하고 싶어.
+첫 MVP 목표는 리드 수집과 강한 관심층 파악이야.
+```
+
+관련 문서:
+
+- canonical prompt pack: [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)
+- 시작 가이드: [docs/start-your-mvp.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/start-your-mvp.md)
+- prompt 평가 가이드: [docs/mvp-starter-prompt-evaluation.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/mvp-starter-prompt-evaluation.md)
+
+## 이 레포로 바로 할 수 있는 것
+
+- 단일 `Next.js` 앱에서 랜딩, 폼, 결제 데모, 어드민을 함께 운영할 수 있습니다.
+- `packages/db/local-data.json` fallback으로 DB 없이도 바로 데모를 시작할 수 있습니다.
+- 필요해지면 `DATABASE_URL` 하나로 Neon 같은 managed Postgres + Drizzle 경로로 전환할 수 있습니다.
+- 리드와 상담 요청을 분리해 약한 신호와 강한 신호를 다르게 해석할 수 있습니다.
+- auth, payment, marketing, analytics는 optional capability로 붙일 수 있습니다.
+- AI가 읽을 repo context와 task 문서를 저장소 안에 같이 유지할 수 있습니다.
+
+## 5분 만에 데모 띄우기
+
+### 1. 로컬 실행
+
+```bash
+corepack enable
+pnpm install
+cp .env.example .env.local
+pnpm db:seed
+pnpm dev
+```
+
+기본 주소는 `http://localhost:3000`입니다.
+
+### 2. 사용자 흐름 확인
+
+- `/`: 랜딩 페이지와 리드 폼
+- `/consult`: 상담 요청 폼
+- `/pay`: 토스 결제 데모
+- `/auth`: optional social login starter demo
+
+### 3. 운영 화면 확인
+
+- `/admin`: 전체 개요
+- `/admin/leads`: 리드/상담 요청 inbox
+- `/admin/experiments`: 실험 목록
+- `/admin/payments`: 결제 상태
+
+### 4. 저장 방식 확인
+
+- `DATABASE_URL`이 없으면 `packages/db/local-data.json`에 저장됩니다.
+- `DATABASE_URL`이 있으면 Neon을 포함한 generic Postgres/Drizzle 경로를 사용합니다.
+
+## 데이터와 인프라 기본값
+
+### 데이터 저장
+
+- 가장 빠른 기본값은 local JSON fallback입니다.
+- 운영 DB 기본 권장값은 Neon입니다.
+- 런타임 계약은 `DATABASE_URL` 하나로 유지하고, Neon 외 다른 Postgres도 사용할 수 있습니다.
+
+### Auth
+
+- DB 기본값과 auth starter는 별개입니다.
+- Google/Kakao는 optional Supabase Auth starter를 사용합니다.
+- Naver는 별도 OAuth starter를 사용합니다.
+- auth는 기본 기능이 아니라 필요할 때만 surface에 올립니다.
+
+### Payment / Marketing / Analytics
+
+- payment는 토스 데모 wiring이 준비돼 있습니다.
+- marketing, analytics, error logging은 optional provider 구조입니다.
+- 외부 provider가 없어도 local demo와 기본 signal 수집은 유지됩니다.
+
+## 어떤 MVP shape로 시작할까
+
+아래 recipe는 generator magic이 아니라 existing module composition pattern입니다.
+
+| Shape | Active flows | Best for |
+| --- | --- | --- |
+| `lead-gen` | landing, lead capture, admin | 빠르게 문의/관심 신호를 모으는 MVP |
+| `consultation` | landing, consultation, admin | 상담 요청 자체가 핵심 전환인 MVP |
+| `comparison-routing` | landing, lead capture, consultation, admin | 비교 후 파트너 연결이 핵심인 MVP |
+| `paid-intent` | landing, payment intent, admin | 결제 의사나 예약금을 강한 신호로 보는 MVP |
+| `waitlist` | landing, lead capture, admin | 출시 전 관심자와 early signal을 모으는 MVP |
+
+Auth와 payment는 기본 기능이 아니라 optional capability입니다. 비즈니스 목표가 요구할 때만 surface에 올리는 편이 맞습니다.
+
+## 가장 먼저 바꾸는 곳
+
+첫 수정 surface는 [`apps/web/src/lib/product-config.ts`](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/apps/web/src/lib/product-config.ts)입니다.
+
+여기서 먼저 맞추는 것:
+
+- 서비스명
+- hero angle
+- trust signal
+- lead / consultation copy
+- primary CTA
+- quality metric
+
+그 다음 순서는 보통 아래와 같습니다.
+
+1. active flows와 deferred flows를 결정합니다.
+2. auth, payment, marketing 같은 optional capability를 필요한 만큼만 올립니다.
+3. 기존 `landing / lead / consultation / payment / admin` 블록으로 표현되지 않는 요구일 때만 deeper code를 바꿉니다.
+4. 마지막에 `pnpm verify`를 실행합니다.
+
+user-facing 흐름이나 integration까지 크게 바뀌었다면 `pnpm verify:full`까지 권장합니다.
+
+## AI 없이 시작하려면
+
+manual workflow나 power-user용 scaffold helper도 그대로 유지합니다.
 
 ```bash
 pnpm mvp:new <slug> --prompt "..."
@@ -26,397 +193,120 @@ pnpm mvp:new rental-support-match --prompt "나는 렌탈 지원금을 비교해
 
 이 명령은 PRD 초안, 첫 work item, 추천 recipe, active flows, deferred flows, primary CTA, admin metric 초안을 함께 만듭니다.
 
-빠른 시작 가이드는 [docs/start-your-mvp.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/start-your-mvp.md)를 보세요.
+## 자주 쓰는 명령어
 
-## 기본 작업 워크플로
-
-이 저장소의 기본값은 `spec-driven + selective TDD + verify`입니다.
-
-### 1. 언제 어떤 플로우가 발동되나
-
-| 상황                                                                          | 발동 플로우          | 기준                                              |
-| ----------------------------------------------------------------------------- | -------------------- | ------------------------------------------------- |
-| 오탈자, 단순 카피 수정, 시맨틱 변화 없는 스타일 수정, 명백한 소규모 버그 수정 | `Quick fix`          | full work item 없이 바로 수정 가능                |
-| 여러 파일에 걸친 기능 작업, 폼/어드민/analytics/DB 변경, 핵심 로직 변경       | `Important change`   | `docs/work-items/*` 문서를 먼저 만들고 진행       |
-| PRD가 이미 있는 기능 작업                                                     | `PRD-driven feature` | `docs/prds/*`를 source로 `feature work item` 생성 |
-| AI 규칙, 문서 구조, adapter 규칙 변경                                         | `AI context change`  | 문서 수정 후 `pnpm ai:sync`까지 실행              |
-
-### 2. 실제로 어떤 로직으로 실행되나
-
-#### Quick fix
-
-1. 관련 canonical 문서만 읽습니다.
-2. light work인지 확인합니다.
-3. validation, 상태 전이, route/action 경계, adapter 계약 변경이 아니면 full TDD를 생략할 수 있습니다.
-4. 바로 수정합니다.
-5. 마지막에 `pnpm verify`를 실행합니다.
-
-#### Important change
-
-1. `pnpm work:new <slug> --request "..."`로 work item을 만듭니다.
-2. `brief.md`, `team-plan.md`, 필요한 role spec, `quality-scorecard.md`를 채웁니다.
-3. `pnpm squad:check [work-id]`로 문서가 템플릿 상태를 벗어났는지 확인합니다.
-4. 구현 단위를 테스트 가능한 `behavior slice`로 나눕니다.
-5. 각 slice마다 먼저 failing test로 public behavior를 고정합니다.
-6. 테스트를 통과시키는 최소 구현만 추가합니다.
-7. 필요하면 리팩터링하고 slice 테스트를 다시 통과시킵니다.
-8. user-facing 작업이면 browser QA evidence와 ship 판단을 `quality-scorecard.md`에 남깁니다.
-9. 마지막에 `pnpm verify`, 필요하면 `pnpm verify:full`을 실행합니다.
-
-#### PRD-driven feature
-
-1. PRD를 `docs/prds/<slug>.md`에 둡니다.
-2. `pnpm feature:new --prd <slug>`로 feature work item을 생성합니다.
-3. `feature-spec.md`, `frontend-spec.md`, `backend-spec.md`, `quality-scorecard.md`에 구현/검증/ship 판단 기준을 적습니다.
-4. 그 문서를 기준으로 구현합니다.
-5. 마지막에 `pnpm verify`, 필요하면 `pnpm verify:full`을 실행합니다.
-
-### 3. 핵심 판단 규칙
-
-- 기본 철학은 “테스트 파일을 먼저 만든다”가 아니라 “public behavior를 먼저 고정한다”입니다.
-- full TDD는 모든 작업에 강제하지 않고 `validation`, `use case`, `server action/route 경계`, `adapter 계약`, `상태 전이`에 우선 적용합니다.
-- spec과 코드가 충돌하면 코드를 먼저 밀지 말고 문서를 먼저 갱신합니다.
-- 중요한 작업은 `spec -> failing test -> minimal implementation -> refactor -> verify` 순서를 기본값으로 둡니다.
-
-## 이 레포로 할 수 있는 것
-
-- 단일 `Next.js` 앱에서 랜딩, 폼, 결제 데모, 어드민을 함께 운영할 수 있습니다.
-- `local-data.json` fallback으로 DB 없이도 바로 개발과 데모를 시작할 수 있습니다.
-- `Supabase/Postgres + Drizzle`로 자연스럽게 확장할 수 있습니다.
-- 리드와 상담 요청을 분리해 관심 신호와 실행 신호를 다르게 해석할 수 있습니다.
-- 내부 이벤트 저장을 기준으로 두고, Mixpanel/광고 스크립트는 선택적으로 붙일 수 있습니다.
-- AI 에이전트가 읽을 컨텍스트와 작업 문서를 repo 안에 함께 유지할 수 있습니다.
-
-## 5분 체험 순서
-
-처음 보는 사람은 아래 순서대로 보면 가장 빠릅니다.
-
-1. 개발 서버 실행
-
-```bash
-corepack enable
-pnpm install
-cp .env.example .env.local
-pnpm db:seed
-pnpm mvp:new my-mvp --prompt "..."
-pnpm dev
-```
-
-기본 주소는 `http://localhost:3000`입니다.
-
-2. 사용자 흐름 확인
-
-- `/`: 랜딩 페이지, 리드 폼, sample A/B test cookie assignment와 hero copy variant 확인
-- `/auth`: 소셜 로그인 starter demo
-- `/consult`: 상담 요청 폼
-- `/pay`: 토스 결제 데모 시작
-
-3. 운영 화면 확인
-
-- `/admin`: 전체 개요
-- `/admin/leads`: 리드/상담 요청 inbox
-- `/admin/experiments`: 실험 목록
-- `/admin/payments`: 결제 상태
-
-4. 저장 방식 확인
-
-- `DATABASE_URL`이 없으면 `packages/db/local-data.json`에 저장됩니다.
-- `DATABASE_URL`이 있으면 Postgres/Drizzle 경로를 사용합니다.
-
-## 포함된 기능
-
-### 제품 흐름
-
-- 랜딩 페이지와 CTA 추적
-- 리드 캡처 폼
-- Google / Kakao / Naver 소셜 로그인 starter
-- 상담 요청 폼
-- 토스 단건 결제 데모
-- 관리자 대시보드
-- 모바일 퍼널 데모
-
-### 운영/분석 기반
-
-- `leads`, `consultation_requests`, `products`, `experiments`, `page_events`, `payments` 기본 모델
-- 내부 이벤트 저장 + optional analytics provider
-- optional marketing pixel script 로딩
-- optional error logging adapter
-
-### AI 드리븐 작업 기반
-
-- repo 내부 Markdown 기반 spec-driven 작업 방식
-- PRD/work item 스캐폴딩 스크립트
-- business goal을 role debate와 browser QA로 연결하는 goal-driven delivery 루프
-- subagent/agent-team/단일 에이전트 역할 시뮬레이션을 같은 artifact로 묶는 team delivery 루프
-- Claude project subagent, Codex skill, Gemini command 같은 platform acceleration을 canonical source에서 generated adapter로 관리
-- Copilot/Cursor/Claude/Gemini/Codex용 컨텍스트 동기화
-
-## 주요 화면
-
-| 경로                 | 용도                     |
-| -------------------- | ------------------------ |
-| `/`                  | 랜딩과 리드 수집         |
-| `/auth`              | 소셜 로그인 starter demo |
-| `/consult`           | 상담 요청 접수           |
-| `/pay`               | 결제 데모 시작           |
-| `/pay/result`        | 결제 복귀 결과 확인      |
-| `/pay/cancel`        | 결제 취소 복귀           |
-| `/admin`             | 운영 개요                |
-| `/admin/leads`       | 리드/상담 요청 확인      |
-| `/admin/products`    | 제품 목록                |
-| `/admin/experiments` | 실험 상태 확인           |
-| `/admin/payments`    | 결제 상태 확인           |
-| `/demo/funnel`       | 모바일 퍼널 데모         |
-| `/health`            | 헬스체크                 |
-
-## 빠른 시작
-
-### 요구사항
-
-- Node `22+`
-- pnpm `10+`
-
-### 설치 및 실행
-
-```bash
-corepack enable
-pnpm install
-cp .env.example .env.local
-pnpm db:seed
-pnpm dev
-```
-
-### 자주 쓰는 명령어
+### Daily
 
 ```bash
 pnpm dev
-pnpm build
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm test:e2e
 pnpm verify
 pnpm verify:full
-pnpm db:seed
-pnpm db:generate
-pnpm db:migrate
+pnpm test:e2e
+```
+
+### PRD / Work item / Scaffold
+
+```bash
 pnpm mvp:new my-mvp --prompt "..."
+pnpm mvp:new my-mvp --goal "..." --audience "..." --offer "..." --signal "..."
 pnpm prd:new my-prd
 pnpm feature:new --prd my-prd
 pnpm work:new my-task --request "작업 배경"
 pnpm squad:check
+```
+
+### Data / Context
+
+```bash
+pnpm db:seed
+pnpm db:generate
+pnpm db:migrate
 pnpm ai:sync
 ```
 
 ## 환경 변수
 
-전체 목록은 [`.env.example`](./.env.example)을 보면 됩니다.
+전체 목록은 [`.env.example`](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/.env.example)을 보면 됩니다.
 
-### 데이터
+### 로컬 데모
 
-- `DATABASE_URL`
 - `LOCAL_DATA_FILE`
+- `NEXT_PUBLIC_SITE_URL`
+
+### Managed Postgres
+
+- `DATABASE_URL` (`Neon` 권장)
+
+### Optional Supabase Auth Starter
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-
-### Auth Starter
-
 - `NEXT_PUBLIC_AUTH_GOOGLE_ENABLED`
 - `NEXT_PUBLIC_AUTH_KAKAO_ENABLED`
+
+### Optional Naver OAuth Starter
+
 - `NEXT_PUBLIC_NAVER_CLIENT_ID`
 - `NAVER_CLIENT_SECRET`
-- `NEXT_PUBLIC_SITE_URL`
 
-### 사이트/결제
+### Optional Payment / Marketing / Analytics
 
-- `NEXT_PUBLIC_SITE_URL`
 - `TOSS_PAYMENTS_API_KEY`
-
-### 마케팅
-
 - `NEXT_PUBLIC_META_PIXEL_ID`
 - `NEXT_PUBLIC_KAKAO_PIXEL_ID`
 - `NEXT_PUBLIC_GOOGLE_ADS_ID`
 - `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL_LEAD`
 - `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL_CONSULTATION`
-
-### Analytics
-
 - `MIXPANEL_PROJECT_TOKEN`
 - `MIXPANEL_API_HOST`
 - `MIXPANEL_DEBUG`
 
-## 저장소 구조
+## 기본 작업 규칙
 
-### 앱 구조
+이 저장소의 기본값은 `spec-driven + selective TDD + verify`입니다.
+
+- 작은 문구 수정이나 명백한 quick fix는 바로 고칠 수 있습니다.
+- 여러 파일에 걸친 기능 작업, 폼/어드민/analytics/DB 변경은 work item 문서를 먼저 만듭니다.
+- 중요한 작업은 `spec -> failing test -> minimal implementation -> refactor -> verify` 순서를 기본값으로 둡니다.
+- spec과 코드가 충돌하면 코드를 먼저 밀지 말고 문서를 먼저 갱신합니다.
+
+관련 문서:
+
+- 구조 이해: [docs/architecture.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/architecture.md)
+- 실험 운영: [docs/experiment-playbook.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/experiment-playbook.md)
+- AI 작업 규칙: [docs/agent-context.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/agent-context.md), [AGENTS.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/AGENTS.md)
+- vibe coding 운영 기준: [docs/vibe-coding-playbook.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/vibe-coding-playbook.md)
+
+## 주요 구조만 빠르게 보기
 
 ```text
 apps/web/src/
-  app/        route entry, layout, page, route.ts
+  app/        route entry
   modules/    도메인별 feature slice
   shared/     app-local shared UI, hooks, shared action
   lib/        앱 전역 wiring, env, provider setup
 ```
 
-### 워크스페이스 패키지
-
 ```text
-packages/core           도메인 타입, zod 스키마, fixture
-packages/db             Drizzle 스키마, 저장소, local fallback, seed
-packages/ui             공유 UI 컴포넌트
-packages/ab-test        cookie 기반 variant assignment와 assignment reader
+packages/core               도메인 타입, zod 스키마, fixture
+packages/db                 Drizzle 스키마, 저장소, local fallback, seed
+packages/ui                 공유 UI 컴포넌트
+packages/ab-test            cookie 기반 variant assignment
 packages/user-behavior-log  page_view / click / impression logger
-packages/analytics      track() 추상화와 adapter
-packages/error-logging  report() 추상화와 adapter
+packages/analytics          track() 추상화와 adapter
+packages/error-logging      report() 추상화와 adapter
 ```
 
-## 실험 패키지 사용법
+자세한 구조 설명은 [docs/architecture.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/architecture.md)에 있습니다.
 
-이 보일러플레이트에는 generic package 두 개가 앱에 이미 연결돼 있습니다. 새 제품으로 복제할 때는 아래 파일들부터 보는 것이 가장 빠릅니다.
+## 더 읽을 문서
 
-### A/B test: `@pmf/ab-test`
-
-1. `apps/web/src/modules/landing/model/hero-copy-experiment.ts`에서 `defineAbTestDefinitions(...)`로 실험과 variant weight를 정의합니다.
-2. `apps/web/src/middleware.ts`에서 `applyAbTestMiddleware(...)`를 호출해 cookie assignment를 생성합니다.
-3. `apps/web/src/app/page.tsx`에서 `getAbTestAssignments(cookies(), definitions)`로 현재 assignment를 읽습니다.
-4. `apps/web/src/modules/landing/ui/landing-page.tsx`처럼 server route가 받은 variant를 UI prop으로 넘겨 카피를 분기합니다.
-
-패키지 세부 API와 standalone 예시는 [packages/ab-test/README.md](./packages/ab-test/README.md)에 정리돼 있습니다.
-
-### Behavior log: `@pmf/user-behavior-log`
-
-1. `apps/web/src/shared/lib/app-behavior-logger.ts`에서 sender를 앱 이벤트 taxonomy와 provider bridge에 연결합니다.
-2. `apps/web/src/shared/ui/behavior-logger-provider.tsx`에서 앱 전역 logger를 provider로 주입합니다.
-3. `apps/web/src/shared/ui/page-view-tracker.tsx`에서 `page_view`, `admin_page_viewed`를 route 기준으로 보냅니다.
-4. `apps/web/src/shared/ui/tracked-link.tsx`에서 CTA click을 `cta_clicked`로 기록하고 destination/source metadata를 함께 보냅니다.
-
-패키지 세부 API와 React wrapper 예시는 [packages/user-behavior-log/README.md](./packages/user-behavior-log/README.md)에 정리돼 있습니다.
-
-### 문서와 AI 컨텍스트
-
-```text
-ai/context/             프로젝트/엔지니어링/spec-driven canonical context
-ai/skills/              저장소 로컬 스킬
-docs/                   아키텍처, 실험 운영, PRD, work item 문서
-AGENTS.md               에이전트용 루트 엔트리
-```
-
-## 아키텍처 핵심
-
-- `apps/web` 하나에서 랜딩, 폼, 어드민, 결제 데모를 모두 처리합니다.
-- `app/`은 얇게 두고 기능 코드는 `modules/*`에 둡니다.
-- 공용화는 `module -> shared -> package` 순서로만 올립니다.
-- 입력 검증은 boundary에서, 유스케이스는 `model`, 저장은 `packages/db`에서 처리합니다.
-- 외부 provider 장애가 핵심 흐름을 깨뜨리지 않게 설계합니다.
-
-자세한 배경과 트레이드오프는 [아키텍처 문서](./docs/architecture.md)에 정리되어 있습니다.
-
-## 데이터 전략
-
-- 기본 개발 모드는 `packages/db/local-data.json` 기반입니다.
-- 운영 환경에서는 `DATABASE_URL`을 설정해 Postgres/Drizzle로 전환합니다.
-- seed를 넣으면 랜딩, 어드민, 실험 목록, 결제 목록을 바로 데모할 수 있습니다.
-
-### 왜 리드와 상담 요청을 분리하나
-
-- 리드 제출은 약한 관심 신호입니다.
-- 상담 요청은 더 강한 실행 신호입니다.
-- 둘을 분리해야 후속 연락 우선순위와 실험 품질을 다르게 해석할 수 있습니다.
-
-## 이벤트와 외부 provider
-
-### 기본 원칙
-
-- 핵심 이벤트는 내부 `page_events`에 먼저 저장합니다.
-- `session_id`를 저장해 익명 세션 흐름을 이어갑니다.
-- 외부 SaaS는 optional provider입니다.
-- 앱 wiring 기본 위치는 `apps/web/src/shared/lib/app-behavior-logger.ts`입니다.
-
-### Analytics
-
-- 기본 provider는 `console`, `store`입니다.
-- `MIXPANEL_PROJECT_TOKEN`이 있으면 Mixpanel 전송을 추가합니다.
-- Mixpanel 실패는 경고로 취급하고 사용자 흐름은 유지합니다.
-
-### Marketing
-
-다음 값이 있으면 해당 스크립트를 브라우저에 로드합니다.
-
-- `NEXT_PUBLIC_META_PIXEL_ID`
-- `NEXT_PUBLIC_KAKAO_PIXEL_ID`
-- `NEXT_PUBLIC_GOOGLE_ADS_ID`
-
-기본 브리지 이벤트는 다음 네 가지입니다.
-
-- `page_view`
-- `admin_page_viewed`
-- `cta_clicked`
-- `lead_form_submitted`
-- `consultation_requested`
-
-## Auth Starter 사용법
-
-- `/auth`에서 provider 상태와 현재 starter session을 확인할 수 있습니다.
-- Google/Kakao는 Supabase social login 설정과 `NEXT_PUBLIC_AUTH_*_ENABLED=true`가 필요합니다.
-- Naver는 `NEXT_PUBLIC_NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `NEXT_PUBLIC_SITE_URL`이 필요합니다.
-- callback route는 `/auth/callback`, Naver code exchange route는 `/api/auth/naver/session`입니다.
-- 이 흐름은 demo/starter 범위이며 `/admin` 보호나 DB user sync는 하지 않습니다.
-
-### Provider 설정 순서
-
-1. `.env.local`에 `NEXT_PUBLIC_SITE_URL`을 현재 앱 주소로 설정합니다.
-2. Google/Kakao를 쓸 경우 Supabase Auth의 Social Providers에서 provider를 활성화하고 callback URL에 `/auth/callback`을 등록합니다.
-3. Google은 `NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=true`, Kakao는 `NEXT_PUBLIC_AUTH_KAKAO_ENABLED=true`를 설정합니다.
-4. Naver를 쓸 경우 네이버 개발자 센터에서 앱을 만들고 `NEXT_PUBLIC_NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`을 채웁니다.
-5. `/auth`에 들어가 provider가 `활성` 상태로 보이는지 확인한 뒤 로그인 흐름을 테스트합니다.
-
-## 결제 데모 사용법
-
-- `/pay`에서 테스트 결제 요청을 생성합니다.
-- 브라우저 복귀는 `/pay/result`, 취소는 `/pay/cancel`로 들어옵니다.
-- 서버 callback은 `/api/payments/toss/callback`에서 받습니다.
-- 저장된 결제 상태는 `/admin/payments`에서 확인합니다.
-
-로컬에서도 브라우저 복귀 테스트는 가능하지만, Toss `resultCallback`은 외부에서 호출되므로 로컬만으로는 완전히 재현되지 않을 수 있습니다. 자세한 내용은 [결제 데모 문서](./docs/toss-payment.md)를 보면 됩니다.
-
-## AI 드리븐 작업 방식
-
-이 저장소는 코드를 AI로 빠르게 생성하더라도 규칙과 문서가 먼저 남도록 설계되어 있습니다.
-
-### 기본 원칙
-
-- source of truth는 repo 안 Markdown입니다.
-- 중요한 작업은 구현 전에 문서로 범위와 결정을 고정합니다.
-- 구조 규칙은 `ai/context/*`, 작업별 결정은 `docs/work-items/*`에 둡니다.
-
-### 스캐폴딩 명령어
-
-```bash
-pnpm prd:new my-prd
-pnpm feature:new --prd my-prd
-pnpm work:new my-task --request "작업 배경"
-pnpm ai:sync
-```
-
-### 언제 무엇을 읽으면 좋은가
-
-- 구조 이해: [docs/architecture.md](./docs/architecture.md)
-- 실험 운영: [docs/experiment-playbook.md](./docs/experiment-playbook.md)
-- AI 작업 규칙: [docs/agent-context.md](./docs/agent-context.md), [AGENTS.md](./AGENTS.md)
-- spec-driven 흐름: [docs/spec-lifecycle.md](./docs/spec-lifecycle.md)
-- vibe coding 운영 기준: [docs/vibe-coding-playbook.md](./docs/vibe-coding-playbook.md)
-
-## 새 제품으로 복제하는 순서
-
-1. `packages/core/src/fixtures/mock-data.ts`에서 제품/실험 seed를 바꿉니다.
-2. `apps/web/src/modules/landing/model/hero-copy-experiment.ts`에서 sample experiment를 새 카피 실험으로 바꿉니다.
-3. `apps/web/src/modules/landing/*`에서 랜딩 카피와 CTA를 수정합니다.
-4. `apps/web/src/shared/lib/app-behavior-logger.ts`, `apps/web/src/shared/ui/tracked-link.tsx`, `apps/web/src/shared/ui/page-view-tracker.tsx`에서 이벤트명과 metadata taxonomy를 조정합니다.
-5. `apps/web/src/modules/lead/*`, `apps/web/src/modules/consultation/*`에서 폼 필드를 조정합니다.
-6. `apps/web/src/lib/app-theme.ts`에서 브랜드 테마를 바꿉니다.
-7. `/admin/experiments`에 노출될 실험 데이터를 함께 갱신합니다.
-8. 운영 단계에 들어가면 `DATABASE_URL`을 연결합니다.
+- prompt-first 시작 가이드: [docs/start-your-mvp.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/start-your-mvp.md)
+- tool-neutral prompt pack: [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)
+- prompt 평가 가이드: [docs/mvp-starter-prompt-evaluation.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/mvp-starter-prompt-evaluation.md)
+- 결제 데모 문서: [docs/toss-payment.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/toss-payment.md)
+- PRD 규칙: [docs/prds/README.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/prds/README.md)
+- work item 규칙: [docs/work-items/README.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/work-items/README.md)
 
 ## 의도적으로 넣지 않은 것
 
@@ -427,4 +317,4 @@ pnpm ai:sync
 - vendor lock-in analytics
 - 과한 repository abstraction
 
-PMF 이전 단계에서는 구현 속도와 신호 품질이 더 중요하다는 전제를 유지합니다.
+PMF 이전 단계에서는 구현 속도보다 중요한 것이 `측정 가능한 사용자 신호`라는 전제를 유지합니다.

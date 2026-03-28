@@ -11,9 +11,9 @@ const now = new Date("2025-01-10T09:00:00.000Z").toISOString();
 
 export const mockProducts: Product[] = [
   {
-    id: "product_modurent",
-    slug: "modurent",
-    name: "모두의렌탈",
+    id: "product_rental_demo",
+    slug: "rental-intake-demo",
+    name: "렌탈 인테이크 데모",
     category: "렌탈 리드 생성",
     oneLiner: "렌탈 문의를 빠르게 받고 상담까지 연결하는 검증용 서비스",
     stage: "active",
@@ -41,7 +41,7 @@ export const mockProducts: Product[] = [
 export const mockExperiments: Experiment[] = [
   {
     id: "experiment_lp_message_a",
-    productId: "product_modurent",
+    productId: "product_rental_demo",
     code: "LP-001",
     name: "긴급 렌탈 니즈 메시지 실험",
     hypothesis:
@@ -57,7 +57,7 @@ export const mockExperiments: Experiment[] = [
   },
   {
     id: "experiment_channel_kakao",
-    productId: "product_modurent",
+    productId: "product_rental_demo",
     code: "CF-002",
     name: "카카오 상담 선호도 실험",
     hypothesis:
@@ -144,7 +144,7 @@ export const mockPayments: Payment[] = [
     id: "payment_1",
     provider: "toss",
     orderNo: "order_demo_001",
-    productDescription: "모두의렌탈 결제 데모",
+    productDescription: "렌탈 인테이크 결제 데모",
     amount: 39000,
     currency: "KRW",
     status: "paid",

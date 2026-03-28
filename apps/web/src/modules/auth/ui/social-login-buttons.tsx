@@ -78,7 +78,7 @@ export function SocialLoginButtons({
       </div>
       <p aria-live="polite" className="text-sm text-muted-foreground">
         {message ??
-          "Google/Kakao는 Supabase social login, Naver는 별도 OAuth adapter로 동작합니다."}
+          "Google/Kakao는 optional Supabase Auth starter, Naver는 별도 OAuth adapter로 동작합니다."}
       </p>
     </div>
   );

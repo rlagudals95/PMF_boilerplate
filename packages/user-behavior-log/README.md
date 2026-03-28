@@ -24,7 +24,7 @@ const logger = createBehaviorLogger({
     path: "/pricing",
     sessionId: "anon_123",
     metadata: {
-      product: "modurent",
+      product: "rental-intake-demo",
     },
   }),
 });

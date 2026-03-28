@@ -28,13 +28,31 @@ describe("getAuthProviderStatuses", () => {
           id: "google",
           isEnabled: false,
           setupHint:
-            "NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY가 필요합니다.",
+            "Optional Supabase Auth starter입니다. NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY를 설정하면 Google 로그인을 켤 수 있습니다.",
         }),
         expect.objectContaining({
           id: "naver",
           isEnabled: false,
           setupHint:
-            "NEXT_PUBLIC_NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 설정이 필요합니다.",
+            "Optional OAuth starter입니다. NEXT_PUBLIC_NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 설정이 필요합니다.",
+        }),
+      ]),
+    );
+  });
+
+  it("keeps google disabled until the optional auth starter flag and provider setup are both ready", () => {
+    const providers = getAuthProviderStatuses({
+      NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon-key",
+    });
+
+    expect(providers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "google",
+          isEnabled: false,
+          setupHint:
+            "Optional Supabase Auth starter입니다. Google을 활성화하려면 NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=true 와 Supabase Google provider 설정이 필요합니다.",
         }),
       ]),
     );

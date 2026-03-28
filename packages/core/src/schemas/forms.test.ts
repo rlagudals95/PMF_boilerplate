@@ -67,7 +67,7 @@ describe("consultationRequestInputSchema", () => {
 describe("paymentCheckoutInputSchema", () => {
   it("accepts a valid payment request", () => {
     const result = paymentCheckoutInputSchema.safeParse({
-      productDescription: "모두의렌탈 결제 데모",
+      productDescription: "렌탈 인테이크 결제 데모",
       amount: 39000,
       customerName: "홍길동",
       customerEmail: "hong@example.com",
@@ -78,7 +78,7 @@ describe("paymentCheckoutInputSchema", () => {
 
   it("rejects non-positive amounts", () => {
     const result = paymentCheckoutInputSchema.safeParse({
-      productDescription: "모두의렌탈 결제 데모",
+      productDescription: "렌탈 인테이크 결제 데모",
       amount: 0,
       customerName: "홍길동",
     });

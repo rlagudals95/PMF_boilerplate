@@ -1,7 +1,7 @@
 ---
 status: "draft"
 owner_role: "pd"
-source_request: "PRD: docs/prds/modurent-demand-validation.md"
+source_request: "PRD: docs/prds/rental-demand-validation-example.md"
 affected_paths:
   - "apps/web/src/app/page.tsx"
   - "apps/web/src/app/consult/*"
@@ -14,7 +14,7 @@ affected_paths:
   - "packages/analytics/*"
   - "apps/web/src/lib/analytics.ts"
 dependencies:
-  - "docs/prds/modurent-demand-validation.md"
+  - "docs/prds/rental-demand-validation-example.md"
   - "docs/work-items/20260315-rental-intake-funnel/feature-spec.md"
 skip_reason: null
 ---
@@ -30,7 +30,7 @@ skip_reason: null
 
 ## Copy Changes
 
-- 랜딩과 리드 폼을 `모두의렌탈` 카피와 렌탈 intake 질문으로 바꾸고, 카테고리/긴급도/연락 선호를 구조화해 저장한다.
+- 랜딩과 리드 폼을 렌탈 도메인 카피와 렌탈 intake 질문으로 바꾸고, 카테고리/긴급도/연락 선호를 구조화해 저장한다.
 
 ## IA Changes
 
@@ -39,7 +39,7 @@ skip_reason: null
 ## Happy Path
 
 - 핵심 대상 사용자가 /, /consult, /admin, /admin/leads 경로로 진입한다.
-- 랜딩과 리드 폼을 `모두의렌탈` 카피와 렌탈 intake 질문으로 바꾸고, 카테고리/긴급도/연락 선호를 구조화해 저장한다.
+- 랜딩과 리드 폼을 렌탈 도메인 카피와 렌탈 intake 질문으로 바꾸고, 카테고리/긴급도/연락 선호를 구조화해 저장한다.
 - 사용자는 어떤 렌탈이 필요한지 짧은 입력만으로 전달하고 적절한 후속 상담을 기대할 수 있다.
 
 ## Edge States

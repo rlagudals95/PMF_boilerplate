@@ -33,6 +33,18 @@
 
 `product-config.ts`는 이 문제를 줄이기 위한 첫 번째 shared surface입니다.
 
+## Product Apply Contract
+
+새 MVP를 이 저장소에 적용할 때는 아래 계약을 기본값으로 둡니다.
+
+1. 첫 수정 surface는 항상 `apps/web/src/lib/product-config.ts`입니다.
+2. landing, lead, consultation, payment, admin, auth 중 어떤 흐름을 전면에 세울지 먼저 정합니다.
+3. existing block 안에서 해결 가능한 요청은 product-facing copy와 surface emphasis 조정으로 끝냅니다.
+4. 기존 block으로 표현되지 않는 요구일 때만 deeper code를 변경합니다.
+5. auth와 payment는 optional capability이므로 비즈니스 목표가 요구할 때만 surface에 올립니다.
+
+즉 이 저장소의 기본 적용 방식은 “새 코드를 많이 생성한다”가 아니라 “typed product surface를 먼저 맞춰 starter를 실제 제품처럼 보이게 만든다”입니다.
+
 ## 품질 가드레일
 
 아래 기준은 `apps/web/src/lib/product-config.ts`의 validation과
@@ -48,11 +60,11 @@
 
 ## 권장 작업 순서
 
-1. 비즈니스 요구만 짧게 있다면 `pnpm mvp:new <slug> --prompt "..."`로 PRD와 첫 work item을 먼저 만들고, generator가 제안한 recipe와 active flows를 확인합니다.
-2. prompt 대신 구조화된 입력이 더 편하면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용합니다.
-3. generated PRD의 `Product Config Starter` section을 보고 서비스 카피 방향을 확인합니다.
-4. `apps/web/src/lib/product-config.ts`에서 서비스 카피와 quality signal을 맞춥니다.
-5. 랜딩, 리드 폼, 상담 폼이 같은 제품 언어를 쓰는지 browser QA로 확인합니다.
+1. 기본값은 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)로 AI가 repo를 읽고 MVP shape를 정하게 합니다.
+2. manual scaffold가 더 필요하면 `pnpm mvp:new <slug> --prompt "..."` 또는 structured input variant를 사용합니다.
+3. PRD의 `Product Config Starter` section과 active/deferred flow 판단을 보고 서비스 방향을 확인합니다.
+4. `apps/web/src/lib/product-config.ts`에서 서비스 카피와 quality signal을 먼저 맞춥니다.
+5. 랜딩, 리드 폼, 상담 폼, 필요한 경우 결제/어드민 surface가 같은 제품 언어를 쓰는지 browser QA로 확인합니다.
 6. `pnpm verify`로 타입/테스트를 확인합니다.
 
 ## 현재 범위 밖

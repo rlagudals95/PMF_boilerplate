@@ -48,6 +48,7 @@
 예시:
 
 - `docs/architecture.md`
+- `docs/ai-starter-prompt-pack.md`
 - `docs/prds/*.md`
 - `docs/product-squad/operating-model.md`
 - `docs/product-squad/goal-driven-delivery.md`
@@ -72,9 +73,10 @@
 10. 현재 작업에 맞는 스킬 문서
 11. 중요한 작업이면 `docs/product-squad/operating-model.md`
 12. 비즈니스 목표 중심 제품 작업이면 `docs/product-squad/goal-driven-delivery.md`
-13. 역할 handoff나 병렬 탐색이 중요하면 `docs/product-squad/agent-team-delivery.md`
-14. 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`
-15. task-local 문서
+13. raw business request에서 출발하는 제품 작업이면 `docs/ai-starter-prompt-pack.md`
+14. 역할 handoff나 병렬 탐색이 중요하면 `docs/product-squad/agent-team-delivery.md`
+15. 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`
+16. task-local 문서
 
 ## 왜 이 구조가 필요한가
 
@@ -132,6 +134,7 @@
 - `packages/*`는 재사용이 검증된 코드만 올립니다.
 - 문서 없는 새 규칙, 새 툴, 새 인프라를 추가하지 않습니다.
 - 코드가 바뀌면 테스트, 타입, 문서 영향도 같이 확인합니다.
+- raw business request에서 시작할 때는 `docs/ai-starter-prompt-pack.md`를 먼저 보고, repo를 읽은 뒤 1~3개의 질문 이내로 방향을 확인하고 적용합니다.
 
 ## Vibe Coding Guardrails
 

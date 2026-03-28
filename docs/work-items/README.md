@@ -7,7 +7,11 @@
 - 기본 형식: `YYYYMMDD-short-slug`
 - 실험 작업: `LP-001-YYYYMMDD-short-slug`
 
-## Quick Start
+## Preferred Entry
+
+raw business request에서 시작한다면 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)로 AI가 repo를 먼저 읽고, 필요한 경우 1~3개의 질문으로 목표를 확인한 뒤 PRD/work item 또는 직접 적용 방향을 정하게 하는 편이 좋습니다.
+
+## Manual / Scaffolding Quick Start
 
 ```bash
 pnpm mvp:new <slug> --prompt "..."
@@ -17,7 +21,7 @@ pnpm feature:new --prd <prd-slug>
 pnpm squad:check [work-id]
 ```
 
-- `pnpm mvp:new <slug> --prompt "..."`는 자연어 비즈니스 아이디어 한 문장으로 recipe와 active flows를 제안하면서 PRD 초안과 첫 feature work item을 함께 만듭니다.
+- `pnpm mvp:new <slug> --prompt "..."`는 자연어 비즈니스 아이디어 한 문장을 PRD 초안과 첫 feature work item으로 정규화하는 scaffold helper입니다.
 - `pnpm mvp:new ...`는 비즈니스 요구 몇 개만으로 PRD 초안과 첫 feature work item을 함께 만듭니다.
 - 위 명령은 `docs/product-squad/templates/*`를 복사해 새 work item 디렉터리를 만듭니다.
 - `pnpm feature:new --prd <prd-slug>`는 role spec 4종에 더해 `feature-spec.md`와 `quality-scorecard.md`까지 같이 생성합니다.

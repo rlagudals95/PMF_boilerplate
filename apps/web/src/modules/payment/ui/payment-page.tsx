@@ -66,7 +66,7 @@ export default async function PaymentPage() {
               {
                 label: "Stored payments",
                 value: String(payments.length),
-                description: "local fallback 또는 postgres에 저장",
+                description: "local fallback 또는 Neon/other postgres에 저장",
               },
               {
                 label: "Paid",
