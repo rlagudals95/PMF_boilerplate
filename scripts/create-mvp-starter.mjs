@@ -316,7 +316,6 @@ async function main() {
         `  - offer: ${resolved.offer}`,
         `  - goal: ${resolved.goal}`,
         `  - signal: ${resolved.signal}`,
-        ...(resolved.prompt ? [`  - prompt: ${resolved.prompt}`] : []),
         "- Setup:",
         ...summaryLines.map((line) => `  ${line}`),
         "",
@@ -353,7 +352,6 @@ async function main() {
       `- Audience: ${resolved.audience}`,
       `- Offer: ${resolved.offer}`,
       `- Signal: ${resolved.signal}`,
-      ...(resolved.prompt ? [`- Prompt: ${resolved.prompt}`] : []),
       ...summaryLines,
       "",
       featureRun.stdout.trim(),
@@ -377,7 +375,6 @@ function parseArgs(args) {
   let problem = "";
   let owner = "Founder";
   let sourceUrl = "";
-  let prompt = "";
   let force = false;
   let dryRun = false;
 
@@ -432,12 +429,6 @@ function parseArgs(args) {
       continue;
     }
 
-    if (arg === "--prompt") {
-      prompt = args[index + 1] ?? "";
-      index += 1;
-      continue;
-    }
-
     if (arg === "--force") {
       force = true;
       continue;
@@ -453,17 +444,15 @@ function parseArgs(args) {
     }
   }
 
-  const normalizedPrompt = normalizeSentence(prompt);
-  const hasPrompt = Boolean(normalizedPrompt);
   const hasExplicitCore =
     Boolean(goal.trim()) &&
     Boolean(audience.trim()) &&
     Boolean(offer.trim()) &&
     Boolean(signal.trim());
 
-  if (!slug || (!hasPrompt && !hasExplicitCore)) {
+  if (!slug || !hasExplicitCore) {
     throw new Error(
-      'Usage: pnpm mvp:new <slug> (--prompt "..." | --goal "..." --audience "..." --offer "..." --signal "...") [--title "..."] [--problem "..."] [--owner "..."] [--source-url "https://..."] [--force] [--dry-run]',
+      'Usage: pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..." [--title "..."] [--problem "..."] [--owner "..."] [--source-url "https://..."] [--force] [--dry-run]',
     );
   }
 
@@ -477,18 +466,17 @@ function parseArgs(args) {
     problem: normalizeSentence(problem),
     owner: owner.trim() || "Founder",
     sourceUrl,
-    prompt: normalizedPrompt,
     force,
     dryRun,
   };
 }
 
 function resolveStarterOptions(options) {
-  const inferenceSeed = options.prompt || options.offer || options.title || options.goal || options.slug;
+  const inferenceSeed =
+    options.offer || options.title || options.goal || options.slug;
   const inference = inferStarterFromText({
     slug: options.slug,
     text: inferenceSeed,
-    prompt: options.prompt,
   });
 
   const goal = options.goal || inference.goal;
@@ -496,9 +484,7 @@ function resolveStarterOptions(options) {
   const offer = options.offer || inference.offer;
   const signal = options.signal || inference.signal;
   const problem = options.problem || inference.problem;
-  const title =
-    options.title ||
-    (options.prompt ? inference.title : toTitleCase(options.slug));
+  const title = options.title || toTitleCase(options.slug);
   const starterSummary = buildStarterSummary({
     ...inference,
     title,
@@ -507,7 +493,10 @@ function resolveStarterOptions(options) {
     offer,
     signal,
     problem,
-    prompt: options.prompt,
+    audienceWasInferred: !options.audience && inference.audienceWasInferred,
+    signalWasInferred: !options.signal && inference.signalWasInferred,
+    targetOutcomeWasInferred:
+      !options.goal && inference.targetOutcomeWasInferred,
   });
 
   return {
@@ -522,13 +511,13 @@ function resolveStarterOptions(options) {
   };
 }
 
-function inferStarterFromText({ slug, text, prompt }) {
+function inferStarterFromText({ slug, text }) {
   const normalizedText = normalizeForMatch(text);
   const recipeMatch = selectRecipe(normalizedText);
-  const topic = extractPromptTopic(prompt || text) || toTitleCase(slug);
+  const topic = extractPromptTopic(text) || toTitleCase(slug);
   const subject = buildSubjectLabel(topic);
-  const targetOutcome = extractGoalHint(prompt || text);
-  const audienceHint = extractAudienceHint(prompt || text);
+  const targetOutcome = extractGoalHint(text);
+  const audienceHint = extractAudienceHint(text);
   const recipe = recipeMatch.recipe;
   const title = buildPromptTitle(topic, slug);
   const goal = recipe.buildGoal({ subject, targetOutcome });
@@ -567,7 +556,6 @@ function buildStarterSummary(inference) {
     offer,
     signal,
     problem,
-    prompt,
     recipeReason,
     recipeConfidence,
     matchedKeywords,
@@ -609,13 +597,13 @@ function buildStarterSummary(inference) {
         ]
       : []),
     ...(audienceWasInferred
-      ? ["Target user가 prompt에서 명확하지 않아 generic default를 사용했다."]
+      ? ["Target user가 structured input에 충분히 드러나지 않아 generic default를 사용했다."]
       : []),
     ...(signalWasInferred
       ? ["Success metric threshold는 recipe default를 사용했으므로 실제 사업 기준으로 보정이 필요할 수 있다."]
       : []),
     ...(targetOutcomeWasInferred
-      ? ["최종 비즈니스 목표가 prompt에서 명시되지 않아 recipe 기본 goal을 사용했다."]
+      ? ["최종 비즈니스 목표가 structured input에 충분히 드러나지 않아 recipe 기본 goal을 사용했다."]
       : []),
   ]);
   const productConfigStarter = {
@@ -633,7 +621,6 @@ function buildStarterSummary(inference) {
     matchedKeywords,
     topic,
     subject,
-    prompt,
     routes: recipe.routes,
     primaryModule: recipe.primaryModule,
     activeFlowIds: recipe.activeFlowIds,
@@ -692,15 +679,6 @@ function renderMvpPrd({
     "---",
     "",
     "# PRD",
-    "",
-    ...(starterSummary.prompt
-      ? [
-          "## Source Prompt",
-          "",
-          `- ${starterSummary.prompt}`,
-          "",
-        ]
-      : []),
     "## MVP Setup",
     "",
     `- recipe: ${starterSummary.recipeId}`,

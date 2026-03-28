@@ -14,15 +14,13 @@ raw business request에서 시작한다면 [docs/ai-starter-prompt-pack.md](/Use
 ## Manual / Scaffolding Quick Start
 
 ```bash
-pnpm mvp:new <slug> --prompt "..."
 pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."
 pnpm work:new <short-slug> --request "원 요청 또는 작업 배경"
 pnpm feature:new --prd <prd-slug>
 pnpm squad:check [work-id]
 ```
 
-- `pnpm mvp:new <slug> --prompt "..."`는 자연어 비즈니스 아이디어 한 문장을 PRD 초안과 첫 feature work item으로 정규화하는 scaffold helper입니다.
-- `pnpm mvp:new ...`는 비즈니스 요구 몇 개만으로 PRD 초안과 첫 feature work item을 함께 만듭니다.
+- `pnpm mvp:new ...`는 goal, audience, offer, signal이 이미 정리된 경우 PRD 초안과 첫 feature work item을 함께 만드는 structured scaffold helper입니다.
 - 위 명령은 `docs/product-squad/templates/*`를 복사해 새 work item 디렉터리를 만듭니다.
 - `pnpm feature:new --prd <prd-slug>`는 role spec 4종에 더해 `feature-spec.md`와 `quality-scorecard.md`까지 같이 생성합니다.
 - 중요한 작업이면 이 scaffold를 만든 뒤 문서를 채우고, 구현 단위를 테스트 가능한 behavior slice로 자른 뒤 진행합니다.

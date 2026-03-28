@@ -108,13 +108,12 @@
 ### PRD-driven feature
 
 1. 기본값은 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)로 AI가 repo를 읽고, 1~3개 이하의 질문으로 목표를 확인한 뒤 MVP shape를 고르게 합니다.
-2. repo-local scaffold가 먼저 필요하면 `pnpm mvp:new <slug> --prompt "..."`로 recipe와 active flow까지 포함된 PRD/work item 초안을 만듭니다.
-3. prompt보다 구조화된 입력이 더 편하면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용합니다.
-4. 외부 PRD가 더 자세히 있다면 `docs/prds/<slug>.md`로 정규화합니다.
-5. `pnpm prd:new <slug>`로 자유도가 높은 scaffold를 만들거나 기존 PRD를 보완합니다.
-6. `pnpm feature:new --prd <slug>` 또는 `new-feature` 스킬로 단일 feature slice의 work item 문서를 생성합니다.
-7. 생성된 `feature-spec.md`와 role spec이 blocked 없이 채워졌는지 확인합니다.
-8. 그 문서를 기준으로 구현과 검증을 진행합니다.
+2. repo-local scaffold가 먼저 필요하고 입력이 이미 정리돼 있다면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용합니다.
+3. 외부 PRD가 더 자세히 있다면 `docs/prds/<slug>.md`로 정규화합니다.
+4. `pnpm prd:new <slug>`로 자유도가 높은 scaffold를 만들거나 기존 PRD를 보완합니다.
+5. `pnpm feature:new --prd <slug>` 또는 `new-feature` 스킬로 단일 feature slice의 work item 문서를 생성합니다.
+6. 생성된 `feature-spec.md`와 role spec이 blocked 없이 채워졌는지 확인합니다.
+7. 그 문서를 기준으로 구현과 검증을 진행합니다.
 
 ### AI context change
 

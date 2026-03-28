@@ -52,18 +52,18 @@ canonical prompt와 follow-up prompt는 [docs/ai-starter-prompt-pack.md](/Users/
 
 이 문서의 요점은 “AI가 이 repo를 이해한 뒤 짧게 왕복하고 바로 적용한다”는 것이지, “무조건 generator를 먼저 돌린다”가 아닙니다.
 
-## Advanced / Manual Scaffold
+## Structured Helper
 
 AI 없이 repo-local scaffold가 먼저 필요하다면 아래 명령을 사용합니다.
 
 ```bash
-pnpm mvp:new <slug> --prompt "..."
+pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."
 ```
 
 예시:
 
 ```bash
-pnpm mvp:new rental-support-match --prompt "나는 렌탈 지원금을 비교해주는 사이트를 만들고 싶고 최종 목표는 렌탈사로 보내는 게 목표야"
+pnpm mvp:new rental-support-match --goal "상담 신청과 제휴 파트너 연결" --audience "렌탈 비교 후 적합한 업체를 찾고 싶은 사용자" --offer "조건 비교 후 적합한 파트너로 연결해 주는 서비스" --signal "qualified_lead_rate >= 20% within 14 days"
 ```
 
 이 명령은 첫 버전에서 아래를 같이 만듭니다.
@@ -143,4 +143,4 @@ prompt보다 구조화된 입력이 더 편하면 기존 방식도 그대로 쓸
 pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."
 ```
 
-이 경우에도 generator는 적절한 recipe와 setup summary를 같이 제안합니다.
+이 helper도 recipe와 setup summary를 같이 제안하지만, raw business idea에서 바로 시작하는 기본 경험은 계속 one-shot prompt입니다.

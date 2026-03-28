@@ -45,7 +45,6 @@ pnpm test
 pnpm test:e2e
 pnpm verify
 pnpm verify:full
-pnpm mvp:new my-mvp --prompt "..."
 pnpm mvp:new my-mvp --goal "..." --audience "..." --offer "..." --signal "..."
 pnpm prd:new my-prd
 pnpm feature:new --prd my-prd
@@ -97,8 +96,7 @@ pnpm db:seed
 - 중요한 작업은 `ai/context/spec-driven.md`와 `ai/context/doc-sync.md`도 함께 읽는다.
 - AI 코딩 툴이 raw business request를 받았다면 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)를 기준으로 repo를 먼저 읽고, 필요한 경우에만 1~3개의 질문으로 목표를 확인한 뒤 MVP를 적용한다.
 - 이때 먼저 `apps/web/src/lib/product-config.ts`와 관련 product-facing surface를 맞추고, existing block으로 표현되지 않는 요구일 때만 deeper code를 건드린다.
-- repo-local PRD/work item scaffold가 먼저 필요하다면 `pnpm mvp:new <slug> --prompt "..."`로 PRD 초안, recipe, active flows, 첫 feature work item을 같이 만든다.
-- prompt보다 구조화된 입력이 더 편하면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용한다.
+- repo-local PRD/work item scaffold가 먼저 필요하고 입력이 이미 구조화돼 있다면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용한다.
 - PRD가 있다면 먼저 `docs/prds/<slug>.md`로 정규화하고 `pnpm feature:new --prd <slug>`로 feature work item을 만든다.
 - 해당 작업은 `pnpm work:new <slug> --request "..."` 또는 수동 작성으로 `docs/work-items/<work-id>/`에 brief와 role spec을 만든다.
 - 중요한 작업과 핵심 로직 변경은 구현 단위를 테스트 가능한 behavior slice로 자르고 `spec -> failing test -> minimal implementation -> refactor -> verify` 순서를 기본값으로 둔다.

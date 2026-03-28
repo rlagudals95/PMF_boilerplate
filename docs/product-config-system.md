@@ -61,7 +61,7 @@
 ## 권장 작업 순서
 
 1. 기본값은 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)로 AI가 repo를 읽고 MVP shape를 정하게 합니다.
-2. manual scaffold가 더 필요하면 `pnpm mvp:new <slug> --prompt "..."` 또는 structured input variant를 사용합니다.
+2. manual scaffold가 더 필요하고 입력이 이미 정리돼 있다면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용합니다.
 3. PRD의 `Product Config Starter` section과 active/deferred flow 판단을 보고 서비스 방향을 확인합니다.
 4. `apps/web/src/lib/product-config.ts`에서 서비스 카피와 quality signal을 먼저 맞춥니다.
 5. 랜딩, 리드 폼, 상담 폼, 필요한 경우 결제/어드민 surface가 같은 제품 언어를 쓰는지 browser QA로 확인합니다.

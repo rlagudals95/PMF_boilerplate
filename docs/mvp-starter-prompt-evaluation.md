@@ -62,12 +62,6 @@ existing landing / lead / consultation / payment / admin 블록 안에서 풀고
 - 장점: 산출물과 output contract가 가장 안정적이다.
 - 약점: 길어서 도구별 context budget 영향을 더 받을 수 있다.
 
-### Variant C: CLI Scaffold Helper
-
-- 형태: `pnpm mvp:new <slug> --prompt "..."`
-- 장점: deterministic한 PRD/work item scaffold를 빠르게 만들 수 있다.
-- 약점: repo를 직접 제품화하는 one-shot UX의 primary promise는 아니다.
-
 ## Evaluation Scenarios
 
 ### S-01 Comparison Routing
@@ -185,4 +179,4 @@ existing landing / lead / consultation / payment / admin 블록 안에서 풀고
 
 - AI 툴에 복붙해서 end-to-end 작업: Variant B (Full AI Prompt)
 - 빠른 테스트용 보조 prompt: Variant A (Short AI Prompt)
-- repo-local scaffold helper: Variant C (`pnpm mvp:new --prompt`)
+- structured helper가 필요하면 별도로 `pnpm mvp:new <slug> --goal ... --audience ... --offer ... --signal ...`를 사용합니다.

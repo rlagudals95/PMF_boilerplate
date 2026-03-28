@@ -116,7 +116,8 @@ existing building block 안에서 active flows와 deferred flows를 다시 정�
 
 ## When To Use CLI Helpers
 
-- `pnpm mvp:new <slug> --prompt "..."`: raw business idea를 PRD와 첫 work item으로 정규화하는 scaffold helper
+- raw business idea에서 바로 시작할 때는 이 문서의 starter prompt를 그대로 사용합니다.
+- `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`: 입력이 이미 구조화된 경우 PRD와 첫 work item을 여는 structured helper
 - `pnpm prd:new <slug>`: 더 자유도가 높은 PRD 초안이 필요할 때
 - `pnpm feature:new --prd <slug>`: canonical PRD를 단일 feature work item으로 정리할 때
 - `pnpm work:new <slug> --request "..."`: 중요한 작업 문서 scaffold가 먼저 필요할 때
