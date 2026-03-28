@@ -2,11 +2,16 @@
 
 이 문서는 이 저장소를 `generator-first`가 아니라 `tool-neutral prompt-first MVP kit`로 쓰기 위한 canonical prompt pack입니다.
 
+역할 분리는 아래처럼 생각하면 됩니다.
+
+- README: 처음 받은 팀이 그대로 따라 하는 Day 0 사용 순서
+- 이 문서: AI 툴에 붙여 넣는 prompt 원문과 follow-up prompt source
+
 ## Recommended Default
 
 - 대부분의 사용자는 명령어보다 AI 코딩 툴에서 이 prompt pack으로 시작합니다.
 - 사용자 경험은 one-shot에 가깝게 유지하되, AI는 내부적으로 repo context를 먼저 읽고 필요한 경우에만 1~3개의 질문으로 목표를 확인합니다.
-- 이 저장소의 강점은 자유 생성이 아니라 existing block 조합입니다. 먼저 `landing`, `lead`, `consultation`, `payment`, `admin`, `auth` 블록 안에서 해결하고, 먼저 `apps/web/src/lib/product-config.ts` 같은 product-facing surface를 맞춥니다.
+- 이 저장소의 강점은 자유 생성이 아니라 existing block 조합입니다. 먼저 `landing`, `lead`, `consultation`, `payment`, `admin`, `auth` 블록 안에서 해결하고, 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` contract와 copy surface를 맞춥니다.
 - `mvp:new`, `prd:new`, `feature:new`, `work:new`는 계속 유지하지만, manual scaffold나 power-user workflow일 때 우선 사용합니다.
 
 ## Supported MVP Shapes
@@ -39,7 +44,7 @@ Auth와 payment는 기본 기능이 아니라 optional runtime capability입니�
 3. 아이디어를 goal / audience / offer / signal로 정리한다.
 4. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
 5. active flows와 deferred flows를 정한다.
-6. 먼저 `apps/web/src/lib/product-config.ts`와 관련 product-facing surface를 맞춘다.
+6. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
 7. 기존 블록으로 표현되지 않는 요구일 때만 deeper code를 변경한다.
 8. auth와 payment는 비즈니스 목표가 필요로 할 때만 노출한다.
 9. 필요한 env vars와 optional capability 상태를 정리한다.
@@ -62,7 +67,7 @@ Auth와 payment는 기본 기능이 아니라 optional runtime capability입니�
 ```text
 이 repo를 읽고 내 사업 아이디어를 이 구조에 맞는 가장 얇은 MVP로 적용해줘.
 먼저 repo context를 읽고 꼭 필요할 때만 1~3개의 질문을 해줘.
-existing landing / lead / consultation / payment / admin 블록 안에서 풀고, 먼저 product-config를 맞춘 뒤 verify까지 해줘.
+existing landing / lead / consultation / payment / admin 블록 안에서 풀고, 먼저 `product-config.mvp`와 copy surface를 맞춘 뒤 verify까지 해줘.
 마지막엔 active flows, deferred flows, required env vars, verification result를 요약해줘.
 ```
 
@@ -94,7 +99,7 @@ target user와 핵심 전환은 유지하고, hero / trust signal / form copy / 
 
 ```text
 현재 MVP에서 funnel shape를 바꾸고 싶어.
-existing building block 안에서 active flows와 deferred flows를 다시 정리하고, product-config와 관련 surface를 그에 맞게 조정해줘.
+existing building block 안에서 active flows와 deferred flows를 다시 정리하고, `product-config.mvp`와 관련 surface를 그에 맞게 조정해줘.
 무엇을 켜고 무엇을 내렸는지와 이유를 같이 요약해줘.
 ```
 

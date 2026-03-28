@@ -1,6 +1,18 @@
 import { productConfig } from "@/lib/product-config";
 
-export const appConfig = {
+export type AppConfig = {
+  appName: string;
+  primaryProduct: string;
+  description: string;
+  dataMode: "postgres" | "local-json";
+  analyticsProviders: string[];
+  paymentProviders: string[];
+  authProviders: string[];
+  marketingProviders: string[];
+  errorLoggingProviders: string[];
+};
+
+export const appConfig: AppConfig = {
   appName: productConfig.appName,
   primaryProduct: productConfig.primaryProduct,
   description: productConfig.description,

@@ -1,11 +1,8 @@
 import {
   ArrowRight,
   CheckCircle2,
-  CreditCard,
-  Database,
   FileText,
   FlaskConical,
-  LayoutTemplate,
   Megaphone,
   Palette,
   PanelsTopLeft,
@@ -22,10 +19,16 @@ import {
 } from "@pmf/ui";
 
 import { brandTheme } from "@/lib/app-theme";
-import { productConfig } from "@/lib/product-config";
-import { LeadCaptureForm } from "@/modules/lead/ui/lead-capture-form";
 import { appConfig } from "@/lib/app-config";
+import {
+  buildCapabilitySetupNotes,
+  buildLandingPrimaryActions,
+  buildRuntimeEntries,
+  buildStarterSnapshot,
+} from "@/lib/mvp-surface";
+import { productConfig } from "@/lib/product-config";
 import { BrandThemePlayground } from "@/modules/landing/ui/brand-theme-playground";
+import { LeadCaptureForm } from "@/modules/lead/ui/lead-capture-form";
 import type { LandingHeroVariant } from "@/modules/landing/model/hero-copy-experiment";
 import { TrackedLink } from "@/shared/ui/tracked-link";
 
@@ -119,57 +122,6 @@ const featureGroups = [
         description: "플랫폼 간 공통 컨텍스트 운영 방식",
       },
     ],
-  },
-] as const;
-
-const runtimeEntries = [
-  {
-    icon: LayoutTemplate,
-    title: "랜딩 + CTA 추적",
-    description:
-      "히어로, 정보 블록, tracked link 기반 CTA 흐름이 이미 연결돼 있습니다.",
-    href: "/#live-form",
-    cta: "라이브 리드 폼 보기",
-  },
-  {
-    icon: CheckCircle2,
-    title: "소셜 로그인 키트",
-    description:
-      "Google, Kakao, Naver login starter와 callback demo를 바로 검증할 수 있습니다.",
-    href: "/auth",
-    cta: "auth demo 열기",
-  },
-  {
-    icon: FlaskConical,
-    title: "모바일 퍼널 데모",
-    description:
-      "CTA 버튼으로 다음 step으로 넘어가는 모바일 퍼널 예시를 바로 확인할 수 있습니다.",
-    href: "/demo/funnel",
-    cta: "퍼널 데모 보기",
-  },
-  {
-    icon: PanelsTopLeft,
-    title: "상담 요청 플로우",
-    description:
-      "예산, 일정, 선호 채널까지 포함한 더 강한 신호 수집 화면이 준비돼 있습니다.",
-    href: "/consult",
-    cta: "상담 플로우 열기",
-  },
-  {
-    icon: CreditCard,
-    title: "토스 결제 데모",
-    description:
-      "서버에서 결제를 생성하고 retUrl/resultCallback까지 확인할 수 있는 실제 결제 데모입니다.",
-    href: "/pay",
-    cta: "결제 데모 열기",
-  },
-  {
-    icon: Database,
-    title: "어드민 운영 화면",
-    description:
-      "리드, 제품, 실험 데이터를 조회하며 다음 액션을 정할 수 있는 운영 화면입니다.",
-    href: "/admin",
-    cta: "어드민 열기",
   },
 ] as const;
 
@@ -325,32 +277,10 @@ export default function LandingPage({
   heroVariant?: LandingHeroVariant;
 }) {
   const heroContent = heroContentByVariant[heroVariant];
-  const starterSnapshot = [
-    {
-      label: "Runtime",
-      value: "landing / lead / consult / pay / admin",
-    },
-    {
-      label: "Experiments",
-      value: "cookie assignment + hero sample",
-    },
-    {
-      label: "Payments",
-      value: "toss checkout demo flow",
-    },
-    {
-      label: "Providers",
-      value: "analytics / payment / marketing / error logging",
-    },
-    {
-      label: "Context",
-      value: "ai/context + docs + skills",
-    },
-    {
-      label: "Fallback",
-      value: appConfig.dataMode,
-    },
-  ] as const;
+  const starterSnapshot = buildStarterSnapshot(productConfig, appConfig);
+  const primaryActions = buildLandingPrimaryActions(productConfig, appConfig);
+  const runtimeEntries = buildRuntimeEntries(productConfig, appConfig);
+  const capabilitySetupNotes = buildCapabilitySetupNotes(productConfig, appConfig);
 
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-10">
@@ -397,37 +327,29 @@ export default function LandingPage({
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <TrackedLink
-                  href="/#feature-map"
-                  eventProperties={{
-                    source: "landing_hero_primary",
-                  }}
+              {primaryActions.map((action, index) => (
+                <Button
+                  key={`${action.href}-${action.label}`}
+                  asChild
+                  size="lg"
+                  variant={action.variant}
                 >
-                  기능 맵 보기
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </TrackedLink>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <TrackedLink
-                  href="/#theme-quick-edit"
-                  eventProperties={{
-                    source: "landing_hero_theme_quick_edit",
-                  }}
-                >
-                  테마 바로 바꾸기
-                </TrackedLink>
-              </Button>
-              <Button asChild variant="secondary" size="lg">
-                <TrackedLink
-                  href="/pay"
-                  eventProperties={{
-                    source: "landing_hero_payment_demo",
-                  }}
-                >
-                  결제 데모 열기
-                </TrackedLink>
-              </Button>
+                  <TrackedLink
+                    href={action.href}
+                    eventProperties={{
+                      source:
+                        index === 0
+                          ? "landing_hero_primary"
+                          : `landing_hero_${action.href.replace(/[^a-zA-Z0-9]+/g, "_")}`,
+                    }}
+                  >
+                    {action.setupRequired
+                      ? `${action.label} 설정 필요`
+                      : action.label}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </TrackedLink>
+                </Button>
+              ))}
             </div>
           </div>
         </div>
@@ -447,11 +369,12 @@ export default function LandingPage({
                   Starter Snapshot
                 </Badge>
                 <h2 className="text-3xl font-semibold tracking-tight">
-                  한 화면으로 보는 기본 제공 범위
+                  한 화면으로 보는 현재 MVP shape
                 </h2>
                 <p className="text-sm leading-7 text-slate-300">
-                  화면, 추적, 운영, 문서 문맥까지 포함된 상태에서 시작할 수
-                  있도록 범위를 명확히 잡아 둔 보일러플레이트입니다.
+                  business prompt를 받은 뒤 AI가 어떤 흐름을 켜고 어떤 기능을
+                  deferred로 둬야 하는지 같은 언어로 정리할 수 있도록 runtime
+                  contract를 노출합니다.
                 </p>
               </div>
 
@@ -482,6 +405,24 @@ export default function LandingPage({
                   {productConfig.quality.primaryGoal}
                 </p>
               </div>
+
+              {capabilitySetupNotes.length > 0 ? (
+                <div className="rounded-3xl border border-amber-400/20 bg-amber-500/10 p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-200">
+                    Setup Required
+                  </p>
+                  <div className="mt-3 space-y-3 text-sm leading-6 text-amber-50">
+                    {capabilitySetupNotes.map((note) => (
+                      <div key={note.capability}>
+                        <p className="font-semibold">
+                          {note.capability === "payment" ? "Payment" : "Auth"}
+                        </p>
+                        <p>{note.state.requiredEnvVars.join(" / ")}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
               <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
                 <div className="flex items-start justify-between gap-4">
@@ -723,16 +664,27 @@ export default function LandingPage({
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {runtimeEntries.map((item) => (
             <Card
-              key={item.title}
+              key={item.flowId}
               className="group overflow-hidden border-border bg-white/90 transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-glow"
             >
               <CardHeader className="space-y-4">
-                <item.icon className="h-5 w-5 text-primary" />
+                {item.flowId === "payment" ? (
+                  <PanelsTopLeft className="h-5 w-5 text-primary" />
+                ) : item.flowId === "consultation" ? (
+                  <FlaskConical className="h-5 w-5 text-primary" />
+                ) : (
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
+                )}
                 <div className="space-y-2">
                   <CardTitle className="text-xl">{item.title}</CardTitle>
                   <CardDescription className="leading-6">
                     {item.description}
                   </CardDescription>
+                  {item.setupRequired ? (
+                    <p className="text-sm font-medium text-amber-700">
+                      설정이 완료되면 바로 검증할 수 있습니다.
+                    </p>
+                  ) : null}
                 </div>
               </CardHeader>
               <CardContent>
@@ -744,10 +696,10 @@ export default function LandingPage({
                   <TrackedLink
                     href={item.href}
                     eventProperties={{
-                      source: `landing_runtime_${item.title}`,
+                      source: `landing_runtime_${item.flowId}`,
                     }}
                   >
-                    {item.cta}
+                    {item.setupRequired ? `${item.cta} 설정 필요` : item.cta}
                     <ArrowRight className="h-4 w-4" />
                   </TrackedLink>
                 </Button>

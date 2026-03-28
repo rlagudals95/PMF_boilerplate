@@ -1,44 +1,62 @@
 # Start Your MVP
 
-이 문서는 이 저장소를 `기능이 많은 boilerplate`가 아니라 `비즈니스 목표를 받아 첫 MVP를 여는 kit`로 쓰는 가장 빠른 시작 경로를 설명합니다.
+이 문서는 README의 `Day 0 사용 순서`를 조금 더 자세히 푼 확장판입니다.
 
 ## 권장 시작 방식
 
-대부분의 사용자는 기능 목록이나 generator보다 AI 코딩 툴의 starter prompt에서 시작하는 편이 좋습니다.
+이 저장소의 기본 온보딩은 명령어보다 `AI tool + one-shot prompt`입니다.
 
-권장 흐름은 아래와 같습니다.
+핵심 계약은 아래 한 줄입니다.
 
-1. AI가 먼저 `AGENTS.md`, `ai/context/*`, 관련 `docs/*`를 읽습니다.
-2. 꼭 필요할 때만 1~3개의 짧은 질문으로 goal, target user, 핵심 전환을 확인합니다.
-3. existing `landing / lead / consultation / payment / admin / auth` 블록 안에서 가장 얇은 MVP shape를 고릅니다.
-4. 먼저 `apps/web/src/lib/product-config.ts`와 product-facing surface를 맞춥니다.
-5. 필요할 때만 deeper code를 바꾸고 마지막에 verify를 실행합니다.
+`one-shot prompt -> repo-aware shape selection -> product-config.mvp + copy update -> optional deeper code -> verify`
+
+추천 흐름은 아래와 같습니다.
+
+1. 로컬에서 starter를 띄웁니다.
+2. AI 코딩 툴에 one-shot prompt를 붙여 넣습니다.
+3. AI가 repo를 읽고 필요한 경우에만 1~3개의 짧은 질문을 합니다.
+4. AI가 가장 얇은 MVP shape를 고릅니다.
+5. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춥니다.
+6. 기존 블록으로 안 되는 경우에만 deeper code를 수정합니다.
+7. 마지막에 `pnpm verify`와 브라우저 확인으로 닫습니다.
 
 canonical prompt와 follow-up prompt는 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)에 둡니다.
 
-## Prompt Template
+## Day 0 상세 순서
 
-아래 포맷을 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)의 `사업 아이디어:` 자리에 넣으면 충분합니다.
+### 1. 로컬 실행
 
-```text
-나는 [무엇을 해주는 사이트/서비스/앱]를 만들고 싶고
-최종 목표는 [어떤 비즈니스 전환]이야
+```bash
+corepack enable
+pnpm install
+cp .env.example .env.local
+pnpm db:seed
+pnpm dev
 ```
 
-더 길게 써도 됩니다.
+기대 결과:
 
-```text
-이 repo를 generic MVP kit로 사용해서 아래 사업 아이디어의 첫 실험 버전을 세팅해줘.
-나는 [서비스 아이디어]를 만들고 싶고, 최종 목표는 [핵심 비즈니스 목표]야.
-필요한 기능만 켜고 PRD/work item/product-config까지 이어질 수 있게 정리해줘.
-```
+- `http://localhost:3000`에서 starter가 뜹니다.
+- `DATABASE_URL`이 없어도 local JSON fallback으로 바로 시연할 수 있습니다.
 
-## AI Tool Prompt Pack
+### 2. AI에 one-shot prompt 넣기
 
-이 저장소의 primary onboarding promise는 명령어보다 tool-neutral prompt pack입니다.
+README의 starter prompt를 그대로 붙여 넣거나, [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)의 canonical prompt를 사용합니다. 두 문서의 starter prompt 원문은 같은 계약을 가리킵니다.
 
-- canonical prompt: [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)
-- prompt 평가 가이드: [docs/mvp-starter-prompt-evaluation.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/mvp-starter-prompt-evaluation.md)
+이 단계에서 중요한 건 기능 목록을 길게 설명하는 것이 아니라 아래만 주는 것입니다.
+
+- 무엇을 만들고 싶은지
+- 첫 MVP의 핵심 비즈니스 전환이 무엇인지
+
+### 3. AI가 shape와 active flow를 정하게 하기
+
+AI는 보통 아래 중 하나를 고릅니다.
+
+- `lead-gen`
+- `consultation`
+- `comparison-routing`
+- `paid-intent`
+- `waitlist`
 
 좋은 실행 결과는 아래를 항상 남겨야 합니다.
 
@@ -50,97 +68,94 @@ canonical prompt와 follow-up prompt는 [docs/ai-starter-prompt-pack.md](/Users/
 - verification result
 - remaining manual follow-ups
 
-이 문서의 요점은 “AI가 이 repo를 이해한 뒤 짧게 왕복하고 바로 적용한다”는 것이지, “무조건 generator를 먼저 돌린다”가 아닙니다.
+### 4. 먼저 바뀌는 곳
+
+첫 수정 surface는 [`apps/web/src/lib/product-config.ts`](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/apps/web/src/lib/product-config.ts)입니다.
+
+여기서 먼저 맞추는 것:
+
+- `mvp.shape`
+- `activeFlows / deferredFlows`
+- `primaryRoute / primaryCta`
+- `navExposure / capability mode`
+- `admin.highlightedMetrics`
+- 서비스명
+- hero angle
+- trust signal
+- lead / consultation copy
+- quality metric
+
+### 5. deeper code는 언제 필요한가
+
+아래 정도는 보통 existing block 안에서 해결합니다.
+
+- 서비스명과 hero copy 변경
+- CTA 변경
+- active flow와 deferred flow 조정
+- payment/auth 노출 여부 조정
+- admin에서 먼저 강조할 metric 변경
+- inactive flow를 nav와 landing 기본 노출에서 숨기기
+- active지만 env가 없는 capability를 `setup required` 상태로 보여주기
+
+아래처럼 현재 블록으로 표현되지 않으면 deeper code를 수정합니다.
+
+- 새 폼 필드 추가
+- validation/schema 변경
+- admin 표 컬럼 변경
+- 새로운 도메인 규칙 추가
+
+### 6. 마지막 확인
+
+보통 아래를 확인하면 첫 데모 close가 됩니다.
+
+- `/`: 랜딩과 리드 진입이 맞는가
+- `/consult`: 상담 흐름이 필요한 경우 stronger signal처럼 보이는가
+- `/pay`: payment가 active일 때 env 및 flow가 맞는가
+- `/admin`: 핵심 metric과 setup required 상태가 맞게 보이는가
+- `pnpm verify`: 타입, lint, 테스트가 통과하는가
+
+## 실전 예시
+
+### 입력
+
+```text
+가전렌탈 비교 사이트를 만들고 싶어.
+사용자가 TV, 냉장고, 정수기 같은 렌탈 상품을 비교하고 내게 맞는 옵션을 찾게 하고 싶어.
+첫 MVP 목표는 상담 신청이나 제휴 파트너 연결이야.
+```
+
+### 보통 나오는 첫 결과
+
+- selected MVP shape: `comparison-routing`
+- active flows: `landing`, `lead`, `consultation`, `admin`
+- deferred flows: `payment`, `auth`
+
+### 먼저 바뀌는 파일
+
+- [`apps/web/src/lib/product-config.ts`](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/apps/web/src/lib/product-config.ts)
+
+### 경우에 따라 추가로 바뀌는 surface
+
+- `lead` surface
+- `consultation` surface
+- `admin` surface
+
+### 완료 기준
+
+- `/`, `/consult`, `/admin`이 comparison-routing 답게 보입니다.
+- `pnpm verify`가 통과합니다.
 
 ## Structured Helper
 
-AI 없이 repo-local scaffold가 먼저 필요하다면 아래 명령을 사용합니다.
+raw business idea에서 시작할 때는 one-shot prompt가 기본입니다. 다만 입력이 이미 구조화돼 있다면 helper를 써도 됩니다.
 
 ```bash
 pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."
 ```
 
-예시:
+이 helper는 PRD 초안, 첫 work item, recipe, active flows, deferred flows, primary CTA, admin metric 초안을 함께 만듭니다.
 
-```bash
-pnpm mvp:new rental-support-match --goal "상담 신청과 제휴 파트너 연결" --audience "렌탈 비교 후 적합한 업체를 찾고 싶은 사용자" --offer "조건 비교 후 적합한 파트너로 연결해 주는 서비스" --signal "qualified_lead_rate >= 20% within 14 days"
-```
+## 관련 문서
 
-이 명령은 첫 버전에서 아래를 같이 만듭니다.
-
-- PRD 초안
-- 첫 feature work item
-- 추천 MVP recipe
-- active flows / deferred flows
-- primary CTA
-- admin metric 초안
-
-## Recipe Quick Guide
-
-아래 recipe는 generator magic이 아니라 existing module composition pattern입니다.
-
-### `lead-gen`
-
-- 언제: 빠르게 문의/관심 신호를 모으고 싶을 때
-- active flows: landing, lead capture, admin
-- deferred flows: consultation, payment, auth
-
-### `consultation`
-
-- 언제: 상담 요청 자체가 핵심 전환일 때
-- active flows: landing, consultation, admin
-- deferred flows: payment, auth
-
-### `comparison-routing`
-
-- 언제: 비교 후 적합한 파트너나 제휴사로 연결하는 게 목표일 때
-- active flows: landing, lead capture, consultation, admin
-- deferred flows: payment, auth
-
-### `paid-intent`
-
-- 언제: 결제 의사, 예약금, pre-order 같은 stronger signal이 필요할 때
-- active flows: landing, payment intent, admin
-- deferred flows: consultation, auth
-
-### `waitlist`
-
-- 언제: 출시 전 관심 사용자와 early signal을 모으고 싶을 때
-- active flows: landing, lead capture, admin
-- deferred flows: consultation, payment, auth
-
-## 생성 후 첫 3단계
-
-### 1. PRD 또는 적용 결과 확인
-
-- `docs/prds/<slug>.md`
-- 여기서 recipe, active flows, deferred flows, key metrics를 먼저 본다.
-
-### 2. Work item 확인
-
-- `docs/work-items/<work-id>/brief.md`
-- 생성된 범위가 너무 크면 여기서 먼저 줄인다.
-
-### 3. Product copy 맞추기
-
-- `apps/web/src/lib/product-config.ts`
-- 서비스명, hero angle, trust signal, CTA, quality metric을 여기서 맞춘다.
-
-## 처음엔 무시해도 되는 것
-
-- social auth starter
-- payment demo
-- A/B test package 세부 설정
-- admin의 모든 화면
-
-중요한 건 “기능을 다 이해하는 것”이 아니라 “이번 MVP에서 어떤 흐름만 켜는가”입니다.
-
-## Fallback
-
-prompt보다 구조화된 입력이 더 편하면 기존 방식도 그대로 쓸 수 있습니다.
-
-```bash
-pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."
-```
-
-이 helper도 recipe와 setup summary를 같이 제안하지만, raw business idea에서 바로 시작하는 기본 경험은 계속 one-shot prompt입니다.
+- canonical prompt pack: [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)
+- README: [README.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/README.md)

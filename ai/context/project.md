@@ -61,7 +61,7 @@ pnpm db:seed
 - `apps/web/src/modules`: 도메인별 feature slice
 - `apps/web/src/shared`: app-local shared UI, hooks, action entrypoint, types
 - `apps/web/src/lib`: app-wide infrastructure wiring
-- `apps/web/src/lib/product-config.ts`: active product copy, trust surfaces, form labels, quality signals
+- `apps/web/src/lib/product-config.ts`: active MVP shape, flow exposure, CTA, trust surfaces, form labels, quality signals
 - `packages/core`: domain models, zod schemas, fixtures
 - `packages/db`: drizzle schema, repositories, seed
 - `packages/ui`: shared UI
@@ -81,7 +81,7 @@ pnpm db:seed
 ## How to add a new experiment
 
 1. 제품 seed와 랜딩 copy를 바꾼다.
-2. `apps/web/src/lib/product-config.ts`에서 hero, trust, form copy를 제품 기준으로 맞춘다.
+2. `apps/web/src/lib/product-config.ts`에서 `mvp` shape, flow exposure, hero, trust, form copy를 제품 기준으로 맞춘다.
 3. 실험 가설과 success metric을 `products`, `experiments`에 등록한다.
 4. 필요한 경우 폼 스키마를 확장한다.
 5. 이벤트 이름은 가능하면 기존 enum 안에서 재사용한다.
@@ -95,7 +95,7 @@ pnpm db:seed
 - AI adapter나 platform-specific acceleration을 바꾸는 작업이면 `ai/context/platform-optimization.md`도 함께 읽는다.
 - 중요한 작업은 `ai/context/spec-driven.md`와 `ai/context/doc-sync.md`도 함께 읽는다.
 - AI 코딩 툴이 raw business request를 받았다면 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)를 기준으로 repo를 먼저 읽고, 필요한 경우에만 1~3개의 질문으로 목표를 확인한 뒤 MVP를 적용한다.
-- 이때 먼저 `apps/web/src/lib/product-config.ts`와 관련 product-facing surface를 맞추고, existing block으로 표현되지 않는 요구일 때만 deeper code를 건드린다.
+- 이때 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` contract와 관련 product-facing surface를 맞추고, existing block으로 표현되지 않는 요구일 때만 deeper code를 건드린다.
 - repo-local PRD/work item scaffold가 먼저 필요하고 입력이 이미 구조화돼 있다면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용한다.
 - PRD가 있다면 먼저 `docs/prds/<slug>.md`로 정규화하고 `pnpm feature:new --prd <slug>`로 feature work item을 만든다.
 - 해당 작업은 `pnpm work:new <slug> --request "..."` 또는 수동 작성으로 `docs/work-items/<work-id>/`에 brief와 role spec을 만든다.

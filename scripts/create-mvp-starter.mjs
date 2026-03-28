@@ -75,9 +75,9 @@ const RECIPE_CATALOG = [
     paymentRequired: false,
     primaryCta: "내 조건으로 비교 결과 받기",
     adminMetrics: [
-      "qualified_lead_rate",
-      "consultation_request_rate",
-      "partner_handoff_count",
+      "qualified_leads",
+      "consult_requests",
+      "tracked_events",
     ],
     keyEvents: [
       "cta_clicked",
@@ -130,7 +130,7 @@ const RECIPE_CATALOG = [
     routes: ["/", "/consult", "/admin"],
     paymentRequired: false,
     primaryCta: "상담 요청하기",
-    adminMetrics: ["consultation_request_rate", "qualified_consult_count"],
+    adminMetrics: ["consult_requests", "tracked_events"],
     keyEvents: ["cta_clicked", "consultation_requested"],
     trustThemes: [
       "응답 속도 설명",
@@ -180,9 +180,9 @@ const RECIPE_CATALOG = [
     paymentRequired: true,
     primaryCta: "결제 의사 확인하기",
     adminMetrics: [
-      "payment_checkout_started_rate",
-      "payment_intent_count",
-      "payment_success_count",
+      "payment_attempts",
+      "paid_payments",
+      "tracked_events",
     ],
     keyEvents: ["cta_clicked", "payment_checkout_started", "payment_completed"],
     trustThemes: ["가격/조건 공개", "환불 또는 취소 안내", "결제 전 확인 정보"],
@@ -227,7 +227,7 @@ const RECIPE_CATALOG = [
     routes: ["/", "/admin"],
     paymentRequired: false,
     primaryCta: "오픈 알림 신청하기",
-    adminMetrics: ["waitlist_signup_rate", "qualified_waitlist_count"],
+    adminMetrics: ["total_leads", "tracked_events"],
     keyEvents: ["cta_clicked", "lead_form_submitted"],
     trustThemes: ["출시 일정 안내", "누가 먼저 초대되는지 설명", "초기 혜택 공개"],
     buildGoal: ({ subject, targetOutcome }) =>
@@ -270,7 +270,7 @@ const RECIPE_CATALOG = [
     routes: ["/", "/admin"],
     paymentRequired: false,
     primaryCta: "핵심 정보 남기기",
-    adminMetrics: ["lead_capture_rate", "qualified_lead_rate"],
+    adminMetrics: ["qualified_leads", "total_leads"],
     keyEvents: ["cta_clicked", "lead_form_submitted"],
     trustThemes: ["문의 후 다음 단계 설명", "응답 속도 약속", "입력 정보 최소화"],
     buildGoal: ({ subject, targetOutcome }) =>

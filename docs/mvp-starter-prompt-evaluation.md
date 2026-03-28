@@ -22,7 +22,7 @@
 ```text
 이 repo를 읽고 내 사업 아이디어를 이 구조에 맞는 가장 얇은 MVP로 적용해줘.
 먼저 repo context를 읽고 꼭 필요할 때만 1~3개의 질문을 해줘.
-existing landing / lead / consultation / payment / admin 블록 안에서 풀고, 먼저 product-config를 맞춘 뒤 verify까지 해줘.
+existing landing / lead / consultation / payment / admin 블록 안에서 풀고, 먼저 `product-config.mvp`와 copy surface를 맞춘 뒤 verify까지 해줘.
 마지막엔 active flows, deferred flows, required env vars, verification result를 요약해줘.
 ```
 
@@ -43,7 +43,7 @@ existing landing / lead / consultation / payment / admin 블록 안에서 풀고
 3. 아이디어를 goal / audience / offer / signal로 정리한다.
 4. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
 5. active flows와 deferred flows를 정한다.
-6. 먼저 `apps/web/src/lib/product-config.ts`와 관련 product-facing surface를 맞춘다.
+6. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
 7. 기존 블록으로 표현되지 않는 요구일 때만 deeper code를 변경한다.
 8. auth와 payment는 비즈니스 목표가 필요로 할 때만 노출한다.
 9. 필요한 env vars와 optional capability 상태를 정리한다.

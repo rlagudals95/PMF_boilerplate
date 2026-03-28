@@ -7,6 +7,49 @@ type ProductCopyItem = {
 
 type NonEmptyList<T> = [T, ...T[]];
 
+export type FlowId =
+  | "landing"
+  | "lead"
+  | "consultation"
+  | "payment"
+  | "admin"
+  | "auth";
+export type MvpShape =
+  | "lead-gen"
+  | "consultation"
+  | "comparison-routing"
+  | "paid-intent"
+  | "waitlist";
+export type SurfaceExposure = "primary" | "hidden";
+export type CapabilityMode = "off" | "optional" | "primary";
+export type PrimaryRoute = "/" | "/consult" | "/pay";
+export type AdminMetricKey =
+  | "total_leads"
+  | "qualified_leads"
+  | "consult_requests"
+  | "payment_attempts"
+  | "paid_payments"
+  | "tracked_events"
+  | "active_products"
+  | "active_experiments";
+
+export const allFlowIds = [
+  "landing",
+  "lead",
+  "consultation",
+  "payment",
+  "admin",
+  "auth",
+] as const satisfies readonly FlowId[];
+
+export const shapeRequiredFlowMap = {
+  "lead-gen": ["landing", "lead", "admin"],
+  consultation: ["landing", "consultation", "admin"],
+  "comparison-routing": ["landing", "lead", "consultation", "admin"],
+  "paid-intent": ["landing", "payment", "admin"],
+  waitlist: ["landing", "lead", "admin"],
+} as const satisfies Record<MvpShape, readonly FlowId[]>;
+
 type ProductHeroCopy = {
   title: string;
   emphasis: string;
@@ -18,6 +61,24 @@ export type ProductConfig = {
   appName: string;
   primaryProduct: string;
   description: string;
+  mvp: {
+    shape: MvpShape;
+    activeFlows: NonEmptyList<FlowId>;
+    deferredFlows: FlowId[];
+    primaryRoute: PrimaryRoute;
+    primaryCta: {
+      label: string;
+      href: string;
+    };
+    navExposure: Record<FlowId, SurfaceExposure>;
+    capabilities: {
+      auth: CapabilityMode;
+      payment: CapabilityMode;
+    };
+    admin: {
+      highlightedMetrics: NonEmptyList<AdminMetricKey>;
+    };
+  };
   site: {
     mark: string;
     headerTitle: string;
@@ -108,10 +169,44 @@ function assertStringItems(
   }
 }
 
+function normalizeFlowIds(flows: readonly FlowId[]) {
+  return [...new Set(flows)].sort();
+}
+
+function resolveHrefFlowId(href: string): FlowId | null {
+  if (href.startsWith("/consult")) {
+    return "consultation";
+  }
+
+  if (href.startsWith("/pay")) {
+    return "payment";
+  }
+
+  if (href.startsWith("/auth")) {
+    return "auth";
+  }
+
+  if (href.startsWith("/admin")) {
+    return "admin";
+  }
+
+  if (href === "/#live-form") {
+    return "lead";
+  }
+
+  if (href === "/" || href.startsWith("/#")) {
+    return "landing";
+  }
+
+  return null;
+}
+
 export function validateProductConfig(config: ProductConfig) {
   assertNonEmptyString(config.appName, "appName");
   assertNonEmptyString(config.primaryProduct, "primaryProduct");
   assertNonEmptyString(config.description, "description");
+  assertNonEmptyString(config.mvp.primaryCta.label, "mvp.primaryCta.label");
+  assertNonEmptyString(config.mvp.primaryCta.href, "mvp.primaryCta.href");
   assertNonEmptyString(config.site.mark, "site.mark");
   assertNonEmptyString(config.site.headerTitle, "site.headerTitle");
   assertNonEmptyString(config.site.headerDescription, "site.headerDescription");
@@ -234,6 +329,114 @@ export function validateProductConfig(config: ProductConfig) {
   assertNonEmptyString(config.quality.primaryGoal, "quality.primaryGoal");
   assertStringItems(config.quality.trustSignals, 3, "quality.trustSignals");
   assertStringItems(config.quality.primaryMetrics, 2, "quality.primaryMetrics");
+  assertMinItems(
+    config.mvp.activeFlows,
+    1,
+    "mvp.activeFlows",
+  );
+  assertStringItems(
+    config.mvp.admin.highlightedMetrics,
+    2,
+    "mvp.admin.highlightedMetrics",
+  );
+
+  const expectedActiveFlows = normalizeFlowIds(shapeRequiredFlowMap[config.mvp.shape]);
+  const activeFlows = normalizeFlowIds(config.mvp.activeFlows);
+  const extraFlows = activeFlows.filter(
+    (flowId) => !expectedActiveFlows.includes(flowId),
+  );
+
+  if (config.mvp.capabilities.auth === "off" && extraFlows.includes("auth")) {
+    throw new Error(
+      "mvp.activeFlows must not include auth when mvp.capabilities.auth is off.",
+    );
+  }
+
+  if (config.mvp.capabilities.payment === "off" && extraFlows.includes("payment")) {
+    throw new Error(
+      "mvp.activeFlows must not include payment when mvp.capabilities.payment is off.",
+    );
+  }
+
+  const allowedExtraFlows = extraFlows.filter((flowId) => {
+    if (flowId === "auth") {
+      return config.mvp.capabilities.auth !== "off";
+    }
+
+    if (flowId === "payment") {
+      return config.mvp.capabilities.payment !== "off";
+    }
+
+    return false;
+  });
+
+  if (
+    expectedActiveFlows.length + allowedExtraFlows.length !== activeFlows.length ||
+    !expectedActiveFlows.every((flowId) => activeFlows.includes(flowId))
+  ) {
+    throw new Error(
+      `mvp.activeFlows must match the ${config.mvp.shape} recipe plus optional auth/payment capability flows.`,
+    );
+  }
+
+  const unresolvedFlows = allFlowIds.filter(
+    (flowId) =>
+      !config.mvp.activeFlows.includes(flowId) &&
+      !config.mvp.deferredFlows.includes(flowId),
+  );
+
+  const overlappingFlows = config.mvp.deferredFlows.filter((flowId) =>
+    config.mvp.activeFlows.includes(flowId),
+  );
+
+  if (unresolvedFlows.length > 0 || overlappingFlows.length > 0) {
+    throw new Error(
+      "mvp.deferredFlows must be a non-overlapping complement of mvp.activeFlows.",
+    );
+  }
+
+  const primaryRouteFlowId = resolveHrefFlowId(config.mvp.primaryRoute);
+  if (!primaryRouteFlowId || !config.mvp.activeFlows.includes(primaryRouteFlowId)) {
+    throw new Error("mvp.primaryRoute must point to an active flow.");
+  }
+
+  const primaryCtaFlowId = resolveHrefFlowId(config.mvp.primaryCta.href);
+  if (!primaryCtaFlowId || !config.mvp.activeFlows.includes(primaryCtaFlowId)) {
+    throw new Error("mvp.primaryCta.href must point to an active flow.");
+  }
+
+  if (
+    config.mvp.capabilities.auth === "primary" &&
+    !config.mvp.activeFlows.includes("auth")
+  ) {
+    throw new Error(
+      "mvp.capabilities.auth must be active when set to primary.",
+    );
+  }
+
+  if (
+    config.mvp.capabilities.payment === "primary" &&
+    !config.mvp.activeFlows.includes("payment")
+  ) {
+    throw new Error(
+      "mvp.capabilities.payment must be active when set to primary.",
+    );
+  }
+
+  for (const flowId of allFlowIds) {
+    if (
+      config.mvp.navExposure[flowId] === "primary" &&
+      !config.mvp.activeFlows.includes(flowId)
+    ) {
+      throw new Error(
+        `mvp.navExposure.${flowId} must be hidden when the flow is not active.`,
+      );
+    }
+  }
+
+  if (config.mvp.navExposure.lead !== "hidden") {
+    throw new Error("mvp.navExposure.lead must stay hidden because it has no standalone route.");
+  }
 }
 
 function defineProductConfig(config: ProductConfig) {
@@ -246,6 +449,35 @@ export const productConfig = defineProductConfig({
   primaryProduct: "PMF MVP Kit",
   description:
     "여러 사이드 프로젝트에서 PMF를 빠르게 탐색하기 위한 랜딩, 리드 캡처, 상담 요청, 실험 운영 기본 골격",
+  mvp: {
+    shape: "comparison-routing",
+    activeFlows: ["landing", "lead", "consultation", "admin"],
+    deferredFlows: ["payment", "auth"],
+    primaryRoute: "/",
+    primaryCta: {
+      label: "핵심 정보 남기기",
+      href: "/#live-form",
+    },
+    navExposure: {
+      landing: "primary",
+      lead: "hidden",
+      consultation: "primary",
+      payment: "hidden",
+      admin: "primary",
+      auth: "hidden",
+    },
+    capabilities: {
+      auth: "off",
+      payment: "off",
+    },
+    admin: {
+      highlightedMetrics: [
+        "qualified_leads",
+        "consult_requests",
+        "total_leads",
+      ],
+    },
+  },
   site: {
     mark: "PK",
     headerTitle: "PMF MVP Kit",
