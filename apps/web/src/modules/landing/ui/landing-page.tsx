@@ -22,6 +22,7 @@ import {
 } from "@pmf/ui";
 
 import { brandTheme } from "@/lib/app-theme";
+import { productConfig } from "@/lib/product-config";
 import { LeadCaptureForm } from "@/modules/lead/ui/lead-capture-form";
 import { appConfig } from "@/lib/app-config";
 import { BrandThemePlayground } from "@/modules/landing/ui/brand-theme-playground";
@@ -46,7 +47,8 @@ const featureGroups = [
       },
       {
         title: "토스 결제 데모",
-        description: "결제 생성과 결과 동기화까지 실험용으로 검증할 수 있습니다.",
+        description:
+          "결제 생성과 결과 동기화까지 실험용으로 검증할 수 있습니다.",
       },
       {
         title: "어드민 화면",
@@ -233,36 +235,18 @@ const integrationGuides = [
   },
 ] as const;
 
-const heroHighlights = [
-  {
-    title: "바로 실행 가능",
-    description: "랜딩, 폼, 결제 데모, 어드민을 바로 띄울 수 있습니다.",
-  },
-  {
-    title: "실험에 필요한 기본선",
-    description:
-      "ab-test cookie assignment, page_view/cta_clicked logging, fallback 저장이 준비돼 있습니다.",
-  },
-  {
-    title: "복제 가능한 구조",
-    description: "theme, seed, 카피를 바꿔 다음 제품으로 옮기기 쉽습니다.",
-  },
-  {
-    title: "문서 포함",
-    description: "architecture, spec-driven, AI context 문서가 같이 들어 있습니다.",
-  },
-] as const;
-
 const starterSteps = [
   {
     step: "01",
     title: "카피와 CTA를 바꾼다",
-    description: "랜딩 메시지와 링크 이벤트를 수정해 실험 가설을 빠르게 반영합니다.",
+    description:
+      "랜딩 메시지와 링크 이벤트를 수정해 실험 가설을 빠르게 반영합니다.",
   },
   {
     step: "02",
     title: "폼으로 신호를 받는다",
-    description: "가벼운 관심과 더 강한 상담 의사를 각각 다른 흐름으로 수집합니다.",
+    description:
+      "가벼운 관심과 더 강한 상담 의사를 각각 다른 흐름으로 수집합니다.",
   },
   {
     step: "03",
@@ -277,7 +261,8 @@ const starterSteps = [
   {
     step: "05",
     title: "다음 제품으로 복제한다",
-    description: "카피와 seed를 바꾸고 같은 보일러플레이트 구조를 새 제품에 재사용합니다.",
+    description:
+      "카피와 seed를 바꾸고 같은 보일러플레이트 구조를 새 제품에 재사용합니다.",
   },
 ] as const;
 
@@ -332,22 +317,7 @@ const themeSnippet = [
 const heroContentByVariant: Record<
   LandingHeroVariant,
   { title: string; emphasis: string; description: string; badge: string }
-> = {
-  control: {
-    title: "PMF 실험용 보일러플레이트가",
-    emphasis: "기본으로 제공하는 기능",
-    description:
-      "이 저장소는 특정 도메인 소개 페이지가 아니라, 랜딩, 리드 수집, 상담 요청, 어드민 운영, 추적 wiring, AI 문맥 문서까지 묶어 둔 스타터입니다. 제품 이름보다 무엇이 이미 들어 있는지를 먼저 파악할 수 있게 랜딩 구조를 정리했습니다.",
-    badge: "Hero Copy: control",
-  },
-  benefit: {
-    title: "새 실험을 시작할 때 필요한 기본선이",
-    emphasis: "처음부터 이미 연결돼 있습니다",
-    description:
-      "랜딩, 리드, 상담, 결제 데모, 운영 화면, 추적 wiring, AI 문서까지 한 번에 묶어 둬서 다음 사이드 프로젝트에서도 바로 검증 루프를 돌릴 수 있습니다.",
-    badge: "Hero Copy: benefit",
-  },
-};
+> = productConfig.landing.heroVariants;
 
 export default function LandingPage({
   heroVariant = "control",
@@ -388,7 +358,9 @@ export default function LandingPage({
         <div className="space-y-8">
           <div className="space-y-6">
             <div className="flex flex-wrap gap-3">
-              <Badge variant="accent">PMF Boilerplate</Badge>
+              <Badge variant="accent">
+                {productConfig.landing.productBadge}
+              </Badge>
               <Badge className="border border-border bg-white/80 text-slate-700">
                 {heroContent.badge}
               </Badge>
@@ -396,7 +368,9 @@ export default function LandingPage({
             <div className="space-y-4">
               <h1 className="max-w-4xl text-5xl font-semibold leading-tight tracking-tight text-slate-950">
                 {heroContent.title}
-                <span className="block text-primary">{heroContent.emphasis}</span>
+                <span className="block text-primary">
+                  {heroContent.emphasis}
+                </span>
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-slate-600">
                 {heroContent.description}
@@ -404,15 +378,19 @@ export default function LandingPage({
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              {heroHighlights.map((item) => (
+              {productConfig.landing.heroHighlights.map((item) => (
                 <div
                   key={item.title}
                   className="flex items-start gap-3 rounded-2xl border border-border bg-white/85 px-4 py-4"
                 >
                   <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />
                   <div className="space-y-1">
-                    <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                    <p className="text-sm leading-6 text-slate-700">{item.description}</p>
+                    <p className="text-sm font-semibold text-slate-900">
+                      {item.title}
+                    </p>
+                    <p className="text-sm leading-6 text-slate-700">
+                      {item.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -465,13 +443,15 @@ export default function LandingPage({
             />
             <div className="relative space-y-6">
               <div className="space-y-3">
-                <Badge className="bg-white/10 text-white">Starter Snapshot</Badge>
+                <Badge className="bg-white/10 text-white">
+                  Starter Snapshot
+                </Badge>
                 <h2 className="text-3xl font-semibold tracking-tight">
                   한 화면으로 보는 기본 제공 범위
                 </h2>
                 <p className="text-sm leading-7 text-slate-300">
-                  화면, 추적, 운영, 문서 문맥까지 포함된 상태에서 시작할 수 있도록 범위를 명확히
-                  잡아 둔 보일러플레이트입니다.
+                  화면, 추적, 운영, 문서 문맥까지 포함된 상태에서 시작할 수
+                  있도록 범위를 명확히 잡아 둔 보일러플레이트입니다.
                 </p>
               </div>
 
@@ -484,7 +464,9 @@ export default function LandingPage({
                     <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">
                       {item.label}
                     </p>
-                    <p className="mt-2 text-sm leading-6 text-slate-100">{item.value}</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-100">
+                      {item.value}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -493,10 +475,11 @@ export default function LandingPage({
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
                   What this is optimized for
                 </p>
-                <p className="mt-3 text-2xl font-semibold">빠른 PMF 실험 반복</p>
+                <p className="mt-3 text-2xl font-semibold">
+                  빠른 PMF 실험 반복
+                </p>
                 <p className="mt-2 text-sm leading-6 text-slate-300">
-                  카피 실험, 리드 수집, 상담 의사 확인, 운영 리뷰 같은 초기 실험 루프를 빠르게
-                  돌리는 데 초점을 맞춥니다.
+                  {productConfig.quality.primaryGoal}
                 </p>
               </div>
 
@@ -506,10 +489,13 @@ export default function LandingPage({
                     <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
                       Brand Theme Quick Edit
                     </p>
-                    <p className="text-lg font-semibold">서비스 색상은 한 파일에서 바꿉니다</p>
+                    <p className="text-lg font-semibold">
+                      서비스 색상은 한 파일에서 바꿉니다
+                    </p>
                     <p className="text-sm leading-6 text-slate-300">
-                      보일러플레이트를 새 서비스로 복제할 때는 theme 파일 한 곳에 hex 컬러만
-                      먼저 바꾸면 주요 강조색이 같이 업데이트됩니다.
+                      보일러플레이트를 새 서비스로 복제할 때는 theme 파일 한
+                      곳에 hex 컬러만 먼저 바꾸면 주요 강조색이 같이
+                      업데이트됩니다.
                     </p>
                   </div>
                   <Palette className="mt-1 h-5 w-5 shrink-0 text-primary" />
@@ -529,8 +515,12 @@ export default function LandingPage({
                         className="h-10 rounded-xl border border-white/10"
                         style={{ backgroundColor: token.preview }}
                       />
-                      <p className="mt-3 text-sm font-semibold">{token.label}</p>
-                      <p className="mt-1 text-xs text-slate-300">{token.description}</p>
+                      <p className="mt-3 text-sm font-semibold">
+                        {token.label}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-300">
+                        {token.description}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -561,8 +551,8 @@ export default function LandingPage({
             보일러플레이트가 이미 포함하는 범위
           </h2>
           <p className="text-base leading-7 text-slate-600">
-            화면만 있는 템플릿이 아니라, 실행 가능한 UI와 추적 wiring, 운영 화면, AI 문맥 문서가
-            함께 들어 있습니다.
+            화면만 있는 템플릿이 아니라, 실행 가능한 UI와 추적 wiring, 운영
+            화면, AI 문맥 문서가 함께 들어 있습니다.
           </p>
         </div>
 
@@ -576,7 +566,9 @@ export default function LandingPage({
                 </div>
                 <div className="space-y-2">
                   <CardTitle className="text-xl">{group.title}</CardTitle>
-                  <CardDescription className="leading-6">{group.description}</CardDescription>
+                  <CardDescription className="leading-6">
+                    {group.description}
+                  </CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -584,8 +576,12 @@ export default function LandingPage({
                   <div key={item.title} className="flex items-start gap-3">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />
                     <div className="space-y-1">
-                      <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                      <p className="text-sm leading-6 text-slate-700">{item.description}</p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {item.title}
+                      </p>
+                      <p className="text-sm leading-6 text-slate-700">
+                        {item.description}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -604,8 +600,8 @@ export default function LandingPage({
             실제로 어디를 바꾸면 되는지 바로 보이게 정리했습니다
           </h2>
           <p className="text-base leading-7 text-slate-600">
-            `@pmf/ab-test`와 `@pmf/user-behavior-log`는 generic package로 두고, 앱에서는 wiring
-            파일만 바꾸는 구조를 기본값으로 둡니다.
+            `@pmf/ab-test`와 `@pmf/user-behavior-log`는 generic package로 두고,
+            앱에서는 wiring 파일만 바꾸는 구조를 기본값으로 둡니다.
           </p>
         </div>
 
@@ -618,7 +614,9 @@ export default function LandingPage({
                 </Badge>
                 <div className="space-y-2">
                   <CardTitle className="text-2xl">{guide.title}</CardTitle>
-                  <CardDescription className="leading-6">{guide.description}</CardDescription>
+                  <CardDescription className="leading-6">
+                    {guide.description}
+                  </CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="space-y-5">
@@ -660,8 +658,9 @@ export default function LandingPage({
               새 서비스로 바꿀 때 가장 먼저 바꾸는 파일
             </h2>
             <p className="text-base leading-7 text-slate-600">
-              이 보일러플레이트는 runtime theme switcher를 두지 않고, 정적 설정 파일 하나에서
-              서비스별 브랜드색을 바꾸는 방식을 기본값으로 둡니다. 복제 후 가장 먼저{" "}
+              이 보일러플레이트는 runtime theme switcher를 두지 않고, 정적 설정
+              파일 하나에서 서비스별 브랜드색을 바꾸는 방식을 기본값으로 둡니다.
+              복제 후 가장 먼저{" "}
               <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground">
                 {themeFilePath}
               </code>
@@ -677,9 +676,9 @@ export default function LandingPage({
               <CardTitle className="text-xl">{themeFilePath}</CardTitle>
               <CardDescription>
                 <code className="font-mono text-xs">primary</code>는 필수이고{" "}
-                <code className="font-mono text-xs">accent</code>는 선택입니다. 비워두면{" "}
-                <code className="font-mono text-xs">primary</code>가 그대로 재사용됩니다. 입력은
-                hex, 내부 토큰은 HSL로 변환됩니다.
+                <code className="font-mono text-xs">accent</code>는 선택입니다.
+                비워두면 <code className="font-mono text-xs">primary</code>가
+                그대로 재사용됩니다. 입력은 hex, 내부 토큰은 HSL로 변환됩니다.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -716,7 +715,8 @@ export default function LandingPage({
             바로 눌러볼 수 있는 화면
           </h2>
           <p className="text-base leading-7 text-slate-600">
-            아래 카드는 설명용 목업이 아니라 현재 프로젝트 안에 포함된 실제 화면으로 연결됩니다.
+            아래 카드는 설명용 목업이 아니라 현재 프로젝트 안에 포함된 실제
+            화면으로 연결됩니다.
           </p>
         </div>
 
@@ -730,11 +730,17 @@ export default function LandingPage({
                 <item.icon className="h-5 w-5 text-primary" />
                 <div className="space-y-2">
                   <CardTitle className="text-xl">{item.title}</CardTitle>
-                  <CardDescription className="leading-6">{item.description}</CardDescription>
+                  <CardDescription className="leading-6">
+                    {item.description}
+                  </CardDescription>
                 </div>
               </CardHeader>
               <CardContent>
-                <Button asChild variant="secondary" className="w-full justify-between">
+                <Button
+                  asChild
+                  variant="secondary"
+                  className="w-full justify-between"
+                >
                   <TrackedLink
                     href={item.href}
                     eventProperties={{
@@ -764,8 +770,9 @@ export default function LandingPage({
               기본 제공 리드 폼을 이 화면에서 바로 확인할 수 있습니다
             </h2>
             <p className="text-base leading-7 text-slate-600">
-              리드 폼은 단순 시안이 아니라 검증, 제출, 에러 처리, marketing event hook까지 붙은
-              실제 흐름입니다. 라이브 예시를 그대로 보고 다른 제품으로 바꾸면 됩니다.
+              리드 폼은 단순 시안이 아니라 검증, 제출, 에러 처리, marketing
+              event hook까지 붙은 실제 흐름입니다. 라이브 예시를 그대로 보고
+              다른 제품으로 바꾸면 됩니다.
             </p>
           </div>
 
@@ -777,8 +784,12 @@ export default function LandingPage({
               >
                 <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />
                 <div className="space-y-1">
-                  <p className="text-sm font-semibold text-slate-900">{item.title}</p>
-                  <p className="text-sm leading-6 text-slate-700">{item.description}</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {item.title}
+                  </p>
+                  <p className="text-sm leading-6 text-slate-700">
+                    {item.description}
+                  </p>
                 </div>
               </div>
             ))}
@@ -797,8 +808,8 @@ export default function LandingPage({
             다음 제품으로 옮길 때 보는 최소 순서
           </h2>
           <p className="text-base leading-7 text-slate-600">
-            이 보일러플레이트는 새 도메인에 맞춰 카피와 seed를 교체하고, 같은 실험 루프를 반복하는
-            흐름에 맞춰 설계돼 있습니다.
+            이 보일러플레이트는 새 도메인에 맞춰 카피와 seed를 교체하고, 같은
+            실험 루프를 반복하는 흐름에 맞춰 설계돼 있습니다.
           </p>
         </div>
 
@@ -810,7 +821,9 @@ export default function LandingPage({
                 <CardTitle>{item.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm leading-6 text-slate-600">{item.description}</p>
+                <p className="text-sm leading-6 text-slate-600">
+                  {item.description}
+                </p>
               </CardContent>
             </Card>
           ))}

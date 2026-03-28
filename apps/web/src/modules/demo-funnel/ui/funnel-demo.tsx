@@ -20,9 +20,10 @@ const funnelSteps = ["product", "budget", "done"] as const;
 const stepMeta = {
   product: {
     eyebrow: "Step 1",
-    title: "어떤 렌탈을 찾고 있나요?",
-    description: "모바일 퍼널 첫 화면처럼 하나의 질문과 하나의 CTA만 보여줍니다.",
-    cta: "이 제품으로 다음",
+    title: "어떤 문제를 먼저 검증하고 싶나요?",
+    description:
+      "모바일 퍼널 첫 화면처럼 하나의 질문과 하나의 CTA만 보여줍니다.",
+    cta: "이 주제로 다음",
   },
   budget: {
     eyebrow: "Step 2",
@@ -43,26 +44,31 @@ const stepMeta = {
 
 const productOptions = [
   {
-    value: "정수기 렌탈",
-    title: "정수기 렌탈",
-    description: "가정용 빠른 비교가 필요한 경우",
+    value: "고객 문의 자동화",
+    title: "고객 문의 자동화",
+    description: "반복 문의를 빠르게 정리하고 싶을 때",
     icon: PackageSearch,
   },
   {
-    value: "안마의자 렌탈",
-    title: "안마의자 렌탈",
-    description: "예산과 브랜드 상담이 중요한 경우",
+    value: "내부 운영 대시보드",
+    title: "내부 운영 대시보드",
+    description: "운영 현황을 한곳에서 보고 싶을 때",
     icon: Sparkles,
   },
   {
-    value: "법인 대량 렌탈",
-    title: "법인 대량 렌탈",
-    description: "여러 대를 묶어서 검토해야 하는 경우",
+    value: "전문가 매칭 서비스",
+    title: "전문가 매칭 서비스",
+    description: "리드와 상담 흐름을 빠르게 검증하고 싶을 때",
     icon: CircleDollarSign,
   },
 ] as const;
 
-const budgetOptions = ["월 3만원 이하", "월 3-5만원", "월 5-10만원", "월 10만원 이상"] as const;
+const budgetOptions = [
+  "월 10만원 이하",
+  "월 10-30만원",
+  "월 30-100만원",
+  "프로젝트 단위 예산 있음",
+] as const;
 
 type DemoDraft = {
   product: string;
@@ -88,7 +94,10 @@ export function FunnelDemo() {
   const isProductReady = draft.product.length > 0;
   const isBudgetReady = draft.budget.length > 0;
 
-  const setField = <TKey extends keyof DemoDraft>(key: TKey, value: DemoDraft[TKey]) => {
+  const setField = <TKey extends keyof DemoDraft>(
+    key: TKey,
+    value: DemoDraft[TKey],
+  ) => {
     setDraft((current) => ({
       ...current,
       [key]: value,
@@ -111,7 +120,10 @@ export function FunnelDemo() {
     (funnel.currentStep === "budget" && !isBudgetReady);
 
   return (
-    <div className="mx-auto w-full max-w-sm space-y-4" data-testid="funnel-demo">
+    <div
+      className="mx-auto w-full max-w-sm space-y-4"
+      data-testid="funnel-demo"
+    >
       <div
         className="rounded-[40px] p-3 shadow-[0_30px_80px_hsl(var(--foreground)/0.2)]"
         style={{
@@ -141,7 +153,7 @@ export function FunnelDemo() {
                     {currentStepMeta.eyebrow}
                   </p>
                   <p className="truncate text-sm font-semibold text-slate-950">
-                    렌탈 상담 미니 퍼널
+                    MVP 상담 미니 퍼널
                   </p>
                 </div>
                 <Badge variant="accent">Mobile</Badge>
@@ -193,10 +205,14 @@ export function FunnelDemo() {
                                 <option.icon className="h-5 w-5" />
                               </div>
                               <div className="space-y-1">
-                                <p className="text-base font-semibold">{option.title}</p>
+                                <p className="text-base font-semibold">
+                                  {option.title}
+                                </p>
                                 <p
                                   className={`text-sm leading-5 ${
-                                    isSelected ? "text-slate-200" : "text-slate-500"
+                                    isSelected
+                                      ? "text-slate-200"
+                                      : "text-slate-500"
                                   }`}
                                 >
                                   {option.description}
@@ -221,7 +237,9 @@ export function FunnelDemo() {
                       </div>
 
                       <div className="space-y-2">
-                        <p className="text-sm font-semibold text-slate-700">월 예산</p>
+                        <p className="text-sm font-semibold text-slate-700">
+                          월 예산
+                        </p>
                         <div className="grid grid-cols-2 gap-2">
                           {budgetOptions.map((option) => {
                             const isSelected = draft.budget === option;
@@ -245,14 +263,19 @@ export function FunnelDemo() {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700" htmlFor="demo-notes">
+                        <label
+                          className="text-sm font-semibold text-slate-700"
+                          htmlFor="demo-notes"
+                        >
                           추가 메모
                         </label>
                         <Textarea
                           id="demo-notes"
                           value={draft.notes}
-                          onChange={(event) => setField("notes", event.target.value)}
-                          placeholder="선호 브랜드, 설치 시기, 연락 가능 시간을 적어주세요."
+                          onChange={(event) =>
+                            setField("notes", event.target.value)
+                          }
+                          placeholder="현재 워크플로우, 팀 상황, 원하는 결과를 적어주세요."
                           className="min-h-28 bg-white"
                         />
                       </div>
@@ -267,9 +290,12 @@ export function FunnelDemo() {
                             <CheckCircle2 className="h-5 w-5" />
                           </div>
                           <div className="space-y-1">
-                            <p className="text-base font-semibold">CTA로 자연스럽게 다음 단계에 도달했습니다.</p>
+                            <p className="text-base font-semibold">
+                              CTA로 자연스럽게 다음 단계에 도달했습니다.
+                            </p>
                             <p className="text-sm leading-6 text-slate-300">
-                              선택과 입력은 한 화면 안에서 끝내고, 마지막에 강한 전환 CTA를 보여주는 구조입니다.
+                              선택과 입력은 한 화면 안에서 끝내고, 마지막에 강한
+                              전환 CTA를 보여주는 구조입니다.
                             </p>
                           </div>
                         </div>
@@ -279,7 +305,10 @@ export function FunnelDemo() {
                         <CardContent className="space-y-4 p-5">
                           <SummaryRow label="제품" value={draft.product} />
                           <SummaryRow label="예산" value={draft.budget} />
-                          <SummaryRow label="메모" value={draft.notes || "추가 메모 없음"} />
+                          <SummaryRow
+                            label="메모"
+                            value={draft.notes || "추가 메모 없음"}
+                          />
                         </CardContent>
                       </Card>
 
@@ -288,10 +317,22 @@ export function FunnelDemo() {
                           Hook Snapshot
                         </p>
                         <div className="mt-3 grid grid-cols-2 gap-2">
-                          <StateChip label="currentStep" value={funnel.currentStep} />
-                          <StateChip label="currentIndex" value={String(funnel.currentIndex)} />
-                          <StateChip label="canGoPrev" value={String(funnel.canGoPrev)} />
-                          <StateChip label="isLastStep" value={String(funnel.isLastStep)} />
+                          <StateChip
+                            label="currentStep"
+                            value={funnel.currentStep}
+                          />
+                          <StateChip
+                            label="currentIndex"
+                            value={String(funnel.currentIndex)}
+                          />
+                          <StateChip
+                            label="canGoPrev"
+                            value={String(funnel.canGoPrev)}
+                          />
+                          <StateChip
+                            label="isLastStep"
+                            value={String(funnel.isLastStep)}
+                          />
                         </div>
                       </div>
                     </div>
@@ -358,7 +399,10 @@ export function FunnelDemo() {
           CTA Transition Pattern
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <MetaChip label="screen" value={`${funnel.currentIndex + 1}/${funnel.stepCount}`} />
+          <MetaChip
+            label="screen"
+            value={`${funnel.currentIndex + 1}/${funnel.stepCount}`}
+          />
           <MetaChip label="product" value={draft.product || "none"} />
           <MetaChip label="budget" value={draft.budget || "none"} />
           <MetaChip label="notes" value={draft.notes ? "filled" : "empty"} />
@@ -371,7 +415,9 @@ export function FunnelDemo() {
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="space-y-1">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+        {label}
+      </p>
       <p className="text-sm leading-6 text-slate-700">{value}</p>
     </div>
   );
@@ -380,7 +426,9 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
 function StateChip({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-white px-3 py-3">
-      <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-slate-400">{label}</p>
+      <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-slate-400">
+        {label}
+      </p>
       <p className="mt-2 font-mono text-xs text-slate-950">{value}</p>
     </div>
   );
@@ -392,7 +440,9 @@ function MetaChip({ label, value }: { label: string; value: string }) {
       <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
         {label}
       </p>
-      <p className="mt-2 truncate text-sm font-medium text-slate-700">{value}</p>
+      <p className="mt-2 truncate text-sm font-medium text-slate-700">
+        {value}
+      </p>
     </div>
   );
 }

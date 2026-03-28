@@ -3,7 +3,7 @@
 ## Purpose
 
 이 저장소는 PMF를 찾기 위한 실험용 보일러플레이트입니다.
-첫 제품은 `모두의렌탈`이지만, 다음 사이드 프로젝트에서도 랜딩-리드-상담-결제-실험 관리 루프를 재사용할 수 있어야 합니다.
+과거 예시 use case로 `모두의렌탈`을 다뤘지만, 기본값은 특정 업종이 아니라 다음 사이드 프로젝트에도 바로 재사용 가능한 범용 MVP kit를 지향합니다.
 
 ## Working rules
 
@@ -44,6 +44,8 @@ pnpm test
 pnpm test:e2e
 pnpm verify
 pnpm verify:full
+pnpm mvp:new my-mvp --prompt "..."
+pnpm mvp:new my-mvp --goal "..." --audience "..." --offer "..." --signal "..."
 pnpm prd:new my-prd
 pnpm feature:new --prd my-prd
 pnpm work:new my-task --request "작업 배경"
@@ -59,6 +61,7 @@ pnpm db:seed
 - `apps/web/src/modules`: 도메인별 feature slice
 - `apps/web/src/shared`: app-local shared UI, hooks, action entrypoint, types
 - `apps/web/src/lib`: app-wide infrastructure wiring
+- `apps/web/src/lib/product-config.ts`: active product copy, trust surfaces, form labels, quality signals
 - `packages/core`: domain models, zod schemas, fixtures
 - `packages/db`: drizzle schema, repositories, seed
 - `packages/ui`: shared UI
@@ -72,14 +75,16 @@ pnpm db:seed
 - `docs/templates`: feature/experiment spec 템플릿
 - `docs/adr`: 구조와 운영 원칙에 대한 경량 결정 로그
 - `ai/agents`: platform-native delegation용 canonical agent prompt
+- `docs/start-your-mvp.md`: 서비스 제작자 관점의 prompt-first 시작 가이드
 
 ## How to add a new experiment
 
 1. 제품 seed와 랜딩 copy를 바꾼다.
-2. 실험 가설과 success metric을 `products`, `experiments`에 등록한다.
-3. 필요한 경우 폼 스키마를 확장한다.
-4. 이벤트 이름은 가능하면 기존 enum 안에서 재사용한다.
-5. 자세한 운영 규칙은 `docs/experiment-playbook.md`를 따른다.
+2. `apps/web/src/lib/product-config.ts`에서 hero, trust, form copy를 제품 기준으로 맞춘다.
+3. 실험 가설과 success metric을 `products`, `experiments`에 등록한다.
+4. 필요한 경우 폼 스키마를 확장한다.
+5. 이벤트 이름은 가능하면 기존 enum 안에서 재사용한다.
+6. 자세한 운영 규칙은 `docs/experiment-playbook.md`를 따른다.
 
 ## How to run important work
 
@@ -88,6 +93,8 @@ pnpm db:seed
 - 역할 간 handoff나 병렬 탐색이 필요한 작업이면 `docs/product-squad/agent-team-delivery.md`도 함께 읽는다.
 - AI adapter나 platform-specific acceleration을 바꾸는 작업이면 `ai/context/platform-optimization.md`도 함께 읽는다.
 - 중요한 작업은 `ai/context/spec-driven.md`와 `ai/context/doc-sync.md`도 함께 읽는다.
+- 비즈니스 요구가 자연어 한 문장이라면 `pnpm mvp:new <slug> --prompt "..."`로 PRD 초안, recipe, active flows, 첫 feature work item을 같이 만든다.
+- prompt보다 구조화된 입력이 더 편하면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용한다.
 - PRD가 있다면 먼저 `docs/prds/<slug>.md`로 정규화하고 `pnpm feature:new --prd <slug>`로 feature work item을 만든다.
 - 해당 작업은 `pnpm work:new <slug> --request "..."` 또는 수동 작성으로 `docs/work-items/<work-id>/`에 brief와 role spec을 만든다.
 - 중요한 작업과 핵심 로직 변경은 구현 단위를 테스트 가능한 behavior slice로 자르고 `spec -> failing test -> minimal implementation -> refactor -> verify` 순서를 기본값으로 둔다.

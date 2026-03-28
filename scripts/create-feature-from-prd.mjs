@@ -335,6 +335,10 @@ function deriveAffectedPaths(feature, analyticsImpact, dataImpact) {
     paths.push(`apps/web/src/modules/${feature.primaryModule}/*`);
   }
 
+  if (feature.uiSurface === "yes") {
+    paths.push("apps/web/src/lib/product-config.ts");
+  }
+
   if (feature.adminSurface === "yes") {
     paths.push("apps/web/src/modules/admin/*");
     paths.push("apps/web/src/app/admin/*");

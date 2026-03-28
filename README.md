@@ -8,6 +8,26 @@ PMF를 찾기 위한 실험용 모노레포 보일러플레이트입니다.
 
 현재 앱에는 generic 실험 패키지 `@pmf/ab-test`와 행동 로그 패키지 `@pmf/user-behavior-log`가 실제로 연결되어 있습니다.
 
+## Start Your MVP
+
+이 저장소를 받을 때는 포함 기능보다 `내 비즈니스를 어떤 MVP 흐름으로 시작할지` 먼저 정하는 게 좋습니다.
+
+가장 빠른 시작 명령:
+
+```bash
+pnpm mvp:new <slug> --prompt "..."
+```
+
+예시:
+
+```bash
+pnpm mvp:new rental-support-match --prompt "나는 렌탈 지원금을 비교해주는 사이트를 만들고 싶고 최종 목표는 렌탈사로 보내는 게 목표야"
+```
+
+이 명령은 PRD 초안, 첫 work item, 추천 recipe, active flows, deferred flows, primary CTA, admin metric 초안을 함께 만듭니다.
+
+빠른 시작 가이드는 [docs/start-your-mvp.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/start-your-mvp.md)를 보세요.
+
 ## 기본 작업 워크플로
 
 이 저장소의 기본값은 `spec-driven + selective TDD + verify`입니다.
@@ -78,6 +98,7 @@ corepack enable
 pnpm install
 cp .env.example .env.local
 pnpm db:seed
+pnpm mvp:new my-mvp --prompt "..."
 pnpm dev
 ```
 
@@ -179,6 +200,7 @@ pnpm verify:full
 pnpm db:seed
 pnpm db:generate
 pnpm db:migrate
+pnpm mvp:new my-mvp --prompt "..."
 pnpm prd:new my-prd
 pnpm feature:new --prd my-prd
 pnpm work:new my-task --request "작업 배경"

@@ -19,6 +19,7 @@
     "ai:sync": "node scripts/sync-ai-context.mjs",
     "squad:check": "node scripts/check-squad-work-item.mjs",
     "prd:new": "node scripts/create-prd.mjs",
+    "mvp:new": "node scripts/create-mvp-starter.mjs",
     "feature:new": "node scripts/create-feature-from-prd.mjs",
     "work:new": "node scripts/create-work-item.mjs",
     "db:seed": "pnpm --filter @pmf/db seed",

@@ -31,11 +31,11 @@ const validInput = {
   name: "홍길동",
   phone: "010-1234-5678",
   email: "hong@example.com",
-  productInterest: "정수기 렌탈",
+  productInterest: "고객 문의 자동화",
   consultationType: "call",
   preferredDate: "",
-  rentalPeriod: "36개월",
-  budgetRange: "월 3-5만원",
+  rentalPeriod: "다음 분기",
+  budgetRange: "월 10-30만원",
   notes: "평일 오후 연락 희망",
   consent: true,
 } as const;
@@ -56,7 +56,8 @@ describe("submitConsultationRequest", () => {
 
     expect(result).toEqual({
       ok: false,
-      message: "상담 요청 접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+      message:
+        "상담 요청 접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
     });
     expect(appErrorLogger.report).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -72,7 +73,9 @@ describe("submitConsultationRequest", () => {
       lead: { id: "lead_test" },
       consultationRequest: { id: "consult_test" },
     } as Awaited<ReturnType<typeof createLeadWithConsultationRequest>>);
-    vi.mocked(appAnalytics.track).mockRejectedValue(new Error("analytics unavailable"));
+    vi.mocked(appAnalytics.track).mockRejectedValue(
+      new Error("analytics unavailable"),
+    );
 
     const result = await submitConsultationRequest(validInput, {
       sessionId: "anon_test",

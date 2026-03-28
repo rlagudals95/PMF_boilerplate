@@ -68,6 +68,7 @@ apps/web/src/
 - `modules/*` direct import로 cross-feature 공유하지 않는다.
 - client/server component 경계는 React/Next 제약 기준으로 나눈다.
 - shared UI와 app shell에서는 raw brand color utility를 직접 쓰지 않고, 서비스 테마는 `apps/web/src/lib/app-theme.ts`에서 관리한다.
+- 헤더 문구, hero copy, trust bullet, form label/placeholder처럼 여러 user-facing surface에 반복되는 제품 카피는 raw TSX literal보다 `apps/web/src/lib/product-config.ts`를 우선한다.
 
 ## FE Checklist
 
@@ -75,4 +76,5 @@ apps/web/src/
 - feature 코드는 `modules/*`에 있는가
 - cross-feature 공용 코드는 `shared/*`에 있는가
 - `lib/*`가 인프라 wiring 역할만 하는가
+- 제품 카피와 신뢰 surface가 여러 파일에 흩어지지 않고 `product-config.ts` 같은 단일 surface로 관리되는가
 - `app/actions.ts`나 `src/components` 같은 금지 패턴이 다시 생기지 않았는가

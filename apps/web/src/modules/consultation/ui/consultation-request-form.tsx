@@ -5,10 +5,20 @@ import {
   consultationRequestInputSchema,
   type ConsultationRequestInput,
 } from "@pmf/core";
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Textarea } from "@pmf/ui";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Textarea,
+} from "@pmf/ui";
 import { startTransition, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { productConfig } from "@/lib/product-config";
 import { submitConsultationRequestAction } from "@/modules/consultation/actions/submit-consultation-request-action";
 import { defaultConsultationRequestValues } from "@/modules/consultation/model/consultation-form";
 import { trackMarketingEvent } from "@/modules/marketing/model/track-marketing-event";
@@ -79,17 +89,27 @@ export function ConsultationRequestForm() {
   return (
     <Card className="border-primary/15 bg-surface shadow-glow">
       <CardHeader>
-        <CardTitle className="text-2xl">상담 요청</CardTitle>
+        <CardTitle className="text-2xl">
+          {productConfig.consultation.formTitle}
+        </CardTitle>
         <p className="text-sm text-muted-foreground">
-          리드만 보는 수준을 넘어, 실제 상담 의사와 맥락까지 확인하는 검증 단계입니다.
+          {productConfig.consultation.formDescription}
         </p>
       </CardHeader>
       <CardContent>
-        <form className="space-y-5" onSubmit={onSubmit} data-testid="consult-form">
+        <form
+          className="space-y-5"
+          onSubmit={onSubmit}
+          data-testid="consult-form"
+        >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="consult-name">이름</Label>
-              <Input id="consult-name" placeholder="홍길동" {...register("name")} />
+              <Input
+                id="consult-name"
+                placeholder="홍길동"
+                {...register("name")}
+              />
               <FieldError message={errors.name?.message} />
             </div>
             <div className="space-y-2">
@@ -115,10 +135,14 @@ export function ConsultationRequestForm() {
               <FieldError message={errors.email?.message} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="consult-interest">상담 제품</Label>
+              <Label htmlFor="consult-interest">
+                {productConfig.consultation.productInterestLabel}
+              </Label>
               <Input
                 id="consult-interest"
-                placeholder="정수기 렌탈"
+                placeholder={
+                  productConfig.consultation.productInterestPlaceholder
+                }
                 {...register("productInterest")}
               />
               <FieldError message={errors.productInterest?.message} />
@@ -128,7 +152,11 @@ export function ConsultationRequestForm() {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="consult-type">상담 방식</Label>
-              <select id="consult-type" className={selectClassName} {...register("consultationType")}>
+              <select
+                id="consult-type"
+                className={selectClassName}
+                {...register("consultationType")}
+              >
                 <option value="call">전화</option>
                 <option value="kakao">카카오</option>
                 <option value="visit">방문</option>
@@ -146,10 +174,12 @@ export function ConsultationRequestForm() {
               <FieldError message={errors.preferredDate?.message} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="consult-budget">예산 범위</Label>
+              <Label htmlFor="consult-budget">
+                {productConfig.consultation.budgetLabel}
+              </Label>
               <Input
                 id="consult-budget"
-                placeholder="월 3-5만원"
+                placeholder={productConfig.consultation.budgetPlaceholder}
                 {...register("budgetRange")}
               />
               <FieldError message={errors.budgetRange?.message} />
@@ -157,20 +187,24 @@ export function ConsultationRequestForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="consult-period">렌탈 기간</Label>
+            <Label htmlFor="consult-period">
+              {productConfig.consultation.timelineLabel}
+            </Label>
             <Input
               id="consult-period"
-              placeholder="24개월 / 36개월"
+              placeholder={productConfig.consultation.timelinePlaceholder}
               {...register("rentalPeriod")}
             />
             <FieldError message={errors.rentalPeriod?.message} />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="consult-notes">상세 요구사항</Label>
+            <Label htmlFor="consult-notes">
+              {productConfig.consultation.notesLabel}
+            </Label>
             <Textarea
               id="consult-notes"
-              placeholder="설치 장소, 선호 브랜드, 예산, 원하는 상담 시간 등을 남겨 주세요."
+              placeholder={productConfig.consultation.notesPlaceholder}
               {...register("notes")}
             />
             <FieldError message={errors.notes?.message} />
@@ -182,7 +216,7 @@ export function ConsultationRequestForm() {
               className={checkboxClassName}
               {...register("consent")}
             />
-            상담 진행을 위한 개인정보 수집 및 연락에 동의합니다.
+            {productConfig.consultation.consentLabel}
           </label>
           <FieldError message={errors.consent?.message} />
 
@@ -192,11 +226,16 @@ export function ConsultationRequestForm() {
             disabled={isPending}
             data-testid="consult-submit"
           >
-            {isPending ? "상담 요청 중..." : "상담 요청 보내기"}
+            {isPending
+              ? productConfig.consultation.pendingLabel
+              : productConfig.consultation.submitLabel}
           </Button>
 
           {serverMessage ? (
-            <p className="text-sm text-muted-foreground" data-testid="consult-message">
+            <p
+              className="text-sm text-muted-foreground"
+              data-testid="consult-message"
+            >
               {serverMessage}
             </p>
           ) : null}

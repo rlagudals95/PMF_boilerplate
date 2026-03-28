@@ -11,7 +11,7 @@ async function main() {
   const { slug, sourceUrl, force } = parseArgs(process.argv.slice(2));
   const template = await readFile(templatePath, "utf8");
   const destinationPath = path.join(prdsDir, `${slug}.md`);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = buildLocalDate(new Date());
   const contents = replaceField(
     replaceField(
       replaceField(
@@ -116,6 +116,14 @@ function toTitleCase(value) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function buildLocalDate(date) {
+  const year = String(date.getFullYear());
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
 main().catch((error) => {

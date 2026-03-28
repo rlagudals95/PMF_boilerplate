@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_KR, Space_Grotesk } from "next/font/google";
 
 import { appConfig } from "@/lib/app-config";
+import { productConfig } from "@/lib/product-config";
 import { themeCssVars } from "@/lib/app-theme";
 import { MarketingProviderScripts } from "@/modules/marketing/ui/marketing-provider-scripts";
 import { PageViewTracker } from "@/shared/ui/page-view-tracker";
@@ -23,7 +24,7 @@ const mono = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: `${appConfig.appName} | ${appConfig.primaryProduct}`,
+  title: productConfig.site.headerTitle,
   description: appConfig.description,
 };
 
@@ -44,7 +45,7 @@ export default function RootLayout({
             <main>{children}</main>
             <footer className="border-t border-border/80 bg-background/80">
               <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
-                <p>PMF Boilerplate for side-project experimentation.</p>
+                <p>{productConfig.site.footerDescription}</p>
                 <p>Default data mode: {appConfig.dataMode}</p>
               </div>
             </footer>

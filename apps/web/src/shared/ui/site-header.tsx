@@ -1,5 +1,6 @@
 import { Button } from "@pmf/ui";
 
+import { productConfig } from "@/lib/product-config";
 import { TrackedLink } from "@/shared/ui/tracked-link";
 
 export function SiteHeader() {
@@ -8,11 +9,15 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <TrackedLink href="/" className="flex items-center gap-3">
           <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-semibold text-primary-foreground shadow-sm">
-            PM
+            {productConfig.site.mark}
           </span>
           <div>
-            <p className="text-sm font-semibold text-foreground">PMF Boilerplate</p>
-            <p className="text-xs text-muted-foreground">실험용 랜딩·리드·운영 스타터</p>
+            <p className="text-sm font-semibold text-foreground">
+              {productConfig.site.headerTitle}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {productConfig.site.headerDescription}
+            </p>
           </div>
         </TrackedLink>
         <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
@@ -46,12 +51,12 @@ export function SiteHeader() {
         </nav>
         <Button asChild size="sm">
           <TrackedLink
-            href="/pay"
+            href="/consult"
             eventProperties={{
               source: "site_header",
             }}
           >
-            결제 데모 열기
+            {productConfig.site.headerPrimaryCtaLabel}
           </TrackedLink>
         </Button>
       </div>

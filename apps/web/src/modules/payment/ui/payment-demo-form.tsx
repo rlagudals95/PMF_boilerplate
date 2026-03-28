@@ -85,7 +85,7 @@ export function PaymentDemoForm({ isConfigured }: { isConfigured: boolean }) {
             </Label>
             <Input
               id="payment-product"
-              placeholder="모두의렌탈 결제 데모"
+              placeholder="MVP 결제 데모"
               className="border-white/10 bg-white/5 text-white placeholder:text-slate-400"
               {...register("productDescription")}
             />
@@ -136,7 +136,9 @@ export function PaymentDemoForm({ isConfigured }: { isConfigured: boolean }) {
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
-            <p>필수 환경변수: `TOSS_PAYMENTS_API_KEY`, `NEXT_PUBLIC_SITE_URL`</p>
+            <p>
+              필수 환경변수: `TOSS_PAYMENTS_API_KEY`, `NEXT_PUBLIC_SITE_URL`
+            </p>
             <p className="mt-1">
               현재 상태: {isConfigured ? "설정됨" : "미설정"}
             </p>

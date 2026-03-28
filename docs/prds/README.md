@@ -11,10 +11,16 @@
 ## 시작 명령
 
 ```bash
+pnpm mvp:new <slug> --prompt "..."
+pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."
 pnpm prd:new <slug>
 pnpm feature:new --prd <slug>
 pnpm feature:new --prd <slug> --feature <feature-slug>
 ```
+
+- `pnpm mvp:new <slug> --prompt "..."`는 자연어 비즈니스 아이디어 한 문장으로 recipe, active flows, deferred flows를 추론해 PRD 초안과 첫 feature work item을 같이 생성하는 가장 빠른 진입점입니다.
+- `pnpm mvp:new ...`는 few inputs로 PRD 초안과 첫 feature work item까지 같이 생성하는 범용 MVP kit 진입점입니다.
+- `pnpm prd:new <slug>`는 더 자유도가 높은 빈 PRD scaffold가 필요할 때 사용합니다.
 
 ## 문서 규칙
 
@@ -29,5 +35,7 @@ pnpm feature:new --prd <slug> --feature <feature-slug>
 
 ## 구현 진입
 
+- 비즈니스 요구가 먼저 있고 빠르게 첫 MVP 문서를 세우고 싶다면 `pnpm mvp:new <slug> --prompt "..."`를 우선 사용할 수 있습니다.
+- prompt보다 구조화된 입력이 더 편하면 기존 `pnpm mvp:new <slug> --goal ... --audience ... --offer ... --signal ...`도 그대로 사용할 수 있습니다.
 - PRD를 만든 뒤에는 `pnpm feature:new --prd <slug>`로 work item, `feature-spec.md`, `quality-scorecard.md`를 생성합니다.
 - PRD 정보가 부족하면 generator는 open questions를 만들고 구현 준비 상태를 `blocked`로 남깁니다.

@@ -86,6 +86,7 @@
 - 버튼, 카드, 입력, 배지, 테이블 정도만 공유 패키지로 둡니다.
 - 무거운 디자인 시스템은 만들지 않되, 서비스별 브랜드 변경을 위한 작은 semantic theme layer는 둡니다.
 - shared UI와 app shell은 raw brand color utility 대신 semantic token을 사용합니다.
+- 서비스별 hero copy, trust point, 폼 문구처럼 여러 user-facing surface에 걸치는 제품 판단은 `apps/web/src/lib/product-config.ts`에 둡니다.
 - 이유: PMF 실험 보일러플레이트는 미학보다 속도와 가독성이 우선입니다.
 
 ### 8. `apps/web`는 Hybrid FSD Lite 구조를 따른다
@@ -229,10 +230,11 @@ page.tsx
 ## 다음 제품으로 재사용하는 방법
 
 1. `packages/core/src/fixtures/mock-data.ts`와 랜딩 카피를 바꿉니다.
-2. 필요한 경우 폼 zod 스키마를 확장합니다.
-3. 실험 채널/상태 enum을 추가합니다.
-4. 제품별 코드는 먼저 `apps/web/src/modules/*`에 두고, 두 번 이상 재사용되는 코드는 `apps/web/src/shared/*`를 검토합니다.
-5. 중요한 작업이면 관련 spec을 repo 문서로 먼저 고정한 뒤 구현합니다.
+2. `apps/web/src/lib/product-config.ts`에서 헤더, hero, trust, 폼 카피를 제품 기준으로 맞춥니다.
+3. 필요한 경우 폼 zod 스키마를 확장합니다.
+4. 실험 채널/상태 enum을 추가합니다.
+5. 제품별 코드는 먼저 `apps/web/src/modules/*`에 두고, 두 번 이상 재사용되는 코드는 `apps/web/src/shared/*`를 검토합니다.
+6. 중요한 작업이면 관련 spec을 repo 문서로 먼저 고정한 뒤 구현합니다.
 
 ## 무엇을 더 넣고 무엇을 빼야 하는가
 

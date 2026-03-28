@@ -26,7 +26,7 @@ describe("startPaymentAction", () => {
   it("passes validated checkout input to the model", async () => {
     const analyticsContext = { sessionId: "anon_test" };
     const input = {
-      productDescription: "모두의렌탈 결제 데모",
+      productDescription: "MVP 결제 데모",
       amount: 39_000,
       customerName: "홍길동",
       customerEmail: "hong@example.com",
