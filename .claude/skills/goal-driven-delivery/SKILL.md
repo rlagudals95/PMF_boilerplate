@@ -12,6 +12,7 @@ verification: "manual"
 - 사용자가 기능 목록보다 비즈니스 목표를 먼저 주고 제품 방향을 정해 달라고 할 때
 - AI가 PM/PD/FE/BE처럼 역할을 나눠 논의한 뒤 더 높은 품질의 결과를 내야 할 때
 - 중요한 작업을 구현 전에 목표, metric, browser QA, release 판단까지 한 루프로 고정해야 할 때
+- prompt, workflow, role topology까지 바꿨을 때 replayable evaluation evidence로 결과를 검증해야 할 때
 
 ## Read first
 
@@ -27,11 +28,12 @@ verification: "manual"
 1. 입력을 기능 요청이 아니라 `goal packet`으로 재해석합니다.
 2. business goal, target user, success metric, non-goals, constraints가 비어 있으면 먼저 문서에 고정합니다.
 3. 중요한 작업이면 `product-squad` 흐름으로 `brief.md`, role spec, `quality-scorecard.md`를 준비합니다.
-4. PM은 business outcome과 acceptance criteria를 고정합니다.
-5. PD는 CTA, 정보 구조, trust, edge state, browser QA 포인트를 정리합니다.
-6. FE/BE는 가장 작은 measurable slice와 test-first 경계를 정합니다.
-7. 구현 후에는 `quality-scorecard.md`에 goal fit, browser evidence, measurement, ship/iterate 판단을 남깁니다.
-8. 여러 역할이 실제 handoff해야 하면 `agent-team-delivery` 기준으로 `team-plan.md`를 함께 사용합니다.
+4. `po-role`이 user conversation과 synthesis를 소유하고, specialist가 반환할 artifact shape를 먼저 고정합니다.
+5. PM은 business outcome과 acceptance criteria를 고정합니다.
+6. PD는 CTA, 정보 구조, trust, edge state, browser QA 포인트를 정리합니다.
+7. FE/BE는 가장 작은 measurable slice와 test-first 경계를 정합니다.
+8. 구현 후에는 `evaluator-role` 또는 동등한 independent reviewer가 `quality-scorecard.md`에 goal fit, browser evidence, measurement, ship/iterate 판단을 남깁니다.
+9. 여러 역할이 실제 handoff해야 하면 `agent-team-delivery` 기준으로 `team-plan.md`를 함께 사용합니다.
 
 ## Goal Packet Checklist
 
@@ -46,9 +48,11 @@ verification: "manual"
 - 기본 최적화 대상은 화면 수나 기능 수가 아니라 business outcome이다.
 - user-facing 작업은 browser QA evidence 없이 완료로 보지 않는다.
 - role debate는 여러 에이전트를 반드시 띄우지 않아도 되고, 한 에이전트가 순차적으로 역할을 수행해도 된다.
+- 기본 토폴로지는 `po-role`이 user conversation을 소유하고 specialist가 bounded artifact를 반환하는 supervisor-first 구조다.
 - metric이 비어 있으면 구현보다 metric 정의를 먼저 진행한다.
 - quality scorecard에서 ship 근거가 약하면 빠르게 scope를 줄여 다시 실험한다.
 - role output은 결과물만이 아니라 enterprise principle adherence도 남겨야 한다.
+- prompt, workflow, role topology 변경은 replayable evaluation evidence 또는 skip reason을 남겨야 한다.
 
 ## Guardrails
 

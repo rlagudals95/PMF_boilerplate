@@ -64,8 +64,11 @@ verification: "manual"
 
 - 모델이 중요한 작업에서 `brief.md`, `team-plan.md`, `quality-scorecard.md`를 더 자주 만들고 읽는다.
 - 모델이 중요한 작업에서 `po-role` gate, goal packet completeness, clarification loop를 생략하지 않는다.
+- 모델이 중요한 작업에서 `po-role`이 user conversation과 synthesis를 소유하는 supervisor-first topology를 흐리지 않는다.
 - goal-driven 작업에서 role debate와 browser QA를 생략하지 않는다.
+- goal-driven 작업에서 `evaluator-role` 또는 동등한 independent release gate를 생략하지 않는다.
 - landing 같은 user-facing 작업에서 commercial quality critique와 visual bar 판단을 건너뛰지 않는다.
+- prompt, workflow, role topology를 바꿀 때 replayable evaluation evidence나 explicit skip reason을 남긴다.
 - 플랫폼 기능이 있으면 delegation과 reminder를 활용하되, 기능이 없어도 같은 artifact와 command로 재현 가능하다.
 - finishing gate는 감이 아니라 `pnpm repo:check`, `pnpm verify`, `pnpm squad:check`, browser evidence 같은 repo-local proof로 닫힌다.
 

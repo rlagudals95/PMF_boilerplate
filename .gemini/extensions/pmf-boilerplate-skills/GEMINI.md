@@ -10,6 +10,7 @@ Bundled skills:
 - `experiment-ops`: 실험 등록, 이벤트 명명, success metric 설계, 종료 기준 판단
 - `product-squad`: 중요한 기능 작업이나 실험 변경을 PM/PD/FE/BE 역할로 나눠서 운영할 때
 - `po-role`: raw business idea나 one-shot 요청을 goal packet, clarification gate, 역할별 승인 흐름으로 정규화할 때
+- `evaluator-role`: 중요한 작업의 release 판단, quality scorecard 정리, prompt/workflow 변경의 replayable evaluation evidence를 검토할 때
 - `goal-driven-delivery`: 비즈니스 목표를 제품 결정, 역할별 논의, browser QA, release 판단까지 연결해야 할 때
 - `agent-team-delivery`: subagent, agent team, 단일 에이전트 역할 시뮬레이션을 같은 canonical workflow로 운영해야 할 때
 - `new-feature`: canonical PRD를 읽고 단일 feature slice의 work item과 spec 문서를 만들 때

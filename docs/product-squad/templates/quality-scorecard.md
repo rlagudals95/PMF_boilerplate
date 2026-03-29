@@ -28,6 +28,10 @@ skip_reason: null
 
 -
 
+## Evaluator Gate Result
+
+-
+
 ## Review Checklist
 
 - [ ] primary business goal과 success metric이 이 변경과 연결된다
@@ -36,11 +40,13 @@ skip_reason: null
 - [ ] 사용자에게 가장 중요한 CTA와 value proposition이 분명하거나 non-user-facing 범위라고 적혀 있다
 - [ ] `po-role` 또는 동등한 first gate가 goal packet completeness와 build-safe 여부를 판정했다
 - [ ] `pd-role` 또는 동등한 UX reviewer가 commercial quality / boilerplate smell을 검토했다
+- [ ] `evaluator-role` 또는 동등한 independent reviewer가 release recommendation을 남겼다
 - [ ] trust, error, empty, pending state 또는 관련 skip reason이 검토되었다
 - [ ] analytics/admin visibility 또는 운영 해석 근거가 있어 결과를 해석할 수 있다
 - [ ] docs/spec sync가 확인되었다
 - [ ] fresh `pnpm verify` 또는 `pnpm verify:full` 결과가 있다
 - [ ] responsive + accessibility + browser QA evidence가 `docs/work-items/<work-id>/browser-qa.md`로 정리되었거나 non-user-facing skip reason이 있다
+- [ ] prompt, workflow, role topology 변경이면 replayable evaluation evidence 또는 explicit skip reason이 있다
 
 ## Browser QA Evidence
 
@@ -71,6 +77,12 @@ skip_reason: null
 ## Verification Evidence
 
 <!-- `pnpm repo:check --work <work-id>`, `pnpm squad:check <work-id>`, `pnpm verify` 또는 `pnpm verify:full` 결과를 적습니다. -->
+
+-
+
+## Replayable Evaluation Evidence
+
+<!-- prompt, workflow, role topology를 건드린 작업이면 prompt evaluation report나 equivalent replay evidence를 적습니다. 아니면 skip reason을 적습니다. -->
 
 -
 

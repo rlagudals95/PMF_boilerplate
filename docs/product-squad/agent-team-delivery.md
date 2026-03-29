@@ -16,6 +16,7 @@ verification: "manual"
 ## 핵심 생각
 
 - 진짜 팀처럼 일한다는 것은 agent를 많이 띄우는 것이 아니라 역할 간 handoff가 명시적이라는 뜻입니다.
+- 기본값은 peer-to-peer 자유 토론이 아니라 `po supervisor -> bounded specialists -> evaluator gate`입니다.
 - 플랫폼 기능은 다르지만, 아래 네 가지는 공통으로 유지할 수 있습니다.
   - shared context pack
   - shared task list
@@ -27,7 +28,7 @@ verification: "manual"
 ### 1. Single-Agent Sequential
 
 - 기본 모드입니다.
-- 한 에이전트가 `lead/po gate -> pm -> pd -> fe -> be -> quality review`를 순차적으로 수행합니다.
+- 한 에이전트가 `lead/po gate -> pm -> pd -> fe -> be -> evaluator -> quality review`를 순차적으로 수행합니다.
 - subagent나 agent team 기능이 없어도 동일한 산출물을 만들 수 있습니다.
 
 ### 2. Subagent Fan-Out
@@ -64,11 +65,38 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
   - route/module/component, state, instrumentation, UI verify
 - be
   - validation, persistence, analytics, admin visibility, failure mode
+- evaluator
+  - quality-scorecard 독립 판정, release recommendation, replayable evaluation 필요 여부
 - quality reviewer
-  - 별도 agent일 수도 있고 lead가 겸할 수도 있습니다.
+  - 별도 agent일 수도 있고 evaluator와 같은 agent일 수도 있습니다.
 
 각 역할은 단순히 산출물만 채우는 것이 아니라 `ai/context/ai-native.md`의 enterprise principles를 자기 관점에서 적용해야 합니다.
 즉 PM은 decision quality, PD는 UX system quality, FE는 code/module quality, BE는 contract/domain quality를 담당합니다.
+
+## Default Topology V2
+
+- `po-role`
+  - user conversation owner
+  - question routing
+  - synthesis owner
+- specialist roles
+  - bounded artifact producer
+  - direct user ping-pong 비기본
+- `evaluator-role`
+  - implementation과 분리된 release judge
+
+이 구조는 manager-first 기본값이며, direct worker-to-worker chat은 exception path입니다.
+
+## Permission Defaults
+
+- `po`, `pm`, `pd`, `evaluator`
+  - read-first, docs-first
+- `fe`, `be`
+  - owned files 안에서 write
+- browser/evidence worker
+  - no code edits
+
+플랫폼이 실제 tool restriction을 제공하지 않더라도, canonical 운영 expectation은 위와 같습니다.
 
 ## Shared Artifacts
 
@@ -116,6 +144,8 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
   - 이어받을 역할
 - success check
   - handoff 전에 확인한 증거
+- evaluator follow-up
+  - evaluator가 추가로 확인해야 하는 잔여 증거
 
 가능하면 success check에는 아래 둘을 함께 남깁니다.
 
@@ -145,11 +175,13 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
 - 병렬화는 task가 아니라 file ownership 기준으로 결정합니다.
 - 같은 파일을 여러 agent가 동시에 편집하지 않습니다.
 - 브라우저 QA, release 판단, final synthesis는 lead가 수렴합니다.
+- release recommendation은 가능하면 `evaluator-role`이 먼저 적고, lead가 최종 synthesis를 합니다.
 - 병렬 implementation보다 병렬 investigation이 먼저입니다.
 
 ## Lead Rules
 
 - lead는 초반에 `po-role`처럼 goal packet과 visual bar가 충분한지 점검합니다.
+- lead는 기본적으로 user-facing conversation을 직접 소유합니다.
 - 진행 중간에 team을 방치하지 않고 수시로 steer합니다.
 - 산출물 간 충돌이 생기면 더 최신 대화가 아니라 repo 문서를 source of truth로 삼습니다.
 - 최종 답은 역할별 산출물을 합쳐 `quality-scorecard.md`에 남깁니다.

@@ -42,6 +42,11 @@ verification: "manual"
 - 위치: `ai/skills/po-role.md`
 - 사용 시점: raw business idea나 one-shot 요청을 goal packet, clarification gate, 역할별 승인 흐름으로 정규화할 때
 
+### `evaluator-role`
+
+- 위치: `ai/skills/evaluator-role.md`
+- 사용 시점: 중요한 작업의 release 판단, quality scorecard 정리, prompt/workflow 변경의 replayable evaluation evidence를 검토할 때
+
 ### `goal-driven-delivery`
 
 - 위치: `ai/skills/goal-driven-delivery.md`

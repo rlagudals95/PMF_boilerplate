@@ -22,6 +22,7 @@ verification: "manual"
 - AI가 스스로 추측해 채워 넣는 영역을 줄이고, metric과 non-goals를 먼저 고정한다.
 - 별도 orchestration 서비스보다 repo 안 source of truth를 우선한다.
 - one-shot 지향은 질문 없는 생성이 아니라, 부족한 입력을 빠르게 드러내고 보충하는 계약으로 본다.
+- 기본 토폴로지는 `po-role`이 user conversation을 소유하고 specialist가 artifact를 반환한 뒤 evaluator가 release를 닫는 구조다.
 
 ## Goal Packet
 
@@ -78,10 +79,19 @@ verification: "manual"
   - route/module/component 경계, state flow, instrumentation 위치, UI test-first 계획
 - `be-role`
   - validation, persistence, analytics/event, failure mode, admin 해석 가능성 검토
+- `evaluator-role`
+  - goal fit, evidence completeness, replayable evaluation 필요 여부, `ship | iterate | stop` 추천
 - `quality review`
-  - 별도 상시 역할이 아니라 각 역할 산출물을 `quality-scorecard.md`로 수렴하는 단계
+  - 각 역할 산출물을 `quality-scorecard.md`로 수렴하는 단계이며, 기본 reviewer는 `evaluator-role`이다
 
 팀처럼 실제 handoff해야 하면 `docs/product-squad/agent-team-delivery.md`의 `team-plan.md` 규칙을 함께 사용합니다.
+
+### Supervisor-First Contract
+
+- `po-role`이 user-facing 질문, 우선순위, synthesis를 기본 소유합니다.
+- PM/PD/FE/BE는 bounded artifact를 반환하는 specialist로 동작합니다.
+- direct peer chat은 `agent-team` 모드에서만 예외적으로 허용합니다.
+- `evaluator-role`은 구현 convenience보다 release evidence를 우선합니다.
 
 ## 작업 루프
 
@@ -97,6 +107,7 @@ verification: "manual"
 - PM은 outcome과 acceptance criteria를 고정한다.
 - PD는 사용자가 어떤 CTA와 어떤 흐름을 만나야 하는지 정리하고, commercial quality와 boilerplate smell을 비평한다.
 - FE/BE는 어떤 얇은 slice를 먼저 구현해야 metric을 해석할 수 있는지 정한다.
+- specialist 산출물은 `po-role`이 합칠 수 있는 artifact로 남기고, direct user-facing ping-pong을 기본값으로 두지 않는다.
 - 이 단계에서는 “예쁘다/별로다”보다 “목표에 기여하나/상용 서비스처럼 신뢰를 주나/해석 가능한가”를 묻는다.
 
 ### Landing Quality Contract
@@ -179,8 +190,10 @@ user-facing 변경이면 아래를 최소 확인합니다.
 ### Release Gate
 
 - `quality-scorecard.md`에 ship / iterate / stop 판단과 근거가 남아 있다.
+- `evaluator-role` 또는 동등한 independent reviewer가 release recommendation을 남겼다.
 - 각 역할 산출물이 enterprise principles를 지켰는지 확인된다.
 - canonical 문서, work item metadata, generated adapter drift가 static gate를 통과한다.
+- prompt, workflow, role topology 변경이면 replayable evaluation evidence 또는 explicit skip reason이 있다.
 
 ## Quality Scorecard
 
@@ -191,11 +204,13 @@ scorecard에는 아래가 들어갑니다.
 - goal fit
 - 지금 죽여야 하는 product risk
 - design gate 결과
+- evaluator gate 결과
 - browser QA evidence
 - code quality evidence
 - principle adherence
 - docs/spec sync evidence
 - verification evidence
+- replayable evaluation evidence
 - measurement / ops check
 - ship / iterate / stop recommendation
 

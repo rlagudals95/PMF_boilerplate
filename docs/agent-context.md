@@ -125,7 +125,7 @@ verification: "manual"
 중요한 작업은 `product-squad`를 기본 진입점으로 사용합니다.
 
 - 기본 오케스트레이터는 `product-squad`입니다.
-- 첫 게이트 역할은 `po-role`이고, 세부 역할은 `pm-role`, `pd-role`, `fe-role`, `be-role`입니다.
+- 첫 게이트 역할은 `po-role`이고, 기본 토폴로지는 `po supervisor -> pm/pd/fe/be specialists -> evaluator-role`입니다.
 - 중요한 작업은 먼저 `docs/work-items/<work-id>/`에 문서 산출물을 만들고, 그 문서를 입력으로 구현합니다.
 - 팀처럼 움직여야 하는 작업은 `team-plan.md`를 shared task list와 handoff source로 사용합니다.
 - user-facing 또는 business-goal-critical 작업은 `quality-scorecard.md`까지 채워야 review loop가 닫힙니다.

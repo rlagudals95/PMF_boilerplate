@@ -14,6 +14,7 @@
 - 입력이 business idea이든 정책/운영 규칙이든 먼저 goal packet으로 정규화한 뒤 가장 얇은 MVP slice를 고릅니다.
 - landing이나 강한 user-facing 작업이면 `visual bar`, trust source, reference 또는 anti-reference가 약할 때 그대로 구현하지 않습니다.
 - `po-role`이 먼저 goal packet completeness를 보고, `pm-role` / `pd-role` / `fe-role` / `be-role` critique가 끝나기 전에는 코드를 수정하지 않습니다.
+- 기본 토폴로지는 `po-role`이 user conversation과 synthesis를 소유하고, specialist는 bounded artifact를 반환하며, `evaluator-role`이 release gate를 닫는 구조입니다.
 - 요청은 먼저 work class가 `gated work`인지 보고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 판단한 뒤 가장 안전한 surface부터 시작합니다.
 - 이 저장소의 강점은 자유 생성이 아니라 existing block 조합입니다. 먼저 `landing`, `lead`, `consultation`, `payment`, `admin`, `auth` 블록 안에서 해결하고, 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` contract와 copy surface를 맞춥니다.
 - 단, existing block 조합이 business goal이나 commercial quality bar를 해치면 starter convenience보다 목표 달성을 우선합니다.
@@ -63,22 +64,25 @@ Auth와 payment는 기본 기능이 아니라 optional runtime capability입니�
 2. 입력을 goal packet으로 정리하고, `business goal`, `target user`, `target moment`, `success metric`, `non-goals`, `constraints`, `existing evidence`, `visual bar`를 먼저 채운다.
 3. `po-role` 관점에서 이 요청을 `ready`, `needs-clarification`, `not-safe-to-build`로 분류한다.
 4. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal packet과 visual bar를 보강한다. landing이나 user-facing 작업이면 reference 또는 anti-reference가 필요한지도 판단한다.
-5. `pm-role` / `pd-role` / `fe-role` / `be-role` 관점에서 “이대로 구현하면 실패하는 이유”를 먼저 적고, critique가 끝나기 전에는 코드 수정을 시작하지 않는다.
+5. `po-role`이 user conversation과 synthesis owner라는 전제로 `pm-role` / `pd-role` / `fe-role` / `be-role` 관점에서 “이대로 구현하면 실패하는 이유”를 먼저 적고, critique가 끝나기 전에는 코드 수정을 시작하지 않는다.
 6. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
 7. 이 요청의 work class가 `gated work`인지 먼저 보고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 판단한 뒤 가장 안전한 surface부터 시작한다.
 8. active flows와 deferred flows를 정한다.
 9. `product-config-friendly`면 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
 10. 기존 블록으로 표현되지 않는 요구일 때만 deeper code를 변경한다.
 11. user-facing 또는 goal-critical 작업이면 필요한 work item과 browser QA evidence까지 남긴다.
-12. auth와 payment는 비즈니스 목표가 필요로 할 때만 노출한다.
-13. 필요한 env vars와 optional capability 상태를 정리한다.
-14. 마지막에 적절한 verify 명령을 실행한다.
+12. prompt, workflow, role topology를 바꾸는 작업이면 replayable evaluation evidence 또는 explicit skip reason을 남긴다.
+13. 마지막에는 `evaluator-role` 관점에서 evidence gap과 `ship | iterate | stop` recommendation을 정리한다.
+14. auth와 payment는 비즈니스 목표가 필요로 할 때만 노출한다.
+15. 필요한 env vars와 optional capability 상태를 정리한다.
+16. 마지막에 적절한 verify 명령을 실행한다.
 
 최종 요약에는 반드시 아래를 포함해줘.
 - selected MVP shape
 - active flows
 - deferred flows
 - major copy/product changes applied
+- release recommendation
 - required env vars for enabled capabilities
 - verification result
 - remaining manual follow-ups
@@ -94,9 +98,10 @@ Auth와 payment는 기본 기능이 아니라 optional runtime capability입니�
 부족하면 꼭 필요할 때만 1~3개의 질문을 해줘.
 landing이나 user-facing 작업이면 reference 또는 anti-reference 필요 여부도 판단해줘.
 `po-role` 관점의 completeness check와 `pm-role` / `pd-role` / `fe-role` / `be-role` critique를 먼저 거친 뒤에 구현해줘.
+`po-role`이 user conversation과 synthesis를 소유하고, 마지막에는 `evaluator-role` 관점의 release recommendation도 남겨줘.
 existing landing / lead / consultation / payment / admin 블록 안에서 풀고, 먼저 이 요청이 `gated work`인지와 `product-config-friendly`인지 또는 `deep code`가 필요한지를 분류해줘.
 그리고 `product-config-friendly`면 먼저 `product-config.mvp`와 copy surface를 맞춘 뒤 verify까지 해줘.
-마지막엔 active flows, deferred flows, required env vars, verification result를 요약해줘.
+마지막엔 active flows, deferred flows, release recommendation, required env vars, verification result를 요약해줘.
 ```
 
 ## Output Contract
@@ -108,6 +113,7 @@ existing landing / lead / consultation / payment / admin 블록 안에서 풀고
 - deferred flows
 - goal packet completeness result
 - major copy/product changes applied
+- release recommendation
 - required env vars for enabled capabilities
 - verification result
 - remaining manual follow-ups

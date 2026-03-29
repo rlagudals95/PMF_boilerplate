@@ -7,6 +7,7 @@
 - Cursor, Claude Code, Codex 같은 도구에서 공통으로 쓸 수 있는 starter prompt를 비교합니다.
 - 어떤 prompt를 기본값으로 둘지 `ship | iterate | reject` 기준으로 판단합니다.
 - 평가 기준은 단순 command correctness보다 `time to usable demo`와 `surface coherence`를 더 우선합니다.
+- 평가 기준에는 `po-role` gate, specialist critique, `evaluator-role` release discipline처럼 topology 품질도 포함합니다.
 - prompt 변경 사유를 repo 안 문서로 남깁니다.
 
 ## 언제 사용하나
@@ -21,8 +22,9 @@
 
 ```text
 이 repo를 읽고 내 사업 아이디어를 이 구조에 맞는 가장 얇은 MVP로 적용해줘.
-먼저 repo context를 읽고 꼭 필요할 때만 1~3개의 질문을 해줘.
-existing landing / lead / consultation / payment / admin 블록 안에서 풀고, 먼저 `product-config.mvp`와 copy surface를 맞춘 뒤 verify까지 해줘.
+먼저 repo context를 읽고 goal packet과 visual bar를 정리해줘.
+꼭 필요할 때만 1~3개의 질문을 하고, `po-role` completeness check와 `pm-role` / `pd-role` / `fe-role` / `be-role` critique를 먼저 거쳐줘.
+기존 블록 안에서 풀고, 마지막엔 `evaluator-role` 관점의 release recommendation까지 남겨줘.
 마지막엔 active flows, deferred flows, required env vars, verification result를 요약해줘.
 ```
 
@@ -39,21 +41,24 @@ existing landing / lead / consultation / payment / admin 블록 안에서 풀고
 
 반드시 아래 순서로 진행해줘.
 1. AGENTS.md와 관련 ai/context/docs를 읽어 이 repo 구조와 기존 building block을 먼저 이해한다.
-2. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal, target user, 핵심 전환을 확인한다.
-3. 아이디어를 goal / audience / offer / signal로 정리한다.
-4. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
-5. active flows와 deferred flows를 정한다.
-6. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
-7. 기존 블록으로 표현되지 않는 요구일 때만 deeper code를 변경한다.
-8. auth와 payment는 비즈니스 목표가 필요로 할 때만 노출한다.
-9. 필요한 env vars와 optional capability 상태를 정리한다.
-10. 마지막에 적절한 verify 명령을 실행한다.
+2. goal packet과 `business goal`, `target user`, `target moment`, `success metric`, `non-goals`, `constraints`, `existing evidence`, `visual bar`를 먼저 정리한다.
+3. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal packet을 보강한다.
+4. `po-role` completeness check와 `pm-role` / `pd-role` / `fe-role` / `be-role` critique를 먼저 수행한다.
+5. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
+6. active flows와 deferred flows를 정한다.
+7. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
+8. 기존 블록으로 표현되지 않는 요구일 때만 deeper code를 변경한다.
+9. auth와 payment는 비즈니스 목표가 필요로 할 때만 노출한다.
+10. `evaluator-role` 관점의 release recommendation을 정리한다.
+11. 필요한 env vars와 optional capability 상태를 정리한다.
+12. 마지막에 적절한 verify 명령을 실행한다.
 
 최종 요약에는 아래를 꼭 포함해줘.
 - selected MVP shape
 - active flows
 - deferred flows
 - major copy/product changes applied
+- release recommendation
 - required env vars for enabled capabilities
 - verification result
 - remaining manual follow-ups
@@ -150,15 +155,27 @@ existing landing / lead / consultation / payment / admin 블록 안에서 풀고
 
 ### 9. Final Summary Contract
 
-- 5: selected MVP shape, active/deferred flows, major changes, env requirements, verify result, follow-up이 한 번에 정리된다.
+- 5: selected MVP shape, active/deferred flows, release recommendation, major changes, env requirements, verify result, follow-up이 한 번에 정리된다.
 - 3: 일부 요약은 있지만 의사결정에 부족하다.
 - 1: 장황하거나 핵심 output contract가 빠진다.
+
+### 10. Quality Gate Discipline
+
+- 5: `po-role` gate, role critique, `evaluator-role` recommendation이 자연스럽게 드러난다.
+- 3: 일부 gate는 보이지만 release discipline이 약하다.
+- 1: 거의 바로 구현으로 들어가거나 gate가 생략된다.
+
+### 11. Commercial Quality Discipline
+
+- 5: user-facing 결과에서 trust, CTA hierarchy, boilerplate smell 억제까지 명시적으로 다룬다.
+- 3: 큰 방향은 맞지만 commercial quality bar가 흐리다.
+- 1: generic copy나 operator-facing wording이 그대로 남는다.
 
 ## Decision Rule
 
 - `ship`
   - 평균 4.0 이상
-  - `MVP Shape Fit`, `Product Surface Coherence`, `Time To Usable Demo` 중 3점 미만이 없음
+  - `MVP Shape Fit`, `Product Surface Coherence`, `Time To Usable Demo`, `Quality Gate Discipline` 중 3점 미만이 없음
 - `iterate`
   - 평균 3.0 이상 4.0 미만
   - 또는 핵심 항목 중 하나가 3점 미만
