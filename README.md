@@ -29,7 +29,7 @@
 - 중요한 작업은 PM/PD/FE/BE 관점의 product-squad review로 business goal 달성 가능성을 높입니다.
 - 제품, 전략, PRD, 운영 규칙의 source of truth는 repo 안 Markdown이고, adapter나 외부 툴은 파생 surface로 둡니다.
 
-핵심 운영 철학은 [ai/context/ai-native.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/ai/context/ai-native.md), Repo OS 인덱스는 [docs/repo-os.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/repo-os.md)에 있습니다.
+핵심 운영 철학은 [ai/context/ai-native.md](ai/context/ai-native.md), Repo OS 인덱스는 [docs/repo-os.md](docs/repo-os.md)에 있습니다.
 
 ## Start In 5 Minutes
 
@@ -46,11 +46,11 @@ pnpm dev
 그다음:
 
 1. `http://localhost:3000`을 엽니다.
-2. [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)의 starter prompt로 AI를 시작합니다.
+2. [docs/ai-starter-prompt-pack.md](docs/ai-starter-prompt-pack.md)의 starter prompt로 AI를 시작합니다.
 3. 먼저 `product-config`에서 해결 가능한지 보고, 필요할 때만 deeper code로 내려갑니다.
 4. 마지막에 `pnpm verify`를 실행합니다.
 
-더 자세한 Day 0 흐름은 [docs/start-your-mvp.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/start-your-mvp.md)에 있습니다.
+더 자세한 Day 0 흐름은 [docs/start-your-mvp.md](docs/start-your-mvp.md)에 있습니다.
 
 ## How It Works
 
@@ -58,7 +58,7 @@ pnpm dev
 
 `goal packet -> shape selection -> product-config -> deeper code only if needed -> verify`
 
-요청을 받으면 먼저 이 변경이 `product-config-friendly`인지, `gated work`인지, `deep code`까지 필요한지 봅니다. 기본값은 언제나 safe surface부터 시작하는 것이고, [`apps/web/src/lib/product-config.ts`](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/apps/web/src/lib/product-config.ts)가 가장 안전한 첫 수정면입니다. deeper code는 기본 동작이 아니라 escalation path입니다.
+요청을 받으면 먼저 이 변경이 `product-config-friendly`인지, `gated work`인지, `deep code`까지 필요한지 봅니다. 기본값은 언제나 safe surface부터 시작하는 것이고, [`apps/web/src/lib/product-config.ts`](apps/web/src/lib/product-config.ts)가 가장 안전한 첫 수정면입니다. deeper code는 기본 동작이 아니라 escalation path입니다.
 
 ## Daily Commands
 
@@ -74,15 +74,15 @@ pnpm work:new <slug> --request "..."
 
 ## Choose Your Path
 
-- MVP를 오늘 바로 시작하고 싶다면: [docs/start-your-mvp.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/start-your-mvp.md)
-- AI를 canonical prompt로 움직이고 싶다면: [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)
-- Repo OS와 agent operating rule을 이해하고 싶다면: [docs/repo-os.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/repo-os.md)
-- 안전한 첫 수정 surface를 알고 싶다면: [docs/product-config-system.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/product-config-system.md)
+- MVP를 오늘 바로 시작하고 싶다면: [docs/start-your-mvp.md](docs/start-your-mvp.md)
+- AI를 canonical prompt로 움직이고 싶다면: [docs/ai-starter-prompt-pack.md](docs/ai-starter-prompt-pack.md)
+- Repo OS와 agent operating rule을 이해하고 싶다면: [docs/repo-os.md](docs/repo-os.md)
+- 안전한 첫 수정 surface를 알고 싶다면: [docs/product-config-system.md](docs/product-config-system.md)
 
 ## Read Next
 
-- [docs/start-your-mvp.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/start-your-mvp.md)
-- [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)
-- [docs/product-config-system.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/product-config-system.md)
-- [docs/repo-os.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/repo-os.md)
-- [docs/agent-context.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/agent-context.md)
+- [docs/start-your-mvp.md](docs/start-your-mvp.md)
+- [docs/ai-starter-prompt-pack.md](docs/ai-starter-prompt-pack.md)
+- [docs/product-config-system.md](docs/product-config-system.md)
+- [docs/repo-os.md](docs/repo-os.md)
+- [docs/agent-context.md](docs/agent-context.md)
