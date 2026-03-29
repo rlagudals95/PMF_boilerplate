@@ -14,7 +14,8 @@ const FLOW_CATALOG = {
   landing: {
     label: "landing",
     dependencyPath: "apps/web/src/modules/landing/*",
-    scopeLine: (offer) => `${offer}를 설명하는 랜딩 hero, trust, CTA를 정리한다.`,
+    scopeLine: (offer) =>
+      `${offer}를 설명하는 랜딩 hero, trust, CTA를 정리한다.`,
   },
   lead: {
     label: "lead capture",
@@ -74,16 +75,8 @@ const RECIPE_CATALOG = [
     routes: ["/", "/consult", "/admin"],
     paymentRequired: false,
     primaryCta: "내 조건으로 비교 결과 받기",
-    adminMetrics: [
-      "qualified_leads",
-      "consult_requests",
-      "tracked_events",
-    ],
-    keyEvents: [
-      "cta_clicked",
-      "lead_form_submitted",
-      "consultation_requested",
-    ],
+    adminMetrics: ["qualified_leads", "consult_requests", "tracked_events"],
+    keyEvents: ["cta_clicked", "lead_form_submitted", "consultation_requested"],
     trustThemes: [
       "비교 기준 공개",
       "연결 프로세스 설명",
@@ -111,15 +104,7 @@ const RECIPE_CATALOG = [
   },
   {
     id: "consultation",
-    keywords: [
-      "상담",
-      "consult",
-      "demo",
-      "미팅",
-      "예약",
-      "전화",
-      "call",
-    ],
+    keywords: ["상담", "consult", "demo", "미팅", "예약", "전화", "call"],
     activeFlowIds: ["landing", "consultation", "admin"],
     deferredItems: [
       "payment demo",
@@ -179,11 +164,7 @@ const RECIPE_CATALOG = [
     routes: ["/", "/pay", "/admin"],
     paymentRequired: true,
     primaryCta: "결제 의사 확인하기",
-    adminMetrics: [
-      "payment_attempts",
-      "paid_payments",
-      "tracked_events",
-    ],
+    adminMetrics: ["payment_attempts", "paid_payments", "tracked_events"],
     keyEvents: ["cta_clicked", "payment_checkout_started", "payment_completed"],
     trustThemes: ["가격/조건 공개", "환불 또는 취소 안내", "결제 전 확인 정보"],
     buildGoal: ({ subject, targetOutcome }) =>
@@ -218,18 +199,18 @@ const RECIPE_CATALOG = [
       "런칭 전",
     ],
     activeFlowIds: ["landing", "lead", "admin"],
-    deferredItems: [
-      "consultation flow",
-      "payment demo",
-      "social auth starter",
-    ],
+    deferredItems: ["consultation flow", "payment demo", "social auth starter"],
     primaryModule: "landing",
     routes: ["/", "/admin"],
     paymentRequired: false,
     primaryCta: "오픈 알림 신청하기",
     adminMetrics: ["total_leads", "tracked_events"],
     keyEvents: ["cta_clicked", "lead_form_submitted"],
-    trustThemes: ["출시 일정 안내", "누가 먼저 초대되는지 설명", "초기 혜택 공개"],
+    trustThemes: [
+      "출시 일정 안내",
+      "누가 먼저 초대되는지 설명",
+      "초기 혜택 공개",
+    ],
     buildGoal: ({ subject, targetOutcome }) =>
       targetOutcome ||
       `${subject} 출시 전 관심 사용자와 early signal을 모은다.`,
@@ -261,18 +242,18 @@ const RECIPE_CATALOG = [
       "모으",
     ],
     activeFlowIds: ["landing", "lead", "admin"],
-    deferredItems: [
-      "consultation flow",
-      "payment demo",
-      "social auth starter",
-    ],
+    deferredItems: ["consultation flow", "payment demo", "social auth starter"],
     primaryModule: "landing",
     routes: ["/", "/admin"],
     paymentRequired: false,
     primaryCta: "핵심 정보 남기기",
     adminMetrics: ["qualified_leads", "total_leads"],
     keyEvents: ["cta_clicked", "lead_form_submitted"],
-    trustThemes: ["문의 후 다음 단계 설명", "응답 속도 약속", "입력 정보 최소화"],
+    trustThemes: [
+      "문의 후 다음 단계 설명",
+      "응답 속도 약속",
+      "입력 정보 최소화",
+    ],
     buildGoal: ({ subject, targetOutcome }) =>
       targetOutcome ||
       `${subject} 관련 관심 사용자를 qualified lead로 전환한다.`,
@@ -563,10 +544,14 @@ function buildStarterSummary(inference) {
     signalWasInferred,
     targetOutcomeWasInferred,
   } = inference;
-  const activeFlows = recipe.activeFlowIds.map((flowId) => FLOW_CATALOG[flowId].label);
+  const activeFlows = recipe.activeFlowIds.map(
+    (flowId) => FLOW_CATALOG[flowId].label,
+  );
   const dependencies = uniqueItems([
     "apps/web/src/lib/product-config.ts",
-    ...recipe.activeFlowIds.map((flowId) => FLOW_CATALOG[flowId].dependencyPath),
+    ...recipe.activeFlowIds.map(
+      (flowId) => FLOW_CATALOG[flowId].dependencyPath,
+    ),
     "packages/core/*",
     "packages/db/*",
     "packages/analytics/*",
@@ -575,7 +560,9 @@ function buildStarterSummary(inference) {
     FLOW_CATALOG[flowId].scopeLine(offer),
   );
   const outOfScope = [
-    ...recipe.deferredItems.map((item) => `${item}는 이번 첫 MVP에서 제외한다.`),
+    ...recipe.deferredItems.map(
+      (item) => `${item}는 이번 첫 MVP에서 제외한다.`,
+    ),
     "복수 제품/복수 플랜 운영",
     "정교한 CRM 자동화",
     "완성형 고객 지원 시스템",
@@ -597,13 +584,19 @@ function buildStarterSummary(inference) {
         ]
       : []),
     ...(audienceWasInferred
-      ? ["Target user가 structured input에 충분히 드러나지 않아 generic default를 사용했다."]
+      ? [
+          "Target user가 structured input에 충분히 드러나지 않아 generic default를 사용했다.",
+        ]
       : []),
     ...(signalWasInferred
-      ? ["Success metric threshold는 recipe default를 사용했으므로 실제 사업 기준으로 보정이 필요할 수 있다."]
+      ? [
+          "Success metric threshold는 recipe default를 사용했으므로 실제 사업 기준으로 보정이 필요할 수 있다.",
+        ]
       : []),
     ...(targetOutcomeWasInferred
-      ? ["최종 비즈니스 목표가 structured input에 충분히 드러나지 않아 recipe 기본 goal을 사용했다."]
+      ? [
+          "최종 비즈니스 목표가 structured input에 충분히 드러나지 않아 recipe 기본 goal을 사용했다.",
+        ]
       : []),
   ]);
   const productConfigStarter = {
@@ -673,6 +666,10 @@ function renderMvpPrd({
     `title: ${JSON.stringify(title)}`,
     'status: "draft"',
     `owner: ${JSON.stringify(owner)}`,
+    "doc_type: task-local",
+    "source_of_truth: true",
+    "freshness: active",
+    "verification: manual",
     `source_url: ${JSON.stringify(sourceUrl)}`,
     `created_at: ${JSON.stringify(createdAt)}`,
     `updated_at: ${JSON.stringify(createdAt)}`,
@@ -860,9 +857,7 @@ function buildAcceptanceCriteria({ audience, offer, recipe }) {
 }
 
 function buildAnalyticsImpact(recipe) {
-  const items = [
-    "`cta_clicked`에 entry point와 recipe context를 남긴다.",
-  ];
+  const items = ["`cta_clicked`에 entry point와 recipe context를 남긴다."];
 
   if (recipe.activeFlowIds.includes("lead")) {
     items.push(
@@ -871,9 +866,7 @@ function buildAnalyticsImpact(recipe) {
   }
 
   if (recipe.activeFlowIds.includes("consultation")) {
-    items.push(
-      "`consultation_requested`에 qualification context를 남긴다.",
-    );
+    items.push("`consultation_requested`에 qualification context를 남긴다.");
   }
 
   if (recipe.activeFlowIds.includes("payment")) {
@@ -1016,7 +1009,9 @@ function extractPromptTopic(value) {
     }
   }
 
-  const firstClause = cleaned.split(/(?:최종 목표|목표는|goal is|goal:|\.|,)/iu)[0];
+  const firstClause = cleaned.split(
+    /(?:최종 목표|목표는|goal is|goal:|\.|,)/iu,
+  )[0];
   return tidyTopic(firstClause);
 }
 

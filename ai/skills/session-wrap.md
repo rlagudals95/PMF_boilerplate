@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Skill: Session Wrap
 
 ## Use when
@@ -9,11 +16,12 @@
 ## Read first
 
 1. `ai/context/project.md`
-2. `ai/context/doc-sync.md`
-3. `ai/context/spec-driven.md`
-4. 관련 `ai/context/engineering*.md`
-5. 관련 `docs/*`
-6. 활성 `docs/work-items/<work-id>/*.md`
+2. `ai/context/ai-native.md`
+3. `ai/context/doc-sync.md`
+4. `ai/context/spec-driven.md`
+5. 관련 `ai/context/engineering*.md`
+6. 관련 `docs/*`
+7. 활성 `docs/work-items/<work-id>/*.md`
 
 ## Workflow
 

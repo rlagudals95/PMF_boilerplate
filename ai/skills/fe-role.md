@@ -1,3 +1,10 @@
+---
+owner: "fe"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Skill: FE Role
 
 ## Use when
@@ -8,10 +15,11 @@
 
 ## Read first
 
-1. 최신 `docs/work-items/<work-id>/brief.md`
-2. 있으면 `docs/work-items/<work-id>/ux-review.md`
-3. `docs/product-squad/templates/frontend-spec.md`
-4. `ai/context/engineering-frontend.md`
+1. `ai/context/ai-native.md`
+2. 최신 `docs/work-items/<work-id>/brief.md`
+3. 있으면 `docs/work-items/<work-id>/ux-review.md`
+4. `docs/product-squad/templates/frontend-spec.md`
+5. `ai/context/engineering-frontend.md`
 
 ## Output
 
@@ -26,6 +34,17 @@
 - 먼저 failing test로 고정할 behavior slice가 적혀 있는가
 - UI 테스트나 수동 검증 시나리오가 public behavior 기준으로 적혀 있는가
 - out-of-scope가 분명한가
+
+## Enterprise Principles
+
+- clean code를 위해 컴포넌트와 훅의 책임을 작게 유지합니다.
+- TDD를 기본으로 작업합니다.
+- 웹 접근성(WCAG)을 준수합니다.
+- route entry, state orchestration, presentation, shared helper를 한 파일에 섞지 않습니다.
+- composition을 우선하고, 재사용을 위한 추상화는 실제 두 번째 사용 사례가 보일 때만 올립니다.
+- encapsulation을 위해 컴포넌트 API와 module public surface를 최소화합니다.
+- object-oriented design이 필요할 때도 UI에서는 무거운 class 계층보다 명시적 상태 모델과 작은 조합을 우선합니다.
+- 테스트 전략은 implementation detail보다 public behavior와 state transition을 검증해야 합니다.
 
 ## Guardrails
 

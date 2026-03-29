@@ -1,4 +1,9 @@
 ---
+owner: "product-squad"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: draft
 owner_role: product-squad
 source_request: ""

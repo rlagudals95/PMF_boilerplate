@@ -1,8 +1,10 @@
 ---
-name: prd-coach
-description: "Use when 문제, 유저 데이터, 가설, 비즈니스 목표를 바탕으로 PRD 초안을 만들고 짧은 왕복으로 계속 다듬어야 할 때"
+owner: "pm"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
 ---
-
 # Skill: PRD Coach
 
 ## Use when

@@ -1,8 +1,10 @@
 ---
-name: agent-team-delivery
-description: "Use when subagent, agent team, 단일 에이전트 역할 시뮬레이션을 같은 canonical workflow로 운영해야 할 때"
+owner: "product-squad"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
 ---
-
 # Skill: Agent Team Delivery
 
 ## Use when

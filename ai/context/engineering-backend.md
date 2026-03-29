@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Engineering Backend
 
 이 문서는 domain, schema, repository, integration, adapter 계층에 적용되는 backend 규칙을 다룹니다.

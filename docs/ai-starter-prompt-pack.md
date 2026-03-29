@@ -11,6 +11,7 @@
 
 - 대부분의 사용자는 명령어보다 AI 코딩 툴에서 이 prompt pack으로 시작합니다.
 - 사용자 경험은 one-shot에 가깝게 유지하되, AI는 내부적으로 repo context를 먼저 읽고 필요한 경우에만 1~3개의 질문으로 목표를 확인합니다.
+- 입력이 business idea이든 정책/운영 규칙이든 먼저 goal packet으로 정규화한 뒤 가장 얇은 MVP slice를 고릅니다.
 - 이 저장소의 강점은 자유 생성이 아니라 existing block 조합입니다. 먼저 `landing`, `lead`, `consultation`, `payment`, `admin`, `auth` 블록 안에서 해결하고, 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` contract와 copy surface를 맞춥니다.
 - `mvp:new`, `prd:new`, `feature:new`, `work:new`는 계속 유지하지만, manual scaffold나 power-user workflow일 때 우선 사용합니다.
 
@@ -33,15 +34,15 @@ Auth와 payment는 기본 기능이 아니라 optional runtime capability입니�
 아래 프롬프트를 Cursor, Claude Code, Codex 같은 AI 코딩 툴에 그대로 붙여 넣는 것을 기본값으로 둡니다.
 
 ```text
-이 repo를 PMF 탐색용 MVP kit로 사용해서 아래 사업 아이디어의 첫 데모 가능한 버전을 만들어줘.
+이 repo를 PMF 탐색용 MVP kit로 사용해서 아래 사업 아이디어 또는 운영 정책/비즈니스 목표를 첫 데모 가능한 버전으로 만들어줘.
 
-사업 아이디어:
+입력:
 [여기에 설명]
 
 반드시 아래 순서로 진행해줘.
 1. AGENTS.md와 관련 ai/context/docs를 읽어 이 repo 구조와 기존 building block을 먼저 이해한다.
-2. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal, target user, 핵심 전환을 확인한다.
-3. 아이디어를 goal / audience / offer / signal로 정리한다.
+2. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal, target user, target moment, constraints를 확인한다.
+3. 입력을 goal packet과 goal / audience / offer / signal로 정리한다.
 4. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
 5. active flows와 deferred flows를 정한다.
 6. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
@@ -65,7 +66,7 @@ Auth와 payment는 기본 기능이 아니라 optional runtime capability입니�
 더 짧은 시작이 필요하면 아래 프롬프트를 사용합니다.
 
 ```text
-이 repo를 읽고 내 사업 아이디어를 이 구조에 맞는 가장 얇은 MVP로 적용해줘.
+이 repo를 읽고 내 사업 아이디어나 운영 정책을 이 구조에 맞는 가장 얇은 MVP로 적용해줘.
 먼저 repo context를 읽고 꼭 필요할 때만 1~3개의 질문을 해줘.
 existing landing / lead / consultation / payment / admin 블록 안에서 풀고, 먼저 `product-config.mvp`와 copy surface를 맞춘 뒤 verify까지 해줘.
 마지막엔 active flows, deferred flows, required env vars, verification result를 요약해줘.
@@ -84,6 +85,34 @@ existing landing / lead / consultation / payment / admin 블록 안에서 풀고
 - remaining manual follow-ups
 
 이 계약은 [docs/mvp-starter-prompt-evaluation.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/mvp-starter-prompt-evaluation.md)와 report template의 기준이기도 합니다.
+
+## Policy-Driven Example
+
+정책이나 운영 제약이 먼저 들어와도 같은 계약으로 정규화합니다.
+
+### 입력 예시
+
+```text
+우리 MVP는 출시 첫 주에는 결제보다 상담 전환이 더 중요해.
+개인정보를 최소 수집해야 하고, 운영팀이 바로 후속 연락할 수 있어야 해.
+첫 성공 기준은 qualified consultation request가 일주일 안에 10건 넘는 거야.
+```
+
+### 기대하는 정규화
+
+- business goal: qualified consultation request 확보
+- target user: 상담이 필요한 초기 관심 사용자
+- target moment: 비교/문의 직전 의사결정 순간
+- success metric: qualified consultation request >= 10 in 7 days
+- non-goals: 첫 주 결제 전환 최적화
+- constraints: 개인정보 최소 수집, 운영팀 후속 연락 가능해야 함
+- existing evidence: 현재 운영 정책과 첫 주 launch priority
+
+### 보통 이어지는 MVP 판단
+
+- selected MVP shape: `consultation`
+- active flows: `landing`, `consultation`, `admin`
+- deferred flows: `payment`, `auth`
 
 ## Follow-Up Prompt Pack
 

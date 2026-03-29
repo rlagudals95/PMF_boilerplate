@@ -7,6 +7,7 @@ This repository is a PMF experimentation boilerplate built for fast iteration wi
 Canonical sources to follow first:
 - `AGENTS.md`
 - `ai/context/project.md`
+- `ai/context/ai-native.md`
 - `ai/context/engineering.md`
 - `ai/context/engineering-common.md`
 - `ai/context/spec-driven.md`
@@ -14,6 +15,7 @@ Canonical sources to follow first:
 - `docs/agent-context.md`
 
 Working rules:
+- Normalize policy, business-goal, PRD, and raw-request inputs through `ai/context/ai-native.md` before choosing an MVP slice or work item path.
 - Keep `apps/web/src/app` thin. Put domain behavior in `apps/web/src/modules/*`.
 - Promote reuse only in this order: `module -> shared -> package`.
 - Validate inputs at the boundary. Keep model/use case files focused on orchestration.
@@ -28,6 +30,7 @@ Fast loops:
 - Use `pnpm work:new <slug> --request "..."` to create a work item scaffold.
 - Use `pnpm prd:new <slug>` to scaffold a canonical PRD in `docs/prds/`.
 - Use `pnpm feature:new --prd <slug> [--feature <feature-slug>]` to turn a PRD into a single feature work item plan.
+- Use `pnpm repo:check` to validate core docs metadata, adapter drift, and the active work item contract.
 - Use `pnpm squad:check [work-id]` to validate that a work item is filled beyond template placeholders.
 - Use `pnpm verify` for the default quality gate.
 - Use `pnpm verify:full` before handoff when user-facing flows or integrations changed.

@@ -1,3 +1,10 @@
+---
+owner: "pm"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # PRDs
 
 이 폴더는 기능 작업의 canonical PRD를 저장합니다.
@@ -35,6 +42,7 @@ pnpm feature:new --prd <slug> --feature <feature-slug>
 - `Target User`, `Core Use Cases`, `Jobs To Be Done`를 함께 유지해 문제, 맥락, 흐름을 분리합니다.
 - PRD가 여러 기능을 담으면 `## Feature Candidates` 아래에 `### <feature-slug>` 단위로 나눕니다.
 - 외부 PRD 링크가 있다면 frontmatter `source_url`에 기록합니다.
+- PRD는 `owner`, `doc_type`, `source_of_truth`, `freshness`, `verification` metadata를 함께 유지합니다.
 - frontmatter에는 `created_at`, `updated_at`를 남깁니다.
 - 문서 최하단 `## Document History`는 append-only로 유지합니다.
 - PRD 생성 시 `created` 행을 추가하고, 의미 있는 수정 시 `updated` 행을 아래에 이어 붙입니다.

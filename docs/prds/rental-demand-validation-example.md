@@ -1,7 +1,11 @@
 ---
+owner: "Founder"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
 title: "렌탈 수요 검증 예시"
 status: draft
-owner: "Founder"
 source_url: ""
 created_at: "2026-03-15"
 updated_at: "2026-03-15"

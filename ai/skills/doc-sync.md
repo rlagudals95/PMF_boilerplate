@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Skill: Doc Sync
 
 ## Use when

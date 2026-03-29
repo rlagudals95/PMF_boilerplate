@@ -1,4 +1,9 @@
 ---
+owner: "be"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: skipped
 owner_role: be
 source_request: "문제나 유저데이터 등등을 가설 비즈니스 목표등을 주었을때 PRD를 생성하는 스킬을 만들고 싶어 원하는 결과물이 나올때까지 티키타카해주는 스킬이 필요해"

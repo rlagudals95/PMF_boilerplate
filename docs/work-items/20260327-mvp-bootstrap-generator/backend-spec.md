@@ -1,4 +1,9 @@
 ---
+owner: "be"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: approved
 owner_role: be
 source_request: "few inputs로 PRD 초안과 feature work item까지 같이 만드는 범용 mvp:new 생성기 추가"

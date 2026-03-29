@@ -1,4 +1,9 @@
 ---
+owner: "product-squad"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
 name: new-feature
 description: "Plan one MVP feature slice from a canonical repo PRD and turn it into work item docs."
 ---
@@ -27,13 +32,14 @@ description: "Plan one MVP feature slice from a canonical repo PRD and turn it i
 ## Read first
 
 1. `ai/context/project.md`
-2. `ai/context/engineering.md`
-3. `ai/context/spec-driven.md`
-4. `ai/context/doc-sync.md`
-5. `docs/product-squad/operating-model.md`
-6. `docs/templates/prd.md`
-7. `docs/templates/feature-spec.md`
-8. 관련 `ai/skills/product-squad.md`, `ai/skills/spec-driven-delivery.md`
+2. `ai/context/ai-native.md`
+3. `ai/context/engineering.md`
+4. `ai/context/spec-driven.md`
+5. `ai/context/doc-sync.md`
+6. `docs/product-squad/operating-model.md`
+7. `docs/templates/prd.md`
+8. `docs/templates/feature-spec.md`
+9. 관련 `ai/skills/product-squad.md`, `ai/skills/spec-driven-delivery.md`
 
 ## Workflow
 

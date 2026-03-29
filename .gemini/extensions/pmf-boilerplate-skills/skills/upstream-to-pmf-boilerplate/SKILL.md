@@ -1,8 +1,10 @@
 ---
-name: upstream-to-pmf-boilerplate
-description: "Use when pmf-boilerplate 기반 다른 서비스에서 만든 재사용 가능한 기능이나 패턴을 현재 보일러플레이트로 역이식할 때"
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
 ---
-
 # Skill: Upstream To PMF Boilerplate
 
 ## Use when
@@ -16,12 +18,13 @@ description: "Use when pmf-boilerplate 기반 다른 서비스에서 만든 재�
 1. 현재 작업 중인 서비스 레포의 관련 구현과 영향 파일
 2. `AGENTS.md`
 3. `ai/context/project.md`
-4. `ai/context/engineering.md`
-5. `ai/context/engineering-common.md`
-6. `ai/context/spec-driven.md`
-7. `ai/context/doc-sync.md`
-8. 작업 성격에 맞는 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md`
-9. 관련 `docs/*`와 패키지 문서
+4. `ai/context/ai-native.md`
+5. `ai/context/engineering.md`
+6. `ai/context/engineering-common.md`
+7. `ai/context/spec-driven.md`
+8. `ai/context/doc-sync.md`
+9. 작업 성격에 맞는 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md`
+10. 관련 `docs/*`와 패키지 문서
 
 ## Goal
 

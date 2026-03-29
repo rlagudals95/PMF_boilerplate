@@ -8,6 +8,7 @@ This directory contains project-scoped Claude skills, project subagents, and set
 - Project subagents live in `.claude/agents/*.md`.
 - Project settings live in `.claude/settings.json`.
 - Shared project memory stays in the repository root `CLAUDE.md`.
+- Use `pnpm repo:check` to catch metadata drift and stale generated adapters.
 - Use `pnpm squad:check [work-id]` before handoff on important work.
 - Refresh these files with `pnpm ai:sync`.
 

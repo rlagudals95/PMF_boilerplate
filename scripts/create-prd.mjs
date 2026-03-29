@@ -8,7 +8,7 @@ const templatePath = path.join(rootDir, "docs", "templates", "prd.md");
 const prdsDir = path.join(rootDir, "docs", "prds");
 
 async function main() {
-  const { slug, sourceUrl, force } = parseArgs(process.argv.slice(2));
+  const { slug, owner, sourceUrl, force } = parseArgs(process.argv.slice(2));
   const template = await readFile(templatePath, "utf8");
   const destinationPath = path.join(prdsDir, `${slug}.md`);
   const today = buildLocalDate(new Date());
@@ -16,7 +16,11 @@ async function main() {
     replaceField(
       replaceField(
         replaceField(
-          replaceField(template, "title", JSON.stringify(toTitleCase(slug))),
+          replaceField(
+            replaceField(template, "title", JSON.stringify(toTitleCase(slug))),
+            "owner",
+            JSON.stringify(owner),
+          ),
           "source_url",
           JSON.stringify(sourceUrl),
         ),
@@ -27,7 +31,7 @@ async function main() {
       JSON.stringify(today),
     ),
     "history",
-    `| ${today} | created | Initial PRD created. | TBD |`,
+    `| ${today} | created | Initial PRD created. | ${owner} |`,
   );
 
   await mkdir(prdsDir, { recursive: true });
@@ -39,6 +43,7 @@ async function main() {
     [
       `Created PRD: docs/prds/${slug}.md`,
       `- Title: ${toTitleCase(slug)}`,
+      `- Owner: ${owner}`,
       `- Created At: ${today}`,
       sourceUrl ? `- Source URL: ${sourceUrl}` : "- Source URL: (empty)",
     ].join("\n") + "\n",
@@ -47,6 +52,7 @@ async function main() {
 
 function parseArgs(args) {
   let slug;
+  let owner = "Founder";
   let sourceUrl = "";
   let force = false;
 
@@ -55,6 +61,12 @@ function parseArgs(args) {
 
     if (arg === "--source-url") {
       sourceUrl = args[index + 1] ?? "";
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--owner") {
+      owner = args[index + 1] ?? owner;
       index += 1;
       continue;
     }
@@ -71,12 +83,13 @@ function parseArgs(args) {
 
   if (!slug) {
     throw new Error(
-      'Usage: pnpm prd:new <slug> [--source-url "https://..."] [--force]',
+      'Usage: pnpm prd:new <slug> [--owner "Founder"] [--source-url "https://..."] [--force]',
     );
   }
 
   return {
     slug: normalizeSlug(slug),
+    owner: owner.trim() || "Founder",
     sourceUrl,
     force,
   };

@@ -14,6 +14,12 @@ const requiredFiles = [
   "quality-scorecard.md",
 ];
 const optionalFiles = ["feature-spec.md"];
+const allowedFreshness = new Set(["active", "review-needed"]);
+const expectedMetadata = {
+  docType: "task-local",
+  sourceOfTruth: "true",
+  verification: "scripted",
+};
 
 async function main() {
   const { workId, strict } = await parseArgs(process.argv.slice(2));
@@ -128,17 +134,24 @@ async function resolveLatestWorkId() {
 function inspectFile(fileName, markdown) {
   const { frontmatter, body } = parseFrontmatter(markdown);
   const status = normalizeScalar(frontmatter.status);
+  const metadataResults = checkMetadataFields(fileName, frontmatter);
 
   if (status === "skipped") {
     const skipReason = normalizeScalar(frontmatter.skip_reason);
     if (!skipReason || skipReason === "null") {
-      return [fail(fileName, "status is skipped but skip_reason is empty")];
+      return [
+        ...metadataResults,
+        fail(fileName, "status is skipped but skip_reason is empty"),
+      ];
     }
 
-    return [pass(fileName, `skipped with reason: ${skipReason}`)];
+    return [
+      ...metadataResults,
+      pass(fileName, `skipped with reason: ${skipReason}`),
+    ];
   }
 
-  const results = [];
+  const results = [...metadataResults];
 
   if (!status || status === "draft") {
     results.push(
@@ -152,7 +165,10 @@ function inspectFile(fileName, markdown) {
         ...checkSections(fileName, body, [
           ["Problem", basicPlaceholderSet()],
           ["Target User", basicPlaceholderSet()],
+          ["Target Moment", basicPlaceholderSet()],
           ["Goal", basicPlaceholderSet()],
+          ["Existing Evidence", basicPlaceholderSet()],
+          ["Enterprise Decision Guardrails", basicPlaceholderSet()],
           ["Success Metric", basicPlaceholderSet()],
           ["Acceptance Criteria", basicPlaceholderSet()],
         ]),
@@ -199,6 +215,7 @@ function inspectFile(fileName, markdown) {
           ["Goal Alignment", basicPlaceholderSet()],
           ["Happy Path", basicPlaceholderSet()],
           ["Edge States", basicPlaceholderSet()],
+          ["Enterprise UX Principles", basicPlaceholderSet()],
           ["Browser QA Plan", basicPlaceholderSet()],
         ]),
       );
@@ -209,6 +226,7 @@ function inspectFile(fileName, markdown) {
           ["Module Targets", basicPlaceholderSet()],
           ["State And Events", basicPlaceholderSet()],
           ["Instrumentation Hooks", basicPlaceholderSet()],
+          ["Enterprise FE Guardrails", basicPlaceholderSet()],
           [
             "Test-First Plan",
             basicPlaceholderSet([
@@ -226,6 +244,7 @@ function inspectFile(fileName, markdown) {
           ["Schema And Validation Changes", basicPlaceholderSet()],
           ["Analytics Impact", basicPlaceholderSet()],
           ["Measurement Guardrails", basicPlaceholderSet()],
+          ["Enterprise BE Guardrails", basicPlaceholderSet()],
           [
             "Boundary / Use Case / Repository Contract Test Plan",
             basicPlaceholderSet([
@@ -243,10 +262,36 @@ function inspectFile(fileName, markdown) {
           ["Goal Fit", basicPlaceholderSet()],
           ["Product Risks To Kill", basicPlaceholderSet()],
           ["Browser QA Evidence", basicPlaceholderSet()],
+          ["Code Quality Evidence", basicPlaceholderSet()],
+          ["Principle Adherence", basicPlaceholderSet()],
+          ["Docs And Spec Sync", basicPlaceholderSet()],
+          ["Verification Evidence", basicPlaceholderSet()],
           ["Measurement And Ops Checks", basicPlaceholderSet()],
           ["Release Recommendation", basicPlaceholderSet()],
         ]),
       );
+      {
+        const browserQaEvidence = extractSection(body, "Browser QA Evidence");
+        if (!hasBrowserQaEvidence(browserQaEvidence)) {
+          results.push(
+            fail(
+              fileName,
+              "Browser QA Evidence must include concrete browser proof or an explicit non-user-facing skip reason",
+            ),
+          );
+        }
+      }
+      {
+        const verificationEvidence = extractSection(body, "Verification Evidence");
+        if (!hasVerificationCommand(verificationEvidence)) {
+          results.push(
+            fail(
+              fileName,
+              "Verification Evidence must mention `pnpm verify` or `pnpm verify:full`",
+            ),
+          );
+        }
+      }
       break;
     case "feature-spec.md":
       results.push(
@@ -296,6 +341,51 @@ function inspectFile(fileName, markdown) {
 
   if (results.every((result) => result.level !== "fail")) {
     results.unshift(pass(fileName, "required sections are present"));
+  }
+
+  return results;
+}
+
+function checkMetadataFields(fileName, frontmatter) {
+  const results = [];
+  const owner = normalizeScalar(frontmatter.owner);
+  const docType = normalizeScalar(frontmatter.doc_type);
+  const sourceOfTruth = normalizeScalar(frontmatter.source_of_truth);
+  const freshness = normalizeScalar(frontmatter.freshness);
+  const verification = normalizeScalar(frontmatter.verification);
+
+  if (!owner) {
+    results.push(fail(fileName, "missing metadata field: owner"));
+  }
+
+  if (docType !== expectedMetadata.docType) {
+    results.push(
+      fail(fileName, `expected doc_type=${expectedMetadata.docType}`),
+    );
+  }
+
+  if (sourceOfTruth !== expectedMetadata.sourceOfTruth) {
+    results.push(
+      fail(
+        fileName,
+        `expected source_of_truth=${expectedMetadata.sourceOfTruth}`,
+      ),
+    );
+  }
+
+  if (!allowedFreshness.has(freshness)) {
+    results.push(
+      fail(
+        fileName,
+        `expected freshness to be one of: ${Array.from(allowedFreshness).join(", ")}`,
+      ),
+    );
+  }
+
+  if (verification !== expectedMetadata.verification) {
+    results.push(
+      fail(fileName, `expected verification=${expectedMetadata.verification}`),
+    );
   }
 
   return results;
@@ -374,7 +464,8 @@ function hasMeaningfulContent(section, placeholders) {
   const lines = section
     .split("\n")
     .map((line) => line.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter((line) => !line.startsWith("<!--"));
 
   if (lines.length === 0) {
     return false;
@@ -385,6 +476,42 @@ function hasMeaningfulContent(section, placeholders) {
 
 function basicPlaceholderSet(extra = []) {
   return new Set(["-", ...extra]);
+}
+
+function hasBrowserQaEvidence(section) {
+  const normalized = section.toLowerCase();
+
+  if (
+    normalized.includes("non-user-facing") ||
+    normalized.includes("non user-facing") ||
+    normalized.includes("browser qa 대상 아님") ||
+    normalized.includes("브라우저 qa 대상 아님") ||
+    normalized.includes("대상 아님") ||
+    normalized.includes("skip reason") ||
+    normalized.includes("skip_reason")
+  ) {
+    return true;
+  }
+
+  return [
+    "desktop",
+    "mobile",
+    "viewport",
+    "screenshot",
+    "record",
+    "flow",
+    "responsive",
+    "focus",
+    "label",
+    "contrast",
+    "playwright",
+    "manual proof",
+    "chrome",
+  ].some((keyword) => normalized.includes(keyword));
+}
+
+function hasVerificationCommand(section) {
+  return /pnpm verify(?::full)?/.test(section);
 }
 
 function normalizeScalar(value) {

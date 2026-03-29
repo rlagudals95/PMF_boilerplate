@@ -1,4 +1,9 @@
 ---
+owner: "fe"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: done
 owner_role: fe
 source_request: "packages/ab-test, packages/user-behavior-log 정리 후 apps/web에 실제로 연결해봐"

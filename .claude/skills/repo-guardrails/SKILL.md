@@ -1,8 +1,10 @@
 ---
-name: repo-guardrails
-description: "Use when 새 패키지/새 추상화/새 인프라를 추가하려 할 때"
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
 ---
-
 # Skill: Repo Guardrails
 
 ## Use when

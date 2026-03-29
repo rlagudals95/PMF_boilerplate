@@ -8,19 +8,23 @@
 - 특정 업종에 묶이지 않는 범용 MVP kit
 - 다음 사이드 프로젝트에서도 재사용 가능해야 함
 
+운영 철학, 품질 기준, Docs-as-Code 원칙의 canonical source는 `ai/context/ai-native.md`이고, Repo OS 문서 계층과 verification entrypoint 인덱스는 `docs/repo-os.md`입니다.
+
 ## 먼저 읽을 것
 
 1. `ai/context/project.md`
-2. `ai/context/engineering.md`
-3. `ai/context/engineering-common.md`
-4. `ai/context/spec-driven.md`
-5. 현재 작업에 맞는 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md` 중 하나 또는 둘 다
-6. `ai/context/doc-sync.md`
-7. `ai/skills/_index.md`
-8. `docs/agent-context.md`
-9. 현재 작업과 관련된 `docs/*` 또는 패키지 문서
-10. 실험 관련 작업이면 `docs/experiment-playbook.md`
-11. AI 어댑터/멀티에이전트 운영을 바꾸는 작업이면 `ai/context/platform-optimization.md`
+2. `ai/context/ai-native.md`
+3. `ai/context/engineering.md`
+4. `ai/context/engineering-common.md`
+5. `ai/context/spec-driven.md`
+6. 현재 작업에 맞는 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md` 중 하나 또는 둘 다
+7. `ai/context/doc-sync.md`
+8. `ai/skills/_index.md`
+9. `docs/agent-context.md`
+10. `docs/repo-os.md`
+11. 현재 작업과 관련된 `docs/*` 또는 패키지 문서
+12. 실험 관련 작업이면 `docs/experiment-playbook.md`
+13. AI 어댑터/멀티에이전트 운영을 바꾸는 작업이면 `ai/context/platform-optimization.md`
 
 ## 아키텍처 원칙
 
@@ -73,7 +77,10 @@
 ## 작업 기본 규칙
 
 - 코드 수정 전에는 관련 문서와 영향 파일을 먼저 읽는다.
+- 정책, business goal, PRD, raw request는 먼저 `ai/context/ai-native.md` 기준으로 goal packet과 thin slice로 정규화한다.
 - 중요한 작업이면 spec 존재 여부와 source of truth 문서를 먼저 확인한다.
+- canonical 문서, work item contract, adapter-driving 파일을 바꿨다면 `pnpm repo:check`를 실행한다.
+- `pnpm repo:check` 기본값은 `approved | in_progress | blocked` 상태의 active work item 전체를 검사하고, 특정 작업만 보려면 `--work <work-id>`를 사용한다.
 - PRD 기반 기능 작업이면 먼저 `docs/prds/<slug>.md`를 확인하고 `pnpm feature:new --prd <slug>`로 work item 문서를 정규화한다.
 - FE 작업이면 `engineering-frontend.md`, DB/schema/repository/integration 작업이면 `engineering-backend.md`를 읽는다.
 - `page.tsx`나 `route.ts`에 비즈니스 로직을 넣지 않는다.
@@ -102,3 +109,4 @@
 - 실제 런타임 어댑터 산출물은 `pnpm ai:sync`로 `.github/copilot-instructions.md`, `.cursor/rules/*.mdc`, `.claude/skills/*/SKILL.md`, `.gemini/commands/repo/*`, `.gemini/extensions/*/skills/*/SKILL.md`, `.codex/skills/*/SKILL.md`에 생성한다.
 - Claude project subagent와 hook 같은 platform acceleration도 canonical source를 바탕으로 `pnpm ai:sync`가 생성한다.
 - 생성된 어댑터 파일은 파생 산출물이고 source of truth는 계속 `ai/`와 이 루트 엔트리 문서다.
+- core docs metadata, active work item completeness, adapter drift는 `pnpm repo:check`로 확인한다.

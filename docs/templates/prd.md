@@ -1,7 +1,11 @@
 ---
+owner: "Founder"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 title: "New PRD"
 status: draft
-owner: ""
 source_url: ""
 created_at: ""
 updated_at: ""

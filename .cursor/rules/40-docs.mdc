@@ -7,7 +7,10 @@ alwaysApply: false
 # Docs Sync Rule
 
 - Treat repo Markdown as the source of truth for important work.
+- Update `ai/context/ai-native.md` first when repo promises, quality bar, or Docs-as-Code rules change.
 - Load `ai/context/doc-sync.md` and `docs/agent-context.md` when changing docs, workflows, or adapters.
+- Keep metadata (`owner`, `doc_type`, `source_of_truth`, `freshness`, `verification`) accurate on core docs and task-local artifacts.
 - Update canonical docs first, then regenerate adapter outputs with `pnpm ai:sync`.
+- Run `pnpm repo:check` after changing canonical docs, work item templates, or adapter-driving files.
 - Do not duplicate full policy text across adapters. Keep adapters short and point them back to canonical docs.
 - If you change workflow commands or templates, update `README.md` and `docs/work-items/README.md` in the same change.

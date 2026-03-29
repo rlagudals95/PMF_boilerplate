@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Skill: Spec-Driven Delivery
 
 ## Use when
@@ -9,16 +16,17 @@
 ## Read first
 
 1. `ai/context/project.md`
-2. `ai/context/engineering.md`
-3. `ai/context/spec-driven.md`
-4. 작업에 맞는 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md`
-5. `ai/context/doc-sync.md`
-6. 관련 `docs/*`와 실제 영향 파일
+2. `ai/context/ai-native.md`
+3. `ai/context/engineering.md`
+4. `ai/context/spec-driven.md`
+5. 작업에 맞는 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md`
+6. `ai/context/doc-sync.md`
+7. 관련 `docs/*`와 실제 영향 파일
 
 중요한 작업이면 추가:
 
-7. `docs/product-squad/operating-model.md`
-8. 활성 `docs/work-items/<work-id>/*.md`
+8. `docs/product-squad/operating-model.md`
+9. 활성 `docs/work-items/<work-id>/*.md`
 
 ## Workflow
 

@@ -8,6 +8,7 @@ This directory contains two official Gemini adapter forms generated from the can
 - Installable extension skills live in `.gemini/extensions/pmf-boilerplate-skills/skills/<skill-name>/SKILL.md`.
 - To register the bundled extension, run `gemini extensions link .gemini/extensions/pmf-boilerplate-skills` from the repository root.
 - Shared project memory stays in the repository root `GEMINI.md`.
+- Use `pnpm repo:check` to catch metadata drift and stale generated adapters.
 - Use `pnpm squad:check [work-id]` before handoff on important work.
 - Refresh these files with `pnpm ai:sync`.
 

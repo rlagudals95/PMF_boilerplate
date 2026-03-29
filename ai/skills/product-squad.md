@@ -1,3 +1,10 @@
+---
+owner: "product-squad"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Skill: Product Squad
 
 ## Use when
@@ -8,11 +15,12 @@
 
 ## Read first
 
-1. `docs/product-squad/operating-model.md`
-2. `docs/product-squad/goal-driven-delivery.md`
-3. `docs/product-squad/agent-team-delivery.md`
-4. 활성 work item이 있으면 `docs/work-items/<work-id>/brief.md`
-5. 작업이 FE/BE를 걸치면 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md`
+1. `ai/context/ai-native.md`
+2. `docs/product-squad/operating-model.md`
+3. `docs/product-squad/goal-driven-delivery.md`
+4. `docs/product-squad/agent-team-delivery.md`
+5. 활성 work item이 있으면 `docs/work-items/<work-id>/brief.md`
+6. 작업이 FE/BE를 걸치면 `ai/context/engineering-frontend.md`, `ai/context/engineering-backend.md`
 
 ## Workflow
 
@@ -38,3 +46,4 @@
 - 최신 `brief.md`가 구현 전 source of truth다.
 - `quality-scorecard.md`는 중요한 작업의 최종 ship/iterate 판단 문서다.
 - 외부 툴, 백그라운드 에이전트, 별도 오케스트레이션 서비스는 v1 범위 밖이다.
+- 각 역할은 `ai/context/ai-native.md`의 enterprise principles를 자기 역할 산출물에 반영해야 한다.

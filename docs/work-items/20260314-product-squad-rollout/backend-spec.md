@@ -1,4 +1,9 @@
 ---
+owner: "be"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: done
 owner_role: be
 source_request: "PLEASE IMPLEMENT THIS PLAN: 실무형 PM/PD/FE/BE 에이전트 운영체계 도입 계획"

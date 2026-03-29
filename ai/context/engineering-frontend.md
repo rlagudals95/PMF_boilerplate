@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Engineering Frontend
 
 이 문서는 `apps/web`에 적용되는 FE 구조 규칙을 다룹니다.

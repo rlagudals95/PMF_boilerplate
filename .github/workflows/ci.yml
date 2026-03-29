@@ -31,6 +31,9 @@ jobs:
       - name: Seed local data
         run: pnpm db:seed
 
+      - name: Repo OS check
+        run: pnpm repo:check
+
       - name: Lint
         run: pnpm lint
 

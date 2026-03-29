@@ -1,8 +1,16 @@
+---
+owner: "product-squad"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Goal-Driven Delivery
 
 ## 목적
 
 - 사용자가 “무엇을 만들까”보다 “어떤 비즈니스 목표를 달성해야 하나”를 먼저 주더라도 AI가 높은 품질의 제품 결정을 내릴 수 있게 한다.
+- 정책, 운영 원칙, business goal처럼 구현보다 상위 입력이 먼저 와도 같은 goal packet과 quality gate로 정규화할 수 있게 한다.
 - 멀티에이전트 서비스가 없어도 repo 안 문서, 스킬, 템플릿만으로 역할 기반 논의와 품질 루프를 재현한다.
 - downstream 서비스가 이 보일러플레이트만 가져가도 같은 작업 방식을 재사용할 수 있게 한다.
 
@@ -35,6 +43,15 @@
 
 이 packet이 약하면 구현보다 문서 보강이 먼저입니다.
 
+정책 입력은 별도 체계로 분리하지 않고 아래처럼 goal packet 안으로 정규화합니다.
+
+- 꼭 지켜야 하는 운영/법무/브랜드 규칙
+  - `constraints`
+- 이번 단계에서 하면 안 되는 것
+  - `non-goals`
+- 무조건 통과해야 하는 품질 기준
+  - `required quality bar`
+
 ## 팀 토폴로지
 
 - `product-squad`
@@ -56,8 +73,8 @@
 
 ### 1. Goal Frame
 
-- 요청을 기능 목록이 아니라 business goal 문장으로 다시 쓴다.
-- target user, success metric, non-goals, constraints를 먼저 적는다.
+- 요청을 기능 목록, 정책 문장, business goal 중 어떤 형태로 받았든 business goal 문장과 goal packet으로 다시 쓴다.
+- target user, target moment, success metric, non-goals, constraints, existing evidence를 먼저 적는다.
 - 이 단계 산출물은 `brief.md`다.
 
 ### 2. Role Debate
@@ -95,8 +112,9 @@ user-facing 변경이면 아래를 최소 확인합니다.
 ### Spec Gate
 
 - `brief.md`, 필요한 role spec, `quality-scorecard.md`가 준비되어 있다.
+- `brief.md`에는 target moment와 existing evidence가 적혀 있다.
 - acceptance criteria가 public behavior 기준으로 적혀 있다.
-- 필요한 경우 `pnpm squad:check [work-id]`로 work item 문서가 placeholder 상태를 벗어났는지 확인한다.
+- 필요한 경우 `pnpm repo:check --work <work-id>`와 `pnpm squad:check [work-id]`로 work item 문서가 placeholder 상태를 벗어났는지 확인한다.
 
 ### Build Gate
 
@@ -115,6 +133,8 @@ user-facing 변경이면 아래를 최소 확인합니다.
 ### Release Gate
 
 - `quality-scorecard.md`에 ship / iterate / stop 판단과 근거가 남아 있다.
+- 각 역할 산출물이 enterprise principles를 지켰는지 확인된다.
+- canonical 문서, work item metadata, generated adapter drift가 static gate를 통과한다.
 
 ## Quality Scorecard
 
@@ -125,6 +145,10 @@ scorecard에는 아래가 들어갑니다.
 - goal fit
 - 지금 죽여야 하는 product risk
 - browser QA evidence
+- code quality evidence
+- principle adherence
+- docs/spec sync evidence
+- verification evidence
 - measurement / ops check
 - ship / iterate / stop recommendation
 

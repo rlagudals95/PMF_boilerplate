@@ -1,8 +1,16 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Architecture Decisions
 
 ## 목표
 
 이 저장소의 목표는 한 제품을 예쁘게 만드는 것이 아니라, 여러 사이드 프로젝트에서 PMF를 찾기 위한 실험 루프를 반복 가능하게 만드는 것입니다.
+운영 약속, quality bar, Docs-as-Code 원칙의 canonical source는 [ai/context/ai-native.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/ai/context/ai-native.md)이고, 이 문서는 그 약속을 구조에 어떻게 반영하는지 설명합니다. Repo OS layer map과 metadata gate 인덱스는 [docs/repo-os.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/repo-os.md)에 있습니다.
 
 ## 핵심 결정
 
@@ -180,9 +188,10 @@ page.tsx
 
 이 package 경계는 현재 monorepo 구조를 위한 것일 뿐 아니라, 미래에 backend를 별도 repo로 추출할 때도 유지되어야 하는 분리 기준입니다.
 
-### 11. 엔터프라이즈급 품질을 위한 최소 기준
+### 11. 엔터프라이즈급 품질을 위한 최소 구조 기준
 
-복잡한 아키텍처를 뜻하지 않습니다. 다음 네 가지를 꾸준히 지키는 것을 뜻합니다.
+엔터프라이즈급 품질의 운영 정의는 `ai/context/ai-native.md`에 둡니다.
+이 구조 문서에서 강조하는 최소 기준은 아래 네 가지입니다.
 
 - 경계가 명확하다.
 - 변경 단위가 작다.
@@ -203,6 +212,7 @@ page.tsx
 ### 13. Spec-driven 운영은 repo 문서를 기준으로 한다
 
 - 구현 기준 문서는 repo 안 Markdown입니다.
+- 운영 약속과 quality bar는 `ai/context/ai-native.md`를 canonical source로 둡니다.
 - `ai/context/spec-driven.md`는 어떤 작업에 어떤 문서가 먼저 필요한지 정의합니다.
 - `ai/context/doc-sync.md`는 어떤 변경이 어떤 문서를 갱신해야 하는지 정의합니다.
 - `docs/templates/*`는 feature/experiment spec의 최소 계약을 제공합니다.

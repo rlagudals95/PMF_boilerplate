@@ -1,4 +1,9 @@
 ---
+owner: "product-squad"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: "draft"
 owner_role: "product-squad"
 related_prd: "docs/prds/rental-demand-validation-example.md"

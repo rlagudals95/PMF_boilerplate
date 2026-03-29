@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Engineering Guide
 
 이 문서는 이 저장소의 엔지니어링 규칙을 어떤 순서로 읽어야 하는지 안내하는 canonical entry입니다.
@@ -26,14 +33,15 @@
 기본 순서:
 
 1. `ai/context/project.md`
-2. 이 문서
-3. `ai/context/engineering-common.md`
-4. `ai/context/spec-driven.md`
-5. 작업에 맞는 FE/BE 문서
-6. `ai/context/doc-sync.md`
-7. `ai/skills/_index.md`
-8. 관련 스킬 문서
-9. 관련 `docs/*`와 실제 영향 파일
+2. `ai/context/ai-native.md`
+3. 이 문서
+4. `ai/context/engineering-common.md`
+5. `ai/context/spec-driven.md`
+6. 작업에 맞는 FE/BE 문서
+7. `ai/context/doc-sync.md`
+8. `ai/skills/_index.md`
+9. 관련 스킬 문서
+10. 관련 `docs/*`와 실제 영향 파일
 
 ## 어떤 작업에 어떤 문서를 읽는가
 

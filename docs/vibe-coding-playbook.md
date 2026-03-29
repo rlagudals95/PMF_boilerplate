@@ -1,6 +1,7 @@
 # Vibe Coding Playbook
 
 이 문서는 이 저장소가 PMF 탐색용 “바이브 코딩”에 얼마나 잘 맞는지 평가하고, 속도와 품질을 동시에 지키기 위한 운영 기준을 정리합니다.
+운영 약속과 품질 바의 canonical source는 [ai/context/ai-native.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/ai/context/ai-native.md)입니다.
 
 ## 결론
 
@@ -152,3 +153,4 @@
 
 실무적으로는 “매우 강한 AI-native PMF 보일러플레이트”라고 볼 수 있습니다.  
 다만 철학은 여전히 “무제한 자유”가 아니라 “빠르되 무너지지 않게” 쪽입니다.
+이 문서는 그 철학을 평가하고 설명하는 문서이고, 반복 운영 기준 자체는 `ai/context/ai-native.md`에 둡니다.

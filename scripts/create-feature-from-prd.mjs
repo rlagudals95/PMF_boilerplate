@@ -227,6 +227,13 @@ function buildPlanningContext(prd, feature) {
   const targetUser = sectionParagraph(prd.sections["Target User"]) || "-";
   const problem = sectionParagraph(prd.sections["Problem"]) || "-";
   const goal = sectionParagraph(prd.sections["Goal"]) || "-";
+  const targetMoment = deriveTargetMoment(prd, feature, targetUser);
+  const existingEvidence = deriveExistingEvidence(
+    prd,
+    analyticsImpact,
+    dataImpact,
+    dependencies,
+  );
   const jobsToBeDone = listFromSection(prd.sections["Jobs To Be Done"]);
   const nonGoals = [
     ...prd.scope.outOfScope,
@@ -263,6 +270,8 @@ function buildPlanningContext(prd, feature) {
     problem,
     goal,
     targetUser,
+    targetMoment,
+    existingEvidence,
     jobsToBeDone,
     successMetric,
     inScope: uniqueItems(inScope),
@@ -312,6 +321,57 @@ function buildUserFlow(feature, prd, targetUser) {
   }
 
   return uniqueItems(flow);
+}
+
+function deriveTargetMoment(prd, feature, targetUser) {
+  const coreUseCases = normalizeContent(prd.sections["Core Use Cases"]);
+  const primarySituation = coreUseCases.match(/- 상황:\s*(.+)/);
+
+  if (primarySituation?.[1]) {
+    return primarySituation[1].trim();
+  }
+
+  if (feature.routes.length > 0) {
+    return `${targetUser}가 ${feature.routes.join(", ")} 경로로 문제 해결을 시도하는 순간`;
+  }
+
+  return `${targetUser}가 ${feature.title} 관련 문제를 해결하려고 첫 행동을 시작하는 순간`;
+}
+
+function deriveExistingEvidence(
+  prd,
+  analyticsImpact,
+  dataImpact,
+  dependencies,
+) {
+  const evidence = [];
+  const sourceUrl = normalizeContent(prd.frontmatter.source_url);
+
+  if (sourceUrl) {
+    evidence.push(`원본 입력 또는 참고 문서: ${sourceUrl}`);
+  }
+
+  if (analyticsImpact.length > 0) {
+    evidence.push(
+      `현재 알려진 measurement surface: ${analyticsImpact.join(", ")}`,
+    );
+  }
+
+  if (dataImpact.length > 0) {
+    evidence.push(`현재 알려진 data impact: ${dataImpact.join(", ")}`);
+  }
+
+  if (dependencies.length > 0) {
+    evidence.push(`의존 시스템 또는 선행 조건: ${dependencies.join(", ")}`);
+  }
+
+  if (evidence.length === 0) {
+    evidence.push(
+      "명시적 existing evidence가 부족하므로 구현 전에 analytics, 고객 메모, 또는 운영 맥락을 추가로 확인해야 한다.",
+    );
+  }
+
+  return evidence;
 }
 
 function deriveAffectedPaths(feature, analyticsImpact, dataImpact) {
@@ -404,6 +464,10 @@ function renderBrief(workId, planning) {
     "",
     renderParagraph(planning.targetUser),
     "",
+    "## Target Moment",
+    "",
+    renderParagraph(planning.targetMoment),
+    "",
     "## Goal",
     "",
     renderParagraph(planning.goal),
@@ -415,6 +479,14 @@ function renderBrief(workId, planning) {
     "## Non-Goals",
     "",
     ...renderBulletList(planning.outOfScope),
+    "",
+    "## Existing Evidence",
+    "",
+    ...renderBulletList(planning.existingEvidence),
+    "",
+    "## Enterprise Decision Guardrails",
+    "",
+    ...renderBulletList(buildEnterpriseDecisionGuardrails(planning)),
     "",
     "## Success Metric",
     "",
@@ -615,6 +687,10 @@ function renderUxReview(workId, planning) {
         "",
         "-",
         "",
+        "## Enterprise UX Principles",
+        "",
+        "-",
+        "",
         "## Browser QA Plan",
         "",
         "-",
@@ -682,6 +758,10 @@ function renderUxReview(workId, planning) {
       "Status feedback is visible without relying on color alone.",
     ]),
     "",
+    "## Enterprise UX Principles",
+    "",
+    ...renderBulletList(buildEnterpriseUxPrinciples(planning)),
+    "",
     "## Browser QA Plan",
     "",
     ...renderBulletList(buildBrowserQaPlan(planning)),
@@ -700,6 +780,10 @@ function renderFrontendSpec(workId, planning) {
       affectedPaths: planning.affectedPaths,
       dependencies: buildDependencies(workId, planning, true),
       sections: [
+        "## Goal Alignment",
+        "",
+        "-",
+        "",
         "## Affected Routes",
         "",
         "-",
@@ -717,6 +801,10 @@ function renderFrontendSpec(workId, planning) {
         "-",
         "",
         "## Instrumentation Hooks",
+        "",
+        "-",
+        "",
+        "## Enterprise FE Guardrails",
         "",
         "-",
         "",
@@ -747,6 +835,10 @@ function renderFrontendSpec(workId, planning) {
     }),
     "# Frontend Spec",
     "",
+    "## Goal Alignment",
+    "",
+    ...renderBulletList(buildGoalAlignment(planning)),
+    "",
     "## Affected Routes",
     "",
     ...renderBulletList(
@@ -775,6 +867,10 @@ function renderFrontendSpec(workId, planning) {
     "",
     ...renderBulletList(buildInstrumentationHooks(planning)),
     "",
+    "## Enterprise FE Guardrails",
+    "",
+    ...renderBulletList(buildEnterpriseFeGuardrails(planning)),
+    "",
     "## Test-First Plan",
     "",
     ...renderBulletList(buildFrontendTests(planning)),
@@ -801,6 +897,10 @@ function renderBackendSpec(workId, planning) {
       affectedPaths: planning.affectedPaths,
       dependencies: buildDependencies(workId, planning),
       sections: [
+        "## Goal Alignment",
+        "",
+        "-",
+        "",
         "## Schema And Validation Changes",
         "",
         "-",
@@ -818,6 +918,10 @@ function renderBackendSpec(workId, planning) {
         "-",
         "",
         "## Measurement Guardrails",
+        "",
+        "-",
+        "",
+        "## Enterprise BE Guardrails",
         "",
         "-",
         "",
@@ -839,6 +943,10 @@ function renderBackendSpec(workId, planning) {
       skip_reason: null,
     }),
     "# Backend Spec",
+    "",
+    "## Goal Alignment",
+    "",
+    ...renderBulletList(buildGoalAlignment(planning)),
     "",
     "## Schema And Validation Changes",
     "",
@@ -863,6 +971,10 @@ function renderBackendSpec(workId, planning) {
     "## Measurement Guardrails",
     "",
     ...renderBulletList(buildMeasurementGuardrails(planning)),
+    "",
+    "## Enterprise BE Guardrails",
+    "",
+    ...renderBulletList(buildEnterpriseBeGuardrails(planning)),
     "",
     "## Boundary / Use Case / Repository Contract Test Plan",
     "",
@@ -909,6 +1021,22 @@ function renderQualityScorecard(workId, planning) {
     "## Browser QA Evidence",
     "",
     ...renderBulletList(buildBrowserQaPlan(planning)),
+    "",
+    "## Code Quality Evidence",
+    "",
+    ...renderBulletList(buildCodeQualityEvidence(planning)),
+    "",
+    "## Principle Adherence",
+    "",
+    ...renderBulletList(buildPrincipleAdherence(planning)),
+    "",
+    "## Docs And Spec Sync",
+    "",
+    ...renderBulletList(buildDocsAndSpecSync(workId, planning)),
+    "",
+    "## Verification Evidence",
+    "",
+    ...renderBulletList(buildVerificationEvidence(workId, planning)),
     "",
     "## Measurement And Ops Checks",
     "",
@@ -1172,7 +1300,29 @@ function buildEscalations(planning) {
   return escalations;
 }
 
+function buildEnterpriseDecisionGuardrails(planning) {
+  const items = [
+    "goal, success metric, acceptance criteria를 구현 전에 decision-complete하게 고정한다.",
+    "문서에 없는 요구를 구현 중 추측으로 채우지 않고 open question으로 승격한다.",
+    "thin slice 하나를 먼저 닫고 나서만 scope를 확장한다.",
+  ];
+
+  if (planning.readiness === "blocked") {
+    items.push(
+      "blocking question 해소 전에는 implementation readiness를 올리지 않는다.",
+    );
+  }
+
+  return items;
+}
+
 function buildBrowserQaPlan(planning) {
+  if (!planning.uxRequired && !planning.frontendRequired) {
+    return [
+      "non-user-facing scope이므로 browser QA는 skip reason과 measurement proof 중심으로 처리한다.",
+    ];
+  }
+
   const items = [
     "desktop viewport에서 happy path와 CTA hierarchy를 확인한다.",
     "mobile viewport에서 첫 스크린 메시지, 폼 길이, sticky CTA 필요 여부를 확인한다.",
@@ -1212,6 +1362,22 @@ function buildEdgeStates(planning) {
   }
 
   return edgeStates;
+}
+
+function buildEnterpriseUxPrinciples(planning) {
+  const items = [
+    "CTA hierarchy와 trust signal을 한 흐름 안에서 일관되게 유지한다.",
+    "happy path뿐 아니라 error, empty, pending state를 같은 정보 구조로 다룬다.",
+    "접근성과 이해 가능성을 novelty보다 우선한다.",
+  ];
+
+  if (planning.backendRequired) {
+    items.push(
+      "입력 후 어떤 후속 연락 또는 처리 결과가 생기는지 기대치를 분명히 적는다.",
+    );
+  }
+
+  return items;
 }
 
 function buildComponentPlan(planning) {
@@ -1286,6 +1452,22 @@ function buildFrontendTests(planning) {
   tests.push("오류 상태, 빈 상태, pending 상태를 확인한다.");
 
   return tests;
+}
+
+function buildEnterpriseFeGuardrails(planning) {
+  const items = [
+    "route entry는 얇게 두고 UI, 상태, 행동의 책임을 module 경계로 분리한다.",
+    "큰 컴포넌트 하나에 state, copy, side effect를 모두 몰아넣지 않는다.",
+    "재사용은 inheritance보다 composition과 explicit props/interface를 우선한다.",
+  ];
+
+  if (planning.analyticsImpact.length > 0) {
+    items.push(
+      "instrumentation은 핵심 state transition 경계에만 두고 중복 emit을 피한다.",
+    );
+  }
+
+  return items;
 }
 
 function buildBackendPlan(planning) {
@@ -1368,6 +1550,22 @@ function buildBackendTests(planning) {
   return tests;
 }
 
+function buildEnterpriseBeGuardrails(planning) {
+  const items = [
+    "validation, use case, repository, adapter 책임을 한 파일에 섞지 않는다.",
+    "domain invariant와 measurement integrity는 호출부가 아니라 경계 안에서 보호한다.",
+    "class나 layer는 명확성이 커질 때만 추가하고 speculative abstraction은 피한다.",
+  ];
+
+  if (planning.analyticsImpact.length > 0) {
+    items.push(
+      "analytics 기록과 외부 전송은 분리해 optional provider 실패가 core signal을 깨지 않게 한다.",
+    );
+  }
+
+  return items;
+}
+
 function buildMeasurementGuardrails(planning) {
   const items = [];
 
@@ -1406,8 +1604,12 @@ function buildQualityRisks(planning) {
 function buildQualityChecklist(planning) {
   const items = [
     "primary business goal과 success metric이 이 변경과 연결된다",
+    "risky boundary test evidence가 있거나 skip reason이 명시되어 있다",
+    "역할별 산출물이 enterprise principles를 따른다",
     "사용자에게 가장 중요한 CTA와 value proposition이 분명하다",
     "trust, error, empty, pending state가 검토되었다",
+    "docs/spec sync가 확인되었다",
+    "fresh `pnpm verify` 또는 `pnpm verify:full` 결과가 있다",
   ];
 
   if (planning.analyticsImpact.length > 0 || planning.backendRequired) {
@@ -1416,6 +1618,87 @@ function buildQualityChecklist(planning) {
 
   if (planning.frontendRequired) {
     items.push("responsive + accessibility + browser QA evidence가 있다");
+  }
+
+  return items;
+}
+
+function buildCodeQualityEvidence(planning) {
+  const items = [
+    "중요한 behavior slice를 먼저 테스트 가능한 단위로 자르고 최소 구현으로 수렴한다.",
+  ];
+
+  if (planning.frontendRequired) {
+    items.push(
+      "state transition과 UI 경계를 검증할 테스트 또는 manual proof 계획이 있다.",
+    );
+  }
+
+  if (planning.backendRequired) {
+    items.push(
+      "validation, persistence, analytics 경계에 대한 contract test 계획이 있다.",
+    );
+  }
+
+  return items;
+}
+
+function buildPrincipleAdherence(planning) {
+  const items = [
+    "PM 산출물은 goal, metric, acceptance criteria를 모호성 없이 고정한다.",
+  ];
+
+  if (planning.uxRequired) {
+    items.push(
+      "PD 산출물은 trust, hierarchy, edge state completeness를 확인한다.",
+    );
+  }
+
+  if (planning.frontendRequired) {
+    items.push(
+      "FE 산출물은 explicit UI/state boundary와 composition-first 구조를 유지한다.",
+    );
+  }
+
+  if (planning.backendRequired) {
+    items.push(
+      "BE 산출물은 validation/use case/repository/adapter 책임을 분리한다.",
+    );
+  }
+
+  return items;
+}
+
+function buildDocsAndSpecSync(workId, planning) {
+  return uniqueItems(
+    [
+      `docs/prds/${planning.prd.slug}.md`,
+      `docs/work-items/${workId}/brief.md`,
+      `docs/work-items/${workId}/team-plan.md`,
+      `docs/work-items/${workId}/quality-scorecard.md`,
+      planning.uxRequired ? `docs/work-items/${workId}/ux-review.md` : null,
+      planning.frontendRequired
+        ? `docs/work-items/${workId}/frontend-spec.md`
+        : null,
+      planning.backendRequired
+        ? `docs/work-items/${workId}/backend-spec.md`
+        : null,
+    ].filter(Boolean),
+  );
+}
+
+function buildVerificationEvidence(workId, planning) {
+  const items = [
+    `run pnpm repo:check --work ${workId}`,
+    `run pnpm squad:check ${workId}`,
+  ];
+
+  if (planning.frontendRequired) {
+    items.push(
+      "run pnpm verify:full if browser-critical flow or integration risk grows beyond unit coverage",
+    );
+  } else {
+    items.push("run pnpm verify");
   }
 
   return items;
@@ -1624,9 +1907,22 @@ function checklistFromSection(content) {
 }
 
 function renderFrontmatter(fields) {
+  const mergedFields = {
+    ...("owner_role" in fields
+      ? {
+          owner: fields.owner_role,
+          doc_type: "task-local",
+          source_of_truth: true,
+          freshness: "active",
+          verification: "scripted",
+        }
+      : {}),
+    ...fields,
+  };
+
   return [
     "---",
-    ...Object.entries(fields).map(([key, value]) =>
+    ...Object.entries(mergedFields).map(([key, value]) =>
       renderYamlField(key, value),
     ),
     "---",

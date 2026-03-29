@@ -1,4 +1,9 @@
 ---
+owner: "pd"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: draft
 owner_role: pd
 source_request: ""
@@ -38,6 +43,10 @@ skip_reason: null
 -
 
 ## Accessibility Checks
+
+-
+
+## Enterprise UX Principles
 
 -
 

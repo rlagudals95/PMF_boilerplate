@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Skill Index
 
 이 폴더는 플랫폼에 종속되지 않는 저장소 로컬 스킬 레지스트리입니다.

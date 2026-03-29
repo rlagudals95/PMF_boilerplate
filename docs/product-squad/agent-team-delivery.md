@@ -1,3 +1,10 @@
+---
+owner: "product-squad"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Agent Team Delivery
 
 ## 목적
@@ -60,6 +67,9 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
 - quality reviewer
   - 별도 agent일 수도 있고 lead가 겸할 수도 있습니다.
 
+각 역할은 단순히 산출물만 채우는 것이 아니라 `ai/context/ai-native.md`의 enterprise principles를 자기 관점에서 적용해야 합니다.
+즉 PM은 decision quality, PD는 UX system quality, FE는 code/module quality, BE는 contract/domain quality를 담당합니다.
+
 ## Shared Artifacts
 
 중요한 작업의 공용 산출물은 아래입니다.
@@ -106,6 +116,11 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
 - success check
   - handoff 전에 확인한 증거
 
+가능하면 success check에는 아래 둘을 함께 남깁니다.
+
+- verification evidence
+- role principle adherence note
+
 다음 역할은 이전 대화 로그가 아니라 이 packet과 repo 문서를 기준으로 움직입니다.
 
 ## Shared Task List 규칙
@@ -141,6 +156,7 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
 - Claude에서는 `.claude/agents/*.md` project subagent와 `.claude/settings.json` hook을 acceleration으로 사용할 수 있습니다.
 - Codex, Gemini, Copilot, Cursor에서는 generated skill/command/rule이 같은 canonical workflow를 더 잘 로드하도록 돕습니다.
 - 중요한 작업 마무리 전에는 플랫폼과 무관하게 `pnpm squad:check [work-id]`를 실행해 artifact가 placeholder 상태가 아닌지 확인합니다.
+- canonical 문서, work item metadata, adapter drift는 `pnpm repo:check`로 먼저 확인합니다.
 
 ## Browser Review Loop
 
@@ -164,6 +180,7 @@ team 방식으로 작업하더라도 user-facing 결과는 아래를 지나야 �
 
 - `team-plan.md`의 모든 task가 completed 또는 explicitly deferred 상태인지 확인합니다.
 - `quality-scorecard.md`에 ship / iterate / stop이 남아 있어야 합니다.
+- 필요한 경우 `pnpm repo:check --work <work-id>`를 실행합니다.
 - 필요한 경우 `pnpm squad:check [work-id]`를 실행합니다.
 - 필요한 경우 `pnpm verify` 또는 `pnpm verify:full`을 실행합니다.
 

@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Engineering Common
 
 이 문서는 FE와 BE 모두에 적용되는 공통 엔지니어링 규칙을 다룹니다.

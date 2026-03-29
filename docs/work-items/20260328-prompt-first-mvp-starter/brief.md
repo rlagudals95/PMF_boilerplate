@@ -1,5 +1,10 @@
 ---
-status: approved
+owner: "pm"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
+status: done
 owner_role: pm
 source_request: "자연어 비즈니스 프롬프트 하나로 recipe를 고르고 PRD/work item까지 여는 prompt-first mvp starter 추가"
 affected_paths:

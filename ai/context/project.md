@@ -1,9 +1,19 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Project Context
 
 ## Purpose
 
 이 저장소는 PMF를 찾기 위한 실험용 보일러플레이트입니다.
 기본값은 특정 업종이 아니라 다음 사이드 프로젝트에도 바로 재사용 가능한 범용 MVP kit를 지향합니다.
+
+운영 약속, quality bar, 역할 기반 작업 방식, Docs-as-Code 원칙의 canonical source는 `ai/context/ai-native.md`입니다.
+Repo OS 문서 계층과 verification entrypoint 인덱스는 `docs/repo-os.md`입니다.
 
 ## Working rules
 
@@ -45,6 +55,7 @@ pnpm test
 pnpm test:e2e
 pnpm verify
 pnpm verify:full
+pnpm repo:check
 pnpm mvp:new my-mvp --goal "..." --audience "..." --offer "..." --signal "..."
 pnpm prd:new my-prd
 pnpm feature:new --prd my-prd
@@ -89,6 +100,7 @@ pnpm db:seed
 
 ## How to run important work
 
+- 중요한 작업, 정책 입력, business-goal-driven 요청은 먼저 `ai/context/ai-native.md`를 읽고 입력을 goal packet으로 정규화한다.
 - 여러 파일에 걸친 기능 작업, 실험 변경, 폼/어드민/analytics/DB 변경은 먼저 `docs/product-squad/operating-model.md`를 읽는다.
 - 중요한 제품 작업이면 `docs/product-squad/goal-driven-delivery.md`도 함께 읽어 business goal, browser QA, release 판단 루프를 맞춘다.
 - 역할 간 handoff나 병렬 탐색이 필요한 작업이면 `docs/product-squad/agent-team-delivery.md`도 함께 읽는다.
@@ -102,6 +114,7 @@ pnpm db:seed
 - 중요한 작업과 핵심 로직 변경은 구현 단위를 테스트 가능한 behavior slice로 자르고 `spec -> failing test -> minimal implementation -> refactor -> verify` 순서를 기본값으로 둔다.
 - feature/work item 문서에는 어떤 behavior를 먼저 failing test로 고정할지 적고, light work가 아니라면 그 문서를 기준으로 구현한다.
 - 구현 후 기본 검증은 `pnpm verify`, 더 무거운 사용자 흐름 검증은 `pnpm verify:full`을 사용한다.
+- canonical 문서, work item contract, adapter-driving 파일이 바뀌면 `pnpm repo:check`를 먼저 통과시킨다.
 - 중요한 작업 문서가 실제로 채워졌는지는 `pnpm squad:check [work-id]`로 확인할 수 있다.
 - AI 컨텍스트나 adapter entry가 바뀌면 `pnpm ai:sync`를 실행한다.
 - 작은 문구 수정이나 단일 스타일 수정은 full process를 생략할 수 있지만, skip 이유는 남긴다.

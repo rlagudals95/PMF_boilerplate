@@ -1,4 +1,9 @@
 ---
+owner: "fe"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: draft
 owner_role: fe
 source_request: ""
@@ -8,6 +13,12 @@ skip_reason: null
 ---
 
 # Frontend Spec
+
+## Goal Alignment
+
+<!-- 이 FE 변경이 어떤 business goal과 사용자 행동 변화를 더 직접적으로 돕는지 적습니다. -->
+
+-
 
 ## Affected Routes
 
@@ -26,6 +37,10 @@ skip_reason: null
 -
 
 ## Instrumentation Hooks
+
+-
+
+## Enterprise FE Guardrails
 
 -
 

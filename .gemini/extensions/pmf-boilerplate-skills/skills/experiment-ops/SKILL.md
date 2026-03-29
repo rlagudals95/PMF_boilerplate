@@ -1,8 +1,10 @@
 ---
-name: experiment-ops
-description: "Use when 실험 등록, 이벤트 명명, success metric 설계, 종료 기준 판단"
+owner: "pm"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
 ---
-
 # Skill: Experiment Ops
 
 ## Use when

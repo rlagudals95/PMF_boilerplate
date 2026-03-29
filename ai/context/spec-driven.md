@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Spec-Driven Delivery
 
 이 문서는 이 저장소에서 spec-driven 개발을 어떻게 운영하는지 정의하는 canonical context입니다.
@@ -16,6 +23,8 @@
 
 - 위치: `ai/context/*`, `ai/skills/*`, `docs/architecture.md`
 - 예시: 구조 규칙, 역할 분리, 문서 sync 정책
+- `ai/context/ai-native.md`는 운영 약속, quality bar, Docs-as-Code 원칙의 canonical source입니다.
+- `docs/repo-os.md`는 Repo OS layer map, metadata contract, verification entrypoint를 요약합니다.
 
 ### 2. Task-local doc
 
@@ -46,14 +55,15 @@
 기본 순서:
 
 1. `ai/context/project.md`
-2. `ai/context/engineering.md`
-3. `ai/context/engineering-common.md`
-4. `ai/context/spec-driven.md`
-5. 작업에 맞는 `engineering-frontend.md`, `engineering-backend.md`
-6. `ai/context/doc-sync.md`
-7. `ai/skills/_index.md`
-8. 관련 스킬 문서
-9. 관련 `docs/*`와 영향 파일
+2. `ai/context/ai-native.md`
+3. `ai/context/engineering.md`
+4. `ai/context/engineering-common.md`
+5. `ai/context/spec-driven.md`
+6. 작업에 맞는 `engineering-frontend.md`, `engineering-backend.md`
+7. `ai/context/doc-sync.md`
+8. `ai/skills/_index.md`
+9. 관련 스킬 문서
+10. 관련 `docs/*`와 영향 파일
 
 추가 규칙:
 
@@ -104,6 +114,7 @@
 
 최소 필요 문서:
 
+- `ai/context/ai-native.md`
 - 관련 canonical context
 - 관련 skill
 - 영향 받는 adapter entry 또는 playbook
@@ -125,7 +136,7 @@
 - 랜딩, 폼, 어드민, analytics, schema, repository 변경은 spec을 먼저 고정합니다.
 - 중요한 작업의 spec에는 test-first로 풀 핵심 behavior slice를 적습니다.
 - 구현은 작은 slice 단위로 `failing test -> minimal implementation -> refactor` 순서를 기본값으로 둡니다.
-- `pnpm verify`, `pnpm verify:full`은 최종 검증 게이트이며, TDD 루프를 대체하지 않습니다.
+- `pnpm repo:check`, `pnpm verify`, `pnpm verify:full`은 최종 검증 게이트이며, TDD 루프를 대체하지 않습니다.
 - 중요한 작업은 handoff 전에 `pnpm squad:check [work-id]`로 work item 문서가 placeholder 상태가 아닌지 확인할 수 있습니다.
 - `product-squad`는 역할 분리를 위한 운영 모델이고, 이 문서는 그 상위의 spec-driven 기준입니다.
 - work item 문서는 task-local source of truth이며, canonical 규칙을 대체하지 않습니다.

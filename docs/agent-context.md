@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Cross-Agent Context Strategy
 
 이 저장소는 특정 AI 코딩 도구 하나에 종속되지 않도록 컨텍스트를 3계층으로 나눕니다.
@@ -9,6 +16,7 @@
 공통 원본은 `ai/` 아래에 둡니다.
 
 - `ai/context/project.md`: 프로젝트 목적, 구조, 명령어, 가드레일
+- `ai/context/ai-native.md`: AI-native 운영 약속, quality bar, Docs-as-Code 원칙
 - `ai/context/engineering.md`: 엔지니어링 문서 entry와 로드 순서
 - `ai/context/engineering-common.md`: FE/BE 공통 규칙
 - `ai/context/spec-driven.md`: spec-driven 개발 기준과 문서 우선순위
@@ -16,6 +24,7 @@
 - `ai/context/engineering-backend.md`: domain/backend/integration 규칙
 - `ai/context/doc-sync.md`: 코드-문서 sync 정책과 drift 기준
 - `ai/context/platform-optimization.md`: 플랫폼별 adapter 최적화 기준
+- `docs/repo-os.md`: Repo OS layer map, metadata contract, verification entrypoint index
 - `ai/skills/_index.md`: 사용 가능한 스킬과 트리거 규칙
 - `ai/skills/*.md`, `ai/skills/*/SKILL.md`: 플랫폼 독립 스킬 문서
 - `ai/agents/*.md`: platform-native delegation용 canonical agent prompt
@@ -63,26 +72,29 @@
 
 1. platform entry (`AGENTS.md` / `CLAUDE.md` / `GEMINI.md` / `.github/copilot-instructions.md` / relevant `.cursor/rules/*.mdc`)
 2. `ai/context/project.md`
-3. `ai/context/engineering.md`
-4. `ai/context/engineering-common.md`
-5. `ai/context/spec-driven.md`
-6. 현재 작업에 맞는 FE/BE 문서 하나 또는 둘 다
-7. `ai/context/doc-sync.md`
-8. adapter나 multi-agent acceleration 작업이면 `ai/context/platform-optimization.md`
-9. `ai/skills/_index.md`
-10. 현재 작업에 맞는 스킬 문서
-11. 중요한 작업이면 `docs/product-squad/operating-model.md`
-12. 비즈니스 목표 중심 제품 작업이면 `docs/product-squad/goal-driven-delivery.md`
-13. raw business request에서 출발하는 제품 작업이면 `docs/ai-starter-prompt-pack.md`
-14. 역할 handoff나 병렬 탐색이 중요하면 `docs/product-squad/agent-team-delivery.md`
-15. 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`
-16. task-local 문서
+3. `ai/context/ai-native.md`
+4. `ai/context/engineering.md`
+5. `ai/context/engineering-common.md`
+6. `ai/context/spec-driven.md`
+7. 현재 작업에 맞는 FE/BE 문서 하나 또는 둘 다
+8. `ai/context/doc-sync.md`
+9. adapter나 multi-agent acceleration 작업이면 `ai/context/platform-optimization.md`
+10. `ai/skills/_index.md`
+11. `docs/repo-os.md`
+12. 현재 작업에 맞는 스킬 문서
+13. 중요한 작업이면 `docs/product-squad/operating-model.md`
+14. 비즈니스 목표 중심 제품 작업이면 `docs/product-squad/goal-driven-delivery.md`
+15. raw business request에서 출발하는 제품 작업이면 `docs/ai-starter-prompt-pack.md`
+16. 역할 handoff나 병렬 탐색이 중요하면 `docs/product-squad/agent-team-delivery.md`
+17. 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`
+18. task-local 문서
 
 ## 왜 이 구조가 필요한가
 
 - 플랫폼마다 시스템 프롬프트 형식이 다릅니다.
 - 하지만 프로젝트 지식과 팀 규칙은 같아야 합니다.
 - 그래서 지식 본문은 중립 Markdown으로 두고, 플랫폼 파일은 로더 역할만 하게 합니다.
+- 운영 약속과 quality bar는 `ai/context/ai-native.md`에 먼저 고정하고, 나머지 문서는 그 약속을 구조와 workflow에 맞게 세분화합니다.
 
 ## 운영 규칙
 
@@ -95,6 +107,7 @@
 - 외부 도구 메모는 입력 채널일 뿐 canonical source가 아닙니다.
 - 플랫폼 런타임 포맷이 필요하면 `ai/`를 source로 삼아 generated adapter를 만듭니다.
 - generated adapter는 직접 수정하지 않고 `pnpm ai:sync`로 다시 만듭니다.
+- core docs metadata, active work item completeness, adapter drift는 `pnpm repo:check`로 확인합니다.
 
 ## Spec-Driven Layer
 
@@ -124,6 +137,7 @@
 모든 에이전트는 아래 규칙을 기본값으로 따릅니다.
 
 - 코드 변경 전에 관련 문서와 실제 영향 파일을 먼저 읽습니다.
+- 정책, business goal, PRD, raw request는 먼저 `ai/context/ai-native.md` 기준으로 goal packet과 thin slice로 정규화합니다.
 - FE 작업이면 `engineering-frontend.md`를 읽습니다.
 - DB/schema/repository/integration 작업이면 `engineering-backend.md`를 읽습니다.
 - full-stack 작업이면 FE/BE 문서를 모두 읽습니다.

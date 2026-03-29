@@ -145,6 +145,21 @@ AI는 보통 아래 중 하나를 고릅니다.
 - `/`, `/consult`, `/admin`이 comparison-routing 답게 보입니다.
 - `pnpm verify`가 통과합니다.
 
+### 정책/운영 제약 입력 예시
+
+```text
+출시 첫 주에는 결제보다 상담 전환을 먼저 확인하고 싶어.
+개인정보는 최소 수집해야 하고 운영팀이 바로 후속 연락할 수 있어야 해.
+첫 성공 기준은 7일 안에 qualified consultation request 10건이야.
+```
+
+### 이 입력에서 기대하는 첫 결과
+
+- goal packet으로 먼저 정규화됩니다.
+- selected MVP shape는 보통 `consultation`이 됩니다.
+- active flows는 `landing`, `consultation`, `admin` 쪽으로 좁혀집니다.
+- deferred flows는 `payment`, `auth`가 됩니다.
+
 ## Structured Helper
 
 raw business idea에서 시작할 때는 one-shot prompt가 기본입니다. 다만 입력이 이미 구조화돼 있다면 helper를 써도 됩니다.

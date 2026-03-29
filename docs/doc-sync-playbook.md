@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Doc Sync Playbook
 
 이 문서는 자주 발생하는 변경 유형별로 어떤 문서를 같이 갱신해야 하는지 사례 중심으로 정리합니다.
@@ -6,6 +13,7 @@
 
 - 문서 sync 판단을 빠르게 만든다.
 - canonical context와 task-local doc의 책임 혼선을 줄인다.
+- Repo OS metadata와 static gate를 어떤 변경에서 같이 갱신해야 하는지 빠르게 판단한다.
 
 ## Case 1. 새 기능 추가
 
@@ -45,6 +53,7 @@
 - `docs/architecture.md`
 - 관련 `ai/context/*`
 - `docs/agent-context.md`
+- `docs/repo-os.md`
 
 필요 시 추가:
 
@@ -105,6 +114,7 @@
 - 관련 `ai/context/*`
 - `docs/agent-context.md`
 - adapter entry 문서
+- `docs/repo-os.md`
 
 ## Canonical vs Task-Local 빠른 판단표
 
@@ -119,3 +129,4 @@
 - 같은 규칙이 여러 파일에 복제되지 않았는가
 - 외부 메모 없이도 repo 문서만으로 작업 배경을 이해할 수 있는가
 - architecture, engineering, skill, work item 문서가 서로 모순되지 않는가
+- canonical doc, template, adapter-driving 파일을 바꿨다면 `pnpm repo:check`와 `pnpm ai:sync` 필요 여부를 함께 확인했는가

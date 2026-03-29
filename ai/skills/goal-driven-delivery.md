@@ -1,3 +1,10 @@
+---
+owner: "product-squad"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Skill: Goal-Driven Delivery
 
 ## Use when
@@ -8,11 +15,12 @@
 
 ## Read first
 
-1. `docs/product-squad/goal-driven-delivery.md`
-2. `docs/product-squad/operating-model.md`
-3. `ai/context/spec-driven.md`
-4. `docs/work-items/README.md`
-5. 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`
+1. `ai/context/ai-native.md`
+2. `docs/product-squad/goal-driven-delivery.md`
+3. `docs/product-squad/operating-model.md`
+4. `ai/context/spec-driven.md`
+5. `docs/work-items/README.md`
+6. 활성 work item이 있으면 `docs/work-items/<work-id>/*.md`
 
 ## Workflow
 
@@ -40,6 +48,7 @@
 - role debate는 여러 에이전트를 반드시 띄우지 않아도 되고, 한 에이전트가 순차적으로 역할을 수행해도 된다.
 - metric이 비어 있으면 구현보다 metric 정의를 먼저 진행한다.
 - quality scorecard에서 ship 근거가 약하면 빠르게 scope를 줄여 다시 실험한다.
+- role output은 결과물만이 아니라 enterprise principle adherence도 남겨야 한다.
 
 ## Guardrails
 

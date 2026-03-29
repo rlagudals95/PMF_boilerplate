@@ -1,4 +1,9 @@
 ---
+owner: "pm"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: done
 owner_role: pm
 source_request: "packages/ab-test, packages/user-behavior-log 위 두개 패키지 다른 프로젝트에서 가져온 패키지야 이 보일러플레이트에서 사용가능한 형태로 재가공가능?"

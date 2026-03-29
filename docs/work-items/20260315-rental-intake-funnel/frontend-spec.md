@@ -1,4 +1,9 @@
 ---
+owner: "fe"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: "draft"
 owner_role: "fe"
 source_request: "PRD: docs/prds/rental-demand-validation-example.md"

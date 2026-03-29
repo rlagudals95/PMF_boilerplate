@@ -17,6 +17,7 @@
     "verify:full": "pnpm verify && pnpm test:e2e",
     "format": "prettier --write .",
     "ai:sync": "node scripts/sync-ai-context.mjs",
+    "repo:check": "node scripts/check-repo-os.mjs",
     "squad:check": "node scripts/check-squad-work-item.mjs",
     "prd:new": "node scripts/create-prd.mjs",
     "mvp:new": "node scripts/create-mvp-starter.mjs",

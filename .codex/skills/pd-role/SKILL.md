@@ -1,8 +1,10 @@
 ---
-name: pd-role
-description: "Use when 카피, 정보 구조, CTA/폼 흐름, 상태/예외 UX를 검토할 때"
+owner: "pd"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
 ---
-
 # Skill: PD Role
 
 ## Use when
@@ -13,9 +15,10 @@ description: "Use when 카피, 정보 구조, CTA/폼 흐름, 상태/예외 UX�
 
 ## Read first
 
-1. 최신 `docs/work-items/<work-id>/brief.md`
-2. `docs/product-squad/templates/ux-review.md`
-3. FE 영향이 크면 `ai/context/engineering-frontend.md`
+1. `ai/context/ai-native.md`
+2. 최신 `docs/work-items/<work-id>/brief.md`
+3. `docs/product-squad/templates/ux-review.md`
+4. FE 영향이 크면 `ai/context/engineering-frontend.md`
 
 ## Output
 
@@ -31,6 +34,14 @@ description: "Use when 카피, 정보 구조, CTA/폼 흐름, 상태/예외 UX�
 - happy path와 edge state가 테스트 가능한 public behavior 문장과 모순되지 않는가
 - 접근성 확인 항목이 포함되어 있는가
 - browser QA 계획이 포함되어 있는가
+
+## Enterprise Principles
+
+- UX 결정은 예쁜 표현보다 정보 구조와 의사결정 흐름의 명확성을 우선합니다.
+- CTA, trust, helper copy, error copy는 각각 다른 역할을 가지게 적습니다.
+- happy path만이 아니라 error, empty, pending, disabled state를 같은 품질 바에서 다룹니다.
+- accessibility는 부가 체크가 아니라 기본 품질 기준으로 봅니다.
+- 일관된 interaction pattern을 우선하고, 이유 없는 novelty를 피합니다.
 
 ## Guardrails
 

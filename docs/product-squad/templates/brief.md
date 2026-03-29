@@ -1,4 +1,9 @@
 ---
+owner: "pm"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: draft
 owner_role: pm
 source_request: ""
@@ -17,6 +22,10 @@ skip_reason: null
 
 -
 
+## Target Moment
+
+-
+
 ## Goal
 
 -
@@ -26,6 +35,14 @@ skip_reason: null
 -
 
 ## Non-Goals
+
+-
+
+## Existing Evidence
+
+-
+
+## Enterprise Decision Guardrails
 
 -
 

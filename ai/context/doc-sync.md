@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Doc Sync Policy
 
 이 문서는 코드와 문서의 sync를 어떻게 유지하는지 정의하는 canonical context입니다.
@@ -14,6 +21,7 @@
 - 모든 변경이 문서 갱신을 요구하지는 않지만, 구조와 운영 규칙 변경은 거의 항상 문서 영향이 있습니다.
 - 같은 규칙을 여러 문서에 복제하지 않고, source 문서를 먼저 갱신합니다.
 - 외부 노트는 sync 대상이 아니라 입력 재료입니다.
+- 핵심 문서와 task-local artifact의 metadata도 문서 계약의 일부로 봅니다.
 
 ## 어떤 변경이 어떤 문서를 유발하는가
 
@@ -88,6 +96,7 @@
 - `docs/agent-context.md`
 - 관련 `ai/context/*`
 - 관련 `ai/skills/*`
+- `docs/repo-os.md`
 
 ## 문서 갱신이 필요한 경우
 
@@ -154,5 +163,6 @@
 - 필요한 canonical 문서를 갱신했다.
 - 필요한 task-local 문서를 갱신했다.
 - docs/test/type 영향 여부를 확인했다.
+- metadata, adapter drift, active work item contract가 `pnpm repo:check` 기준과 맞는다.
 - work item이 있다면 상태와 실제 구현 단계가 크게 어긋나지 않는다.
 - Notion 같은 외부 노트가 있다면 repo spec에 필요한 내용이 반영되었다.

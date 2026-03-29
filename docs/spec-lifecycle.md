@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Spec Lifecycle
 
 이 문서는 기능 spec과 실험 spec이 어떤 흐름으로 생성, 사용, 갱신, 종료되는지 설명합니다.
@@ -7,18 +14,29 @@
 - 구현 전에 필요한 결정을 문서로 고정한다.
 - 구현 중 scope drift를 문서 기준으로 관리한다.
 - 작업 종료 후 어떤 문서가 살아남아야 하는지 구분한다.
+- 반복되는 운영 약속과 quality bar는 `ai/context/ai-native.md` 같은 canonical 문서에 승격한다.
 
 ## 단계
 
 ### 1. Draft
 
-- 입력: 사용자 요청, 회의 메모, Notion 초안, 기존 이슈
+- 입력: 정책, business goal, 사용자 요청, 회의 메모, Notion 초안, 기존 이슈
 - 결과: repo 안 Markdown 초안
 - 권장 위치:
   - 중요한 작업: `docs/work-items/<work-id>/brief.md`
   - 독립 기능/실험: `docs/templates/*` 기반 문서
 
 이 단계에서는 아직 구현보다 결정 수집이 우선입니다.
+
+입력 형태가 달라도 이 단계의 기본 정규화 결과는 같은 goal packet입니다.
+
+- business goal
+- target user
+- target moment
+- success metric
+- non-goals
+- constraints
+- existing evidence
 
 ### 2. Review
 
@@ -39,7 +57,7 @@
 ### 4. Verify
 
 - 결과가 acceptance criteria를 충족하는지 확인합니다.
-- slice 단위 테스트가 통과한 뒤 최종 `pnpm verify` 또는 필요 시 `pnpm verify:full`로 마무리합니다.
+- slice 단위 테스트가 통과한 뒤 최종 `pnpm repo:check`, `pnpm verify` 또는 필요 시 `pnpm verify:full`로 마무리합니다.
 - 최종 verify는 구현 중간의 TDD 루프를 대체하지 않고, release gate 역할을 합니다.
 - test, type, docs 영향이 반영되었는지 확인합니다.
 - 필요한 경우 work item 상태를 갱신합니다.
@@ -47,6 +65,7 @@
 ### 5. Reflect
 
 - 구조 규칙이 바뀌었으면 canonical 문서를 갱신합니다.
+- 운영 약속, goal packet 정규화, quality bar가 바뀌었으면 `ai/context/ai-native.md`를 먼저 갱신합니다.
 - 현재 작업에만 필요한 결정은 task-local 문서에 남깁니다.
 - 반복 규칙으로 승격할 가치가 있으면 `ai/context/*` 또는 `ai/skills/*`에 반영합니다.
 
@@ -75,6 +94,8 @@
 - validation, action/route 경계, 상태 전이, adapter 계약이 바뀌면 light work라도 TDD 적용을 우선 검토합니다.
 - spec은 구현 복붙 문서가 아니라 결정 문서여야 합니다.
 - canonical context는 반복 규칙만, task-local doc은 현재 작업 결정만 담습니다.
+- quality bar를 바꾸는 작업은 `ai/context/ai-native.md`, `ai/context/spec-driven.md`, 관련 work item 문서를 함께 봅니다.
+- 핵심 문서와 task-local artifact의 metadata도 이 단계에서 함께 갱신합니다.
 
 ## Exit Checklist
 

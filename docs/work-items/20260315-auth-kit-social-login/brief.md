@@ -1,4 +1,9 @@
 ---
+owner: "pm"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: done
 owner_role: pm
 source_request: "이 보일러플레이트에, auth 관련된 kit이 빠진거 같아. 카카오, 네이버, 구글 로그인 보일러플레이트 kit도 추가해줘"

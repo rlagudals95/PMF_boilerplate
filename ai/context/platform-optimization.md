@@ -1,3 +1,10 @@
+---
+owner: "platform"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Platform Optimization
 
 이 문서는 플랫폼별 AI adapter를 어떻게 최적화할지 정의하는 canonical context입니다.
@@ -40,13 +47,13 @@
 
 - 루트 `AGENTS.md`를 repository entry로 유지한다.
 - `.codex/skills/*`와 skill index를 generated adapter로 유지한다.
-- tool-native subagent가 없더라도 `product-squad`, `goal-driven-delivery`, `agent-team-delivery`와 `squad:check`를 통해 같은 품질 루프를 재현한다.
+- tool-native subagent가 없더라도 `product-squad`, `goal-driven-delivery`, `agent-team-delivery`, `repo:check`, `squad:check`를 통해 같은 품질 루프를 재현한다.
 
 ### Gemini
 
 - `.gemini/commands/repo/*`를 slash command entry로 사용한다.
 - `.gemini/extensions/*/skills/*`를 installable extension skill로 유지한다.
-- 중요한 작업은 command entry보다 canonical work item artifact와 `squad:check`를 기준으로 마무리한다.
+- 중요한 작업은 command entry보다 canonical work item artifact와 `repo:check`, `squad:check`를 기준으로 마무리한다.
 
 ### Cursor And Copilot
 
@@ -58,7 +65,7 @@
 - 모델이 중요한 작업에서 `brief.md`, `team-plan.md`, `quality-scorecard.md`를 더 자주 만들고 읽는다.
 - goal-driven 작업에서 role debate와 browser QA를 생략하지 않는다.
 - 플랫폼 기능이 있으면 delegation과 reminder를 활용하되, 기능이 없어도 같은 artifact와 command로 재현 가능하다.
-- finishing gate는 감이 아니라 `pnpm verify`, `pnpm squad:check`, browser evidence 같은 repo-local proof로 닫힌다.
+- finishing gate는 감이 아니라 `pnpm repo:check`, `pnpm verify`, `pnpm squad:check`, browser evidence 같은 repo-local proof로 닫힌다.
 
 ## Guardrails
 

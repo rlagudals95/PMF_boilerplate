@@ -1,3 +1,10 @@
+---
+owner: "product-squad"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Work Items
 
 중요한 작업은 이 폴더 아래에 `docs/work-items/<work-id>/` 형태로 관리합니다.
@@ -10,6 +17,7 @@
 ## Preferred Entry
 
 raw business request에서 시작한다면 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)로 AI가 repo를 먼저 읽고, 필요한 경우 1~3개의 질문으로 목표를 확인한 뒤 PRD/work item 또는 직접 적용 방향을 정하게 하는 편이 좋습니다.
+정책이나 business goal이 먼저 주어지는 경우에도 같은 흐름으로 `goal packet -> work item -> thin slice` 순서로 정규화하는 것을 기본값으로 둡니다.
 
 ## Manual / Scaffolding Quick Start
 
@@ -17,6 +25,8 @@ raw business request에서 시작한다면 [docs/ai-starter-prompt-pack.md](/Use
 pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."
 pnpm work:new <short-slug> --request "원 요청 또는 작업 배경"
 pnpm feature:new --prd <prd-slug>
+pnpm repo:check
+pnpm repo:check --work <work-id>
 pnpm squad:check [work-id]
 ```
 
@@ -24,8 +34,13 @@ pnpm squad:check [work-id]
 - 위 명령은 `docs/product-squad/templates/*`를 복사해 새 work item 디렉터리를 만듭니다.
 - `pnpm feature:new --prd <prd-slug>`는 role spec 4종에 더해 `feature-spec.md`와 `quality-scorecard.md`까지 같이 생성합니다.
 - 중요한 작업이면 이 scaffold를 만든 뒤 문서를 채우고, 구현 단위를 테스트 가능한 behavior slice로 자른 뒤 진행합니다.
+- `brief.md`에는 최소한 business goal, target user, target moment, success metric, non-goals, constraints, existing evidence가 드러나야 합니다.
 - 기본 구현 루프는 `spec -> failing test -> minimal implementation -> refactor -> verify`입니다.
 - `frontend-spec.md`, `backend-spec.md`, `feature-spec.md`에는 어떤 behavior를 먼저 failing test로 고정할지 적어야 합니다.
+- work item 문서는 `owner`, `doc_type`, `source_of_truth`, `freshness`, `verification` metadata를 함께 유지합니다.
+- `pnpm repo:check` 기본값은 `approved | in_progress | blocked` 상태의 active work item 전체를 검사합니다.
+- historical work item은 `done` 또는 `skipped`로 닫아 active 검사 대상에서 빠지게 유지합니다.
+- historical artifact까지 한 번에 감사하려면 `pnpm repo:check --all`을 사용합니다. 이 모드는 migration/audit 용도로 봅니다.
 - handoff 전에 `pnpm squad:check [work-id]`로 placeholder가 남아 있는지 점검합니다.
 
 ## Required files
@@ -47,6 +62,9 @@ pnpm squad:check [work-id]
 - 각 역할 문서는 `docs/product-squad/templates/*.md`를 복사해서 시작합니다.
 - `team-plan.md`는 실제 subagent/team 기능이 없어도 shared task list와 handoff를 시뮬레이션하는 coordination 문서입니다.
 - 중요한 작업과 핵심 로직 변경은 문서에 적힌 behavior slice를 먼저 failing test로 고정한 뒤 최소 구현을 추가합니다.
+- `quality-scorecard.md`는 browser QA뿐 아니라 test/docs sync/verify evidence까지 모으는 최종 quality gate입니다.
+- `quality-scorecard.md`는 역할별 enterprise principle adherence도 함께 확인하는 최종 quality gate입니다.
 - user-facing 또는 goal-critical 작업은 `quality-scorecard.md`에 browser QA evidence와 ship 판단을 남깁니다.
+- `pnpm repo:check [work-id]`는 core docs metadata, adapter drift, active work item contract를 함께 확인하는 상위 static gate입니다.
 - `pnpm squad:check [work-id]`는 work item 문서가 아직 템플릿 상태인지 빠르게 확인하는 기본 검증입니다.
 - 구현 중 scope가 바뀌면 코드보다 문서를 먼저 갱신합니다.

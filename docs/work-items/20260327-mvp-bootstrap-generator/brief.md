@@ -1,5 +1,10 @@
 ---
-status: approved
+owner: "pm"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
+status: done
 owner_role: pm
 source_request: "few inputs로 PRD 초안과 feature work item까지 같이 만드는 범용 mvp:new 생성기 추가"
 affected_paths:

@@ -1,4 +1,9 @@
 ---
+owner: "be"
+doc_type: "task-local"
+source_of_truth: true
+freshness: "active"
+verification: "scripted"
 status: skipped
 owner_role: be
 source_request: "Cursor/Claude Code/Codex에서 공통으로 쓸 MVP starter prompt를 비교 평가하는 기준과 템플릿 추가"

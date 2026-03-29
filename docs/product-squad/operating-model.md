@@ -1,3 +1,10 @@
+---
+owner: "product-squad"
+doc_type: "canonical"
+source_of_truth: true
+freshness: "active"
+verification: "manual"
+---
 # Product Squad Operating Model
 
 ## 목적
@@ -8,6 +15,8 @@
 ## 기본 원칙
 
 - 기본 진입점은 `product-squad`다.
+- 중요한 작업의 기본값은 `역할 기반 문서 + quality gate`다.
+- 중요한 작업의 Repo OS 기본 경로는 `goal packet -> brief -> role specs -> team-plan -> tests -> browser evidence -> quality-scorecard`다.
 - canonical PRD가 있으면 `new-feature`가 `product-squad` 앞단에서 work item 생성기를 담당할 수 있다.
 - 중요한 작업은 먼저 문서 산출물을 만든다.
 - 최신 `brief.md`가 구현 전 기준 문서다.
@@ -16,6 +25,7 @@
 - 작은 수정은 full process를 생략할 수 있지만 `skip_reason`은 남긴다.
 - spec-driven 기준은 `ai/context/spec-driven.md`를 따른다.
 - 문서 sync 기준은 `ai/context/doc-sync.md`를 따른다.
+- 모든 역할은 `ai/context/ai-native.md`의 enterprise principles를 기본값으로 따른다.
 
 ## 어떤 작업이 gated work 인가
 
@@ -23,6 +33,7 @@
 - 랜딩, 폼, 어드민 동작 변경
 - analytics event, marketing event, error logging 변경
 - DB schema, repository, validation 변경
+- AI adapter, 읽기 순서, 역할/운영 규칙 변경
 - 여러 파일에 걸친 기능 작업
 
 ## 어떤 작업은 light work 인가
@@ -75,6 +86,19 @@
 - `be-role`
   - validation, use case, repository contract, adapter failure handling 중 무엇을 먼저 failing test로 고정할지 적습니다.
 
+## 역할별 Enterprise Principles
+
+- `pm-role`
+  - decision-complete 문서, 일관된 용어, 테스트 가능한 acceptance criteria를 기본값으로 둡니다.
+- `pd-role`
+  - CTA hierarchy, trust, accessibility, edge state completeness를 기본값으로 둡니다.
+- `fe-role`
+  - 작은 책임 단위, explicit UI/state boundary, composition-first 구조를 기본값으로 둡니다.
+- `be-role`
+  - validation/use case/repository 분리, encapsulated domain rule, explicit adapter contract를 기본값으로 둡니다.
+- `quality review`
+  - 동작 확인만이 아니라 principle adherence와 verification evidence를 같이 봅니다.
+
 ## 역할 선택 규칙
 
 - 사용자 흐름, 카피, 폼 변경: `PM + PD + FE`
@@ -111,6 +135,16 @@ docs/work-items/<work-id>/
 
 모든 work item 문서는 아래 필드를 가진다.
 
+- `owner`
+  - 문서 유지 역할
+- `doc_type`
+  - `task-local`
+- `source_of_truth`
+  - 현재 작업 기준 문서 여부
+- `freshness`
+  - `active`, 필요 시 `review-needed`
+- `verification`
+  - 기본값은 `scripted`
 - `status`
   - `draft`, `approved`, `in_progress`, `blocked`, `done`, `skipped`
 - `owner_role`
@@ -135,15 +169,16 @@ docs/work-items/<work-id>/
 7. 구현 단위를 테스트 가능한 behavior slice로 자른다.
 8. 중요한 작업과 핵심 로직 변경은 각 slice를 failing test로 먼저 고정한 뒤 최소 구현과 리팩터링을 진행한다.
 9. user-facing 작업이면 browser QA evidence와 measurement check를 `quality-scorecard.md`에 남긴다.
-10. 작업 종료 전에는 `pnpm squad:check [work-id]`로 문서가 placeholder 상태가 아닌지 확인한다.
-11. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
-12. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인하고 `pnpm verify` 또는 `pnpm verify:full`을 실행한다.
+10. non-user-facing 작업이어도 `quality-scorecard.md`에 test/docs sync/verify evidence를 남긴다.
+11. 작업 종료 전에는 `pnpm repo:check --work <work-id>`와 `pnpm squad:check [work-id]`로 문서와 metadata가 placeholder 상태를 벗어났는지 확인한다.
+12. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
+13. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인하고 `pnpm verify` 또는 `pnpm verify:full`을 실행한다.
 
 ## Goal-Driven Review Loop
 
 - 기능 아이디어보다 business goal을 먼저 고정합니다.
 - role spec은 병렬 문서가 아니라 같은 문제를 다른 관점으로 검토하는 장치입니다.
-- 최종 판단은 `quality-scorecard.md`에 `ship | iterate | stop` 형태로 남깁니다.
+- 최종 판단은 `quality-scorecard.md`에 `ship | iterate | stop` 형태로 남기며, browser evidence뿐 아니라 test/docs sync/verify evidence도 같이 남깁니다.
 - user-facing 변경은 browser QA evidence 없이 완료로 보지 않습니다.
 
 ## PD 범위 제한

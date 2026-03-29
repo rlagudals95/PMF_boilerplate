@@ -1,10 +1,19 @@
 # PMF Boilerplate
 
-비즈니스 아이디어를 받아 `데모 가능한 MVP`로 빠르게 적용하기 위한 PMF 탐색용 모노레포 kit입니다.
+비즈니스 아이디어, 운영 정책, business goal을 받아 `데모 가능한 MVP`로 빠르게 적용하기 위한 PMF 탐색용 모노레포 kit입니다.
 
 ## 목적 요약
 
 이 레포는 작은 제품팀이 AI와 함께 `첫 데모 가능한 MVP`를 빠르게 여는 데 초점을 둔 starter입니다.
+
+핵심 운영 약속은 아래와 같습니다.
+
+- 정책이나 business goal도 goal packet과 MVP thin slice로 정규화합니다.
+- 바이브 코딩이어도 repo-local quality gate로 품질을 판정합니다.
+- 중요한 작업은 PM/PD/FE/BE 역할 관점으로 검토합니다.
+- 제품/전략/PRD/운영 규칙의 source of truth는 repo Markdown입니다.
+
+운영 철학과 quality bar의 canonical source는 [ai/context/ai-native.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/ai/context/ai-native.md)입니다. Repo OS 문서 계층과 verification entrypoint 인덱스는 [docs/repo-os.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/repo-os.md)에 있습니다.
 
 잘 맞는 경우:
 
@@ -42,7 +51,7 @@ pnpm dev
 당신이 하는 일:
 
 - Codex, Cursor, Claude Code 같은 AI 코딩 툴에 아래 starter prompt를 넣습니다.
-- 이때 비즈니스 아이디어와 첫 MVP 목표만 적으면 충분합니다.
+- 이때 비즈니스 아이디어, 운영 정책, 첫 MVP 목표 중 핵심 입력만 적으면 충분합니다.
 - 같은 prompt 원문은 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)에도 있습니다.
 
 기대 결과:
@@ -94,6 +103,7 @@ pnpm dev
 당신이 하는 일:
 
 - AI에게 마지막에 `pnpm verify`를 실행하게 합니다.
+- canonical 문서, work item contract, adapter-driving 파일을 바꿨다면 `pnpm repo:check`도 같이 실행하게 합니다.
 - 브라우저에서 `/`, `/consult`, `/pay`, `/admin` 중 active flow에 맞는 화면을 확인합니다.
 
 기대 결과:
@@ -108,15 +118,15 @@ pnpm dev
 아래 프롬프트를 Codex, Cursor, Claude Code 같은 AI 코딩 툴에 그대로 붙여 넣는 것을 권장합니다.
 
 ```text
-이 repo를 PMF 탐색용 MVP kit로 사용해서 아래 사업 아이디어의 첫 데모 가능한 버전을 만들어줘.
+이 repo를 PMF 탐색용 MVP kit로 사용해서 아래 사업 아이디어 또는 운영 정책/비즈니스 목표를 첫 데모 가능한 버전으로 만들어줘.
 
-사업 아이디어:
+입력:
 [여기에 설명]
 
 반드시 아래 순서로 진행해줘.
 1. AGENTS.md와 관련 ai/context/docs를 읽어 이 repo 구조와 기존 building block을 먼저 이해한다.
-2. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal, target user, 핵심 전환을 확인한다.
-3. 아이디어를 goal / audience / offer / signal로 정리한다.
+2. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal, target user, target moment, constraints를 확인한다.
+3. 입력을 goal packet과 goal / audience / offer / signal로 정리한다.
 4. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
 5. active flows와 deferred flows를 정한다.
 6. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
@@ -182,7 +192,7 @@ pnpm dev
 
 실제로는 아래 계약으로 동작합니다.
 
-`one-shot prompt -> repo-aware shape selection -> product-config.mvp + copy update -> optional deeper code -> verify`
+`one-shot prompt -> goal packet 정규화 -> repo-aware shape selection -> product-config.mvp + copy update -> optional deeper code -> verify`
 
 즉 AI는 아래 순서로 움직입니다.
 
@@ -288,6 +298,7 @@ pnpm mvp:new rental-support-match --goal "상담 신청과 제휴 파트너 연�
 
 ```bash
 pnpm dev
+pnpm repo:check
 pnpm verify
 pnpm verify:full
 pnpm test:e2e
@@ -300,6 +311,7 @@ pnpm mvp:new my-mvp --goal "..." --audience "..." --offer "..." --signal "..."
 pnpm prd:new my-prd
 pnpm feature:new --prd my-prd
 pnpm work:new my-task --request "작업 배경"
+pnpm repo:check
 pnpm squad:check
 ```
 
@@ -315,5 +327,6 @@ pnpm ai:sync
 ## 더 자세히 볼 문서
 
 - canonical prompt pack: [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)
+- Repo OS index: [docs/repo-os.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/repo-os.md)
 - 시작 가이드: [docs/start-your-mvp.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/start-your-mvp.md)
 - prompt 평가 가이드: [docs/mvp-starter-prompt-evaluation.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/mvp-starter-prompt-evaluation.md)

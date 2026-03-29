@@ -5,5 +5,6 @@
 This directory contains project rules generated from the canonical context in `ai/` and the repository entry in `AGENTS.md`.
 
 - Rules live in `.cursor/rules/*.mdc`.
+- Use `pnpm repo:check` to detect metadata drift and stale generated adapters.
 - Refresh these files with `pnpm ai:sync` after changing canonical AI context.
 - The root `AGENTS.md` remains the canonical repo entrypoint.
