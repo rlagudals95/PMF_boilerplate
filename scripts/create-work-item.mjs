@@ -7,6 +7,7 @@ const rootDir = process.cwd();
 const templatesDir = path.join(rootDir, "docs", "product-squad", "templates");
 const workItemsDir = path.join(rootDir, "docs", "work-items");
 const templateFiles = [
+  "goal-packet.md",
   "brief.md",
   "team-plan.md",
   "ux-review.md",
@@ -27,12 +28,7 @@ async function main() {
     const templatePath = path.join(templatesDir, fileName);
     const destinationPath = path.join(targetDir, fileName);
     const template = await readFile(templatePath, "utf8");
-    const contents = request
-      ? template.replace(
-          'source_request: ""',
-          `source_request: ${JSON.stringify(request)}`,
-        )
-      : template;
+    const contents = materializeTaskLocalTemplate(template, { request });
 
     await writeFile(destinationPath, contents);
   }
@@ -83,6 +79,23 @@ function parseArgs(args) {
     request,
     force,
   };
+}
+
+function materializeTaskLocalTemplate(template, { request }) {
+  let output = template
+    .replace(/^doc_type:\s*".*"$/m, 'doc_type: "task-local"')
+    .replace(/^source_of_truth:\s*.*$/m, "source_of_truth: true")
+    .replace(/^freshness:\s*".*"$/m, 'freshness: "active"')
+    .replace(/^verification:\s*".*"$/m, 'verification: "scripted"');
+
+  if (request) {
+    output = output.replace(
+      /^source_request:\s*.*$/m,
+      `source_request: ${JSON.stringify(request)}`,
+    );
+  }
+
+  return output;
 }
 
 function normalizeSlug(value) {

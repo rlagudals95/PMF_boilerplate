@@ -14,16 +14,20 @@ verification: "manual"
 
 ## 핵심 결정
 
-### 1. 단일 Next.js 앱 + 공유 패키지
+### 1. 단일 Next.js host + optional Nest API + 공유 패키지
 
-- 랜딩, 폼, 어드민, 헬스체크를 모두 `apps/web` 하나에서 처리합니다.
-- 별도 API 서버를 두지 않았습니다.
-- 이유: PMF 탐색 단계에서 배포와 변경 속도가 가장 중요하기 때문입니다.
+- 기본 user-facing surface는 `apps/web` 하나에서 처리합니다.
+- `apps/api`는 optional NestJS backend example로만 추가합니다.
+- 별도 API 서버는 기본값이 아니라 선택적 advanced path입니다.
+- 이유: PMF 탐색 단계의 Day 0 속도는 유지하면서도, 추후 분리 가능한 backend 경계를 보여주기 위해서입니다.
 
 추가 기준:
 
 - `apps/web`는 하나의 제품 앱이면서 동시에 modular monolith의 host 역할을 합니다.
-- FE와 BE를 모두 이 앱 안에서 처리하되, 프레임워크 계층과 도메인 계층은 분리합니다.
+- `apps/api`를 켜더라도 랜딩, 폼, 어드민 surface는 계속 `apps/web`가 소유합니다.
+- `apps/api`는 selected write flow의 transport/application 경계를 보여주는 backend example입니다.
+- domain과 persistence는 계속 shared package에 남겨 extract-ready 구조를 유지합니다.
+- `apps/api`는 provider-neutral `deployable shape`까지만 기본 제공하고, Docker와 CI runtime smoke는 포함하되 baked-in CD는 포함하지 않습니다.
 
 ### 2. Neon/Postgres 권장 + 로컬 JSON fallback
 
@@ -138,6 +142,18 @@ apps/web/src/
 - 문서 sync 기준의 canonical source는 `ai/context/doc-sync.md`
 - 이 문서는 현재 저장소 구조를 설명하고, `engineering-*` 문서는 수정 규칙을 설명합니다.
 
+`apps/api`를 사용할 때는 아래 추가 구조를 따릅니다.
+
+```txt
+apps/api/src/
+  modules/              # Nest feature modules
+    health/
+    lead/
+    consultation/
+  shared/               # shared pipes, filters, interceptors
+  lib/                  # runtime config and adapter wiring
+```
+
 ### 9. 책임 분리 규칙
 
 각 계층은 아래 책임만 가집니다.
@@ -146,6 +162,8 @@ apps/web/src/
   - 화면 조합, metadata, data entry 연결
 - `route.ts`, server action
   - request parsing, auth/session 확인, use case 호출
+- `apps/api/src/modules/*`
+  - controller, DTO, backend use case, Nest module wiring
 - `modules/*/model`
   - 비즈니스 규칙, 상태 전이, 유스케이스
 - `shared/*`
@@ -168,7 +186,9 @@ apps/web/src/
 의존성은 아래 방향을 넘지 않습니다.
 
 ```txt
-app -> modules | shared | lib -> packages
+apps/web -> packages
+apps/api -> packages
+apps/web -> apps/api (HTTP only, optional)
 ```
 
 예시:
@@ -183,7 +203,7 @@ page.tsx
   -> packages/analytics adapter
 ```
 
-`packages/*`는 `apps/web/*`를 참조하지 않습니다.
+`packages/*`는 `apps/web/*`나 `apps/api/*`를 참조하지 않습니다.
 `modules/*`끼리 직접 참조하지 않고, 공용화가 필요하면 `shared/*`로 올립니다.
 
 이 package 경계는 현재 monorepo 구조를 위한 것일 뿐 아니라, 미래에 backend를 별도 repo로 추출할 때도 유지되어야 하는 분리 기준입니다.
@@ -247,7 +267,8 @@ page.tsx
 3. 필요한 경우 폼 zod 스키마를 확장합니다.
 4. 실험 채널/상태 enum을 추가합니다.
 5. 제품별 코드는 먼저 `apps/web/src/modules/*`에 두고, 두 번 이상 재사용되는 코드는 `apps/web/src/shared/*`를 검토합니다.
-6. 중요한 작업이면 관련 spec을 repo 문서로 먼저 고정한 뒤 구현합니다.
+6. selected write flow를 API 경계로 분리하고 싶을 때만 `apps/api` 모듈을 추가합니다.
+7. 중요한 작업이면 관련 spec을 repo 문서로 먼저 고정한 뒤 구현합니다.
 
 ## 무엇을 더 넣고 무엇을 빼야 하는가
 

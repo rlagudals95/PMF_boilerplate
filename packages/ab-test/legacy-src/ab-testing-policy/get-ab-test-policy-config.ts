@@ -1,6 +1,6 @@
 import { type LegacyIndependentPolicies } from './types';
 
-import { INDEPENDENT_AB_TEST_POLICIES } from './AB_TEST_POLICIES';
+import { INDEPENDENT_AB_TEST_POLICIES } from './ab-test-policies';
 
 function deepFreeze<T>(obj: T): T {
   if (typeof obj !== 'object' || obj === null || Object.isFrozen(obj)) {

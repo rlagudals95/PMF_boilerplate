@@ -101,6 +101,8 @@ user-facing 변경이면 아래를 최소 확인합니다.
 - keyboard/focus 흐름
 - contrast 또는 스타일 drift
 - 필요 시 screenshot diff 또는 recorded flow
+- 가능하면 `pnpm browser:qa --work <work-id>`로 evidence summary를 만들고 `docs/work-items/<work-id>/browser-qa.md`에 남깁니다.
+- raw screenshots, traces, report는 local Playwright output으로 유지합니다.
 
 ## Quality Gates
 
@@ -123,6 +125,7 @@ user-facing 변경이면 아래를 최소 확인합니다.
 ### Browser Gate
 
 - user-facing surface라면 browser evidence가 있다.
+- browser evidence는 가능하면 `docs/work-items/<work-id>/browser-qa.md`로 정리합니다.
 - edge state와 accessibility 기본선이 검토되었다.
 
 ### Measurement Gate
@@ -151,6 +154,8 @@ scorecard에는 아래가 들어갑니다.
 - verification evidence
 - measurement / ops check
 - ship / iterate / stop recommendation
+
+browser QA evidence는 `docs/work-items/<work-id>/browser-qa.md`를 참조하거나, user-facing이 아닌 경우 explicit skip reason을 남기는 방식으로 정리합니다.
 
 이 문서는 “보기 좋다”가 아니라 “목표를 움직일 만한가”를 판정하는 문서입니다.
 

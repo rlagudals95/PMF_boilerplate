@@ -25,6 +25,7 @@ async function main() {
   await checkMetadata(results);
   await checkTargetWorkItems(results, workIds, options.strict);
   await checkAdapterDrift(results);
+  await checkLintToolingContract(results);
 
   process.stdout.write(
     [
@@ -219,10 +220,11 @@ async function checkMetadata(results) {
       files: (await walkMarkdownFiles(path.join(docsDir, "work-items"))).filter(
         (filePath) => path.basename(filePath) !== "README.md",
       ),
-      expectedForFile: () => ({
+      expectedForFile: (filePath) => ({
         docType: "task-local",
         sourceOfTruth: "true",
-        verification: "scripted",
+        verification:
+          path.basename(filePath) === "browser-qa.md" ? "generated" : "scripted",
       }),
     },
   ];
@@ -393,6 +395,97 @@ async function checkAdapterDrift(results) {
   results.push(
     pass("adapter-drift", "generated adapters match canonical sources"),
   );
+}
+
+async function checkLintToolingContract(results) {
+  const packageFiles = await listTrackedPackageJsonFiles();
+
+  if (packageFiles.length === 0) {
+    results.push(fail("lint-tooling", "no tracked package.json files found"));
+    return;
+  }
+
+  const issues = [];
+
+  for (const filePath of packageFiles) {
+    const absolutePath = path.join(rootDir, filePath);
+    const pkg = JSON.parse(await readFile(absolutePath, "utf8"));
+    const scripts = pkg.scripts ?? {};
+
+    if (filePath === "package.json") {
+      const rootLint = normalizeScalar(scripts.lint);
+      const rootVerify = normalizeScalar(scripts.verify);
+
+      if (!rootLint) {
+        issues.push("package.json: missing scripts.lint");
+      }
+
+      if (!rootVerify) {
+        issues.push("package.json: missing scripts.verify");
+      } else if (!rootVerify.includes("pnpm lint")) {
+        issues.push("package.json: scripts.verify must include `pnpm lint`");
+      }
+
+      continue;
+    }
+
+    const lintScript = normalizeScalar(scripts.lint);
+
+    if (!lintScript) {
+      continue;
+    }
+
+    if (!lintScript.includes("eslint")) {
+      issues.push(
+        `${filePath}: scripts.lint must remain ESLint-backed (found: ${lintScript})`,
+      );
+      continue;
+    }
+
+    if (/\boxlint\b|biome/i.test(lintScript)) {
+      issues.push(
+        `${filePath}: scripts.lint must not replace ESLint with Oxlint/Biome (found: ${lintScript})`,
+      );
+    }
+  }
+
+  if (issues.length > 0) {
+    for (const issue of issues) {
+      results.push(fail("lint-tooling", issue));
+    }
+    return;
+  }
+
+  results.push(
+    pass(
+      "lint-tooling",
+      `${packageFiles.length} tracked package manifests keep the ESLint lint contract`,
+    ),
+  );
+}
+
+async function listTrackedPackageJsonFiles() {
+  const run = spawnSync(
+    "git",
+    ["ls-files", "package.json", "apps/*/package.json", "packages/*/package.json"],
+    {
+      cwd: rootDir,
+      encoding: "utf8",
+    },
+  );
+
+  if (run.status !== 0) {
+    throw new Error(
+      summarizeChildOutput(run.stdout, run.stderr) ||
+        "Failed to list tracked package manifests via git ls-files",
+    );
+  }
+
+  return (run.stdout ?? "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .sort();
 }
 
 async function walkMarkdownFiles(directoryPath) {

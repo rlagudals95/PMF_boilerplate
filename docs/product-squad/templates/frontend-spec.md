@@ -52,6 +52,10 @@ skip_reason: null
 
 ## Manual Browser QA
 
+`pnpm browser:qa --work <work-id>`를 실행해 desktop/mobile evidence를 수집하고,
+요약은 `docs/work-items/<work-id>/browser-qa.md`에 남긴다.
+raw screenshots와 traces는 local Playwright output으로만 유지한다.
+
 -
 
 ## Out Of Scope

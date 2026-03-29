@@ -6,6 +6,14 @@ import path from "node:path";
 const rootDir = process.cwd();
 const prdsDir = path.join(rootDir, "docs", "prds");
 const workItemsDir = path.join(rootDir, "docs", "work-items");
+const knownGoalPacketScopes = [
+  "landing",
+  "lead",
+  "consultation",
+  "payment",
+  "admin",
+  "auth",
+];
 
 async function main() {
   const { prdSlug, requestedFeatureSlug } = parseArgs(process.argv.slice(2));
@@ -20,6 +28,10 @@ async function main() {
   await mkdir(targetDir, { recursive: true });
 
   await Promise.all([
+    writeFile(
+      path.join(targetDir, "goal-packet.md"),
+      renderGoalPacket(workId, planning),
+    ),
     writeFile(path.join(targetDir, "brief.md"), renderBrief(workId, planning)),
     writeFile(
       path.join(targetDir, "team-plan.md"),
@@ -57,6 +69,65 @@ async function main() {
       `- Blocking questions: ${planning.blockingQuestions.length}`,
     ].join("\n") + "\n",
   );
+}
+
+function renderGoalPacket(workId, planning) {
+  return [
+    renderFrontmatter({
+      status: planning.readiness === "blocked" ? "blocked" : "draft",
+      owner_role: "product-squad",
+      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+      affected_paths: planning.affectedPaths,
+      dependencies: [`docs/prds/${planning.prd.slug}.md`],
+      skip_reason: null,
+    }),
+    "# Goal Packet",
+    "",
+    "## Business Goal",
+    "",
+    ...renderBulletList([planning.goal]),
+    "",
+    "## Target User",
+    "",
+    ...renderBulletList([planning.targetUser]),
+    "",
+    "## Target Moment",
+    "",
+    ...renderBulletList([planning.targetMoment]),
+    "",
+    "## Success Metric",
+    "",
+    ...renderBulletList(planning.successMetric),
+    "",
+    "## Non-Goals",
+    "",
+    ...renderBulletList(planning.outOfScope),
+    "",
+    "## Constraints",
+    "",
+    ...renderBulletList(planning.constraints),
+    "",
+    "## Existing Evidence",
+    "",
+    ...renderBulletList(planning.existingEvidence),
+    "",
+    "## Selected Delivery Shape",
+    "",
+    ...renderBulletList([buildSelectedDeliveryShape(planning)]),
+    "",
+    "## Active Scope",
+    "",
+    ...renderBulletList(buildActiveScope(planning)),
+    "",
+    "## Deferred Scope",
+    "",
+    ...renderBulletList(buildDeferredScope(planning)),
+    "",
+    "## Selection Rationale",
+    "",
+    ...renderBulletList(buildSelectionRationale(planning)),
+    "",
+  ].join("\n");
 }
 
 function parseArgs(args) {
@@ -345,7 +416,7 @@ function deriveExistingEvidence(
   dependencies,
 ) {
   const evidence = [];
-  const sourceUrl = normalizeContent(prd.frontmatter.source_url);
+  const sourceUrl = normalizeContent(prd.sourceUrl);
 
   if (sourceUrl) {
     evidence.push(`원본 입력 또는 참고 문서: ${sourceUrl}`);
@@ -1077,6 +1148,7 @@ function buildDependencies(workId, planning, includeFeatureSpec) {
   return uniqueItems(
     [
       `docs/prds/${planning.prd.slug}.md`,
+      `docs/work-items/${workId}/goal-packet.md`,
       includeFeatureSpec ? `docs/work-items/${workId}/feature-spec.md` : null,
     ].filter(Boolean),
   );
@@ -1212,6 +1284,7 @@ function buildTeamTopology(planning) {
 function buildSharedContextPack(workId, planning) {
   return uniqueItems(
     [
+      `docs/work-items/${workId}/goal-packet.md`,
       `docs/prds/${planning.prd.slug}.md`,
       `docs/work-items/${workId}/brief.md`,
       `docs/work-items/${workId}/feature-spec.md`,
@@ -1224,6 +1297,57 @@ function buildSharedContextPack(workId, planning) {
         : null,
     ].filter(Boolean),
   );
+}
+
+function buildSelectedDeliveryShape(planning) {
+  return `${planning.feature.slug} feature slice`;
+}
+
+function buildActiveScope(planning) {
+  const scope = [];
+
+  if (planning.feature.routes.includes("/")) {
+    scope.push("landing");
+  }
+
+  if (planning.feature.primaryModule === "lead") {
+    scope.push("lead");
+  }
+
+  if (planning.feature.routes.some((route) => route.startsWith("/consult"))) {
+    scope.push("consultation");
+  }
+
+  if (planning.feature.routes.some((route) => route.startsWith("/pay"))) {
+    scope.push("payment");
+  }
+
+  if (planning.feature.routes.some((route) => route.startsWith("/admin"))) {
+    scope.push("admin");
+  }
+
+  if (planning.feature.primaryModule === "auth") {
+    scope.push("auth");
+  }
+
+  return scope.length > 0
+    ? uniqueItems(scope)
+    : [planning.feature.primaryModule || "documentation"];
+}
+
+function buildDeferredScope(planning) {
+  const activeScope = new Set(buildActiveScope(planning));
+  const deferred = knownGoalPacketScopes.filter((item) => !activeScope.has(item));
+
+  return deferred.length > 0 ? deferred : ["none"];
+}
+
+function buildSelectionRationale(planning) {
+  return uniqueItems([
+    `Selected because the thinnest measurable slice is ${planning.feature.title}.`,
+    planning.feature.summary || planning.goal,
+    `Primary module target: ${planning.feature.primaryModule || "unknown"}.`,
+  ]);
 }
 
 function buildSharedTaskList(planning) {

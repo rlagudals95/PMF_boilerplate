@@ -32,6 +32,7 @@ verification: "manual"
 ## 네이밍 규칙
 
 - UI 컴포넌트: PascalCase
+- source 파일명(`*.ts`, `*.tsx`)은 kebab-case
 - 함수/변수: camelCase
 - DB 컬럼: snake_case
 - 파일명은 역할이 드러나야 한다.

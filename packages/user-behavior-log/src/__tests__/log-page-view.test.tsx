@@ -4,7 +4,7 @@ import { render, waitFor } from "@testing-library/react";
 
 import { createBehaviorLogger } from "../create-behavior-logger";
 import { BehaviorLoggerProvider } from "../react/context";
-import { LogPageView } from "../react/LogPageView";
+import { LogPageView } from "../react/log-page-view";
 
 describe("LogPageView", () => {
   it("sends a page_view event on mount", async () => {

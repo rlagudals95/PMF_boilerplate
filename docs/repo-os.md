@@ -75,19 +75,33 @@ Repo OS v1에서 metadata와 static gate를 강제하는 핵심 범위는 아래
 
 PM/PD/FE/BE 역할은 multi-bot 기능이 아니라 같은 goal packet을 다른 관점으로 검증하는 문서 계약입니다.
 
+요청 triage는 두 축으로 해석합니다.
+
+- work class: `light work | gated work`
+- editing depth: `product-config-friendly | deep code`
+
+즉 work item이 필요한 변경이어도, 구현의 첫 스텝은 safe surface인 `product-config`일 수 있습니다.
+
 ## Verification Entry Points
 
+- `pnpm lint`
+  - workspace 기본 lint gate다.
+  - canonical default는 `ESLint`이며, 각 workspace의 `lint` 스크립트는 shared config를 통해 이 계약을 따른다.
 - `pnpm repo:check`
   - 기본값은 `status: approved | in_progress | blocked` work item 전체를 검사합니다.
   - `--work <work-id>`로 특정 work item만 검사할 수 있고, `--strict`는 `draft`도 포함합니다.
   - `--all`은 historical artifact까지 포함해 모든 work item을 검사하는 migration/audit 모드입니다.
-  - core docs metadata, adapter drift, active work item contract를 함께 확인합니다.
+  - core docs metadata, adapter drift, active work item contract, tracked workspace의 lint tooling contract를 함께 확인합니다.
 - `pnpm squad:check [work-id]`
   - work item 문서가 placeholder 상태를 벗어났는지 확인합니다.
 - `pnpm verify`
   - lint, typecheck, unit test를 확인합니다.
 - `pnpm verify:full`
   - browser-critical 또는 integration-heavy 변경의 더 무거운 검증 게이트입니다.
+- `pnpm browser:qa --work <work-id>`
+  - repo-native Browser QA harness다.
+  - desktop/mobile evidence를 수집하고 `docs/work-items/<work-id>/browser-qa.md` 요약을 남깁니다.
+  - raw screenshots, traces, report는 local Playwright output으로 유지합니다.
 - `pnpm ai:sync`
   - generated adapter를 canonical source 기준으로 다시 만듭니다.
 
@@ -95,5 +109,6 @@ PM/PD/FE/BE 역할은 multi-bot 기능이 아니라 같은 goal packet을 다른
 
 - canonical 규칙을 바꿨으면 generated adapter를 직접 고치지 않고 `pnpm ai:sync`를 실행합니다.
 - 구조, 운영, work item contract가 바뀌었으면 `pnpm repo:check`를 먼저 통과시킵니다.
+- lint 기본 엔진이나 workspace `lint`/`verify` 계약을 바꾸려면 canonical 문서와 검증 로직을 함께 갱신합니다.
 - user-facing 또는 goal-critical 작업은 browser evidence와 measurement check가 없는 상태에서 ship-ready로 보지 않습니다.
 - optional automation은 Repo OS artifact를 읽는 실행기일 뿐, 새로운 source of truth가 되면 안 됩니다.

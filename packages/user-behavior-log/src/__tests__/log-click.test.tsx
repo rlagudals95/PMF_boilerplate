@@ -4,7 +4,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { createBehaviorLogger } from "../create-behavior-logger";
 import { BehaviorLoggerProvider } from "../react/context";
-import { LogClick } from "../react/LogClick";
+import { LogClick } from "../react/log-click";
 
 describe("LogClick", () => {
   it("sends a click event and preserves the child onClick handler", async () => {

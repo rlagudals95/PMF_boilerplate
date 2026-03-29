@@ -19,13 +19,41 @@ verification: "manual"
 - 중요한 작업의 Repo OS 기본 경로는 `goal packet -> brief -> role specs -> team-plan -> tests -> browser evidence -> quality-scorecard`다.
 - canonical PRD가 있으면 `new-feature`가 `product-squad` 앞단에서 work item 생성기를 담당할 수 있다.
 - 중요한 작업은 먼저 문서 산출물을 만든다.
-- 최신 `brief.md`가 구현 전 기준 문서다.
+- 최신 `goal-packet.md`가 입력 정규화 기준 문서이고, 최신 `brief.md`가 구현 전 기준 문서다.
 - user-facing 또는 goal-critical 작업은 `goal-driven-delivery` 기준으로 browser evidence와 quality scorecard까지 남긴다.
 - 역할 handoff나 병렬 탐색이 있으면 `agent-team-delivery` 기준으로 `team-plan.md`를 coordination source로 사용한다.
 - 작은 수정은 full process를 생략할 수 있지만 `skip_reason`은 남긴다.
 - spec-driven 기준은 `ai/context/spec-driven.md`를 따른다.
 - 문서 sync 기준은 `ai/context/doc-sync.md`를 따른다.
 - 모든 역할은 `ai/context/ai-native.md`의 enterprise principles를 기본값으로 따른다.
+
+## Task Triage Matrix
+
+| Request Type | Default Work Class | Default Roles | Default Execution Mode |
+| --- | --- | --- | --- |
+| policy / business goal -> MVP shaping | gated work | product-squad + pm + pd + fe (+ be when data or analytics change) | single-agent sequential |
+| user-facing flow or copy change | gated work | pm + pd + fe | single-agent sequential |
+| validation / persistence / analytics contract change | gated work | pm + fe + be | single-agent sequential |
+| pure FE refactor with no behavior change | light work | fe | single-agent sequential |
+| pure BE refactor with no contract change | light work | be | single-agent sequential |
+| parallel research or competing hypotheses | gated work | product-squad + role owners | subagent fan-out |
+| tightly coupled cross-layer implementation | gated work | product-squad + pm + pd + fe + be | agent-team only when platform support is clearly useful |
+
+## Editing Surface Triage
+
+작업 분류와 별개로, 구현을 어디서 시작할지에 대한 triage도 같이 합니다.
+
+| Triage Label | Meaning | Default First Move |
+| --- | --- | --- |
+| `product-config-friendly` | existing block 안에서 해결 가능한 copy, CTA, trust, active/deferred flow, admin metric 강조 변경 | [`apps/web/src/lib/product-config.ts`](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/apps/web/src/lib/product-config.ts)부터 조정 |
+| `gated work` | goal-critical, user-facing, contract-affecting, multi-file change | work item과 role spec, quality gate를 먼저 열기 |
+| `deep code` | existing block이나 `product-config`로 표현되지 않는 새 폼 필드, validation/schema, action/use case/repository, 새로운 도메인 규칙 | safe surface 검토 후 module/action/schema 쪽으로만 내려가기 |
+
+중요한 점은 이 분류가 서로 배타적이지 않다는 것입니다.
+
+- 한 요청은 `product-config-friendly`이면서 동시에 `gated work`일 수 있습니다.
+- `deep code`는 work class가 아니라 escalation depth입니다.
+- 기본 escalation path는 `product-config-friendly -> existing module surface -> deep code`입니다.
 
 ## 어떤 작업이 gated work 인가
 
@@ -36,6 +64,8 @@ verification: "manual"
 - AI adapter, 읽기 순서, 역할/운영 규칙 변경
 - 여러 파일에 걸친 기능 작업
 
+위 항목 중에서도 existing block과 `product-config`로 표현 가능한 user-facing 변경이라면, 구현의 첫 스텝은 safe surface에서 시작합니다.
+
 ## 어떤 작업은 light work 인가
 
 - 오탈자 수정
@@ -43,6 +73,8 @@ verification: "manual"
 - 단순 카피 수정
 - 명백한 소규모 버그 수정
 - 기존 spec 범위 안의 단순 리팩터링
+
+light work도 제품 문구, CTA, trust surface 변경이라면 raw TSX보다 `product-config`를 먼저 봅니다.
 
 단, 아래 변경은 light work라도 TDD 적용을 우선 검토합니다.
 
@@ -122,6 +154,7 @@ verification: "manual"
 
 ```txt
 docs/work-items/<work-id>/
+  goal-packet.md
   brief.md
   feature-spec.md
   team-plan.md
@@ -161,18 +194,21 @@ docs/work-items/<work-id>/
 ## 운영 순서
 
 1. 요청을 `gated work` 또는 `light work`로 분류한다.
-2. gated work면 `work-id`를 만든다.
-3. `brief.md`를 먼저 만든다.
-4. `team-plan.md`로 execution mode와 task graph를 먼저 정한다.
-5. 필요한 역할 문서를 만든다.
-6. 필요 없는 문서는 `skipped`로 남긴다.
-7. 구현 단위를 테스트 가능한 behavior slice로 자른다.
-8. 중요한 작업과 핵심 로직 변경은 각 slice를 failing test로 먼저 고정한 뒤 최소 구현과 리팩터링을 진행한다.
-9. user-facing 작업이면 browser QA evidence와 measurement check를 `quality-scorecard.md`에 남긴다.
-10. non-user-facing 작업이어도 `quality-scorecard.md`에 test/docs sync/verify evidence를 남긴다.
-11. 작업 종료 전에는 `pnpm repo:check --work <work-id>`와 `pnpm squad:check [work-id]`로 문서와 metadata가 placeholder 상태를 벗어났는지 확인한다.
-12. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
-13. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인하고 `pnpm verify` 또는 `pnpm verify:full`을 실행한다.
+2. 동시에 이 요청이 `product-config-friendly`인지, `deep code`가 필요한지 판단한다.
+3. gated work면 `work-id`를 만든다.
+4. `goal-packet.md`로 입력을 정규화하고 delivery shape와 active/deferred scope를 먼저 고정한다.
+5. `brief.md`를 만든다.
+6. `team-plan.md`로 execution mode와 task graph를 먼저 정한다.
+7. 필요한 역할 문서를 만든다.
+8. 필요 없는 문서는 `skipped`로 남긴다.
+9. `product-config-friendly`면 raw TSX나 deeper code보다 safe surface를 먼저 수정한다.
+10. 구현 단위를 테스트 가능한 behavior slice로 자른다.
+11. 중요한 작업과 핵심 로직 변경은 각 slice를 failing test로 먼저 고정한 뒤 최소 구현과 리팩터링을 진행한다.
+12. user-facing 작업이면 browser QA evidence와 measurement check를 `quality-scorecard.md`에 남긴다.
+13. non-user-facing 작업이어도 `quality-scorecard.md`에 test/docs sync/verify evidence를 남긴다.
+14. 작업 종료 전에는 `pnpm repo:check --work <work-id>`와 `pnpm squad:check [work-id]`로 문서와 metadata가 placeholder 상태를 벗어났는지 확인한다.
+15. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
+16. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인하고 `pnpm verify` 또는 `pnpm verify:full`을 실행한다.
 
 ## Goal-Driven Review Loop
 

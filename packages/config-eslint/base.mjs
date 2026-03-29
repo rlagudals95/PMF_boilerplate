@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import checkFile from "eslint-plugin-check-file";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -13,6 +14,11 @@ const ignores = [
 ];
 
 const typedFiles = ["**/*.{ts,tsx,mts,cts}"];
+const sourceFiles = [
+  "apps/web/src/**/*.{ts,tsx,mts,cts}",
+  "packages/*/src/**/*.{ts,tsx,mts,cts}",
+  "src/**/*.{ts,tsx,mts,cts}",
+];
 
 const typedConfigs = tseslint.configs.recommendedTypeChecked.map((config) => ({
   ...config,
@@ -25,6 +31,23 @@ const baseConfig = [
   },
   js.configs.recommended,
   ...typedConfigs,
+  {
+    files: sourceFiles,
+    plugins: {
+      "check-file": checkFile,
+    },
+    rules: {
+      "check-file/filename-naming-convention": [
+        "error",
+        {
+          "**/*.{ts,tsx,mts,cts}": "KEBAB_CASE",
+        },
+        {
+          ignoreMiddleExtensions: true,
+        },
+      ],
+    },
+  },
   {
     files: typedFiles,
     languageOptions: {

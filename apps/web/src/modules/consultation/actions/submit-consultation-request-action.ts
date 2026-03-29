@@ -1,7 +1,9 @@
 "use server";
 
 import { consultationRequestInputSchema } from "@pmf/core";
+import { revalidatePath } from "next/cache";
 
+import { submitConsultationRequestViaApi } from "@/shared/api/pmf-api-client";
 import type { ActionResult, AnalyticsContextInput } from "@/shared/types/form-action";
 import { createInvalidInputResult } from "@/shared/types/form-action";
 
@@ -15,6 +17,21 @@ export const submitConsultationRequestAction = async (
 
   if (!parsed.success) {
     return createInvalidInputResult(parsed.error.flatten().fieldErrors);
+  }
+
+  if (process.env.PMF_API_BASE_URL) {
+    const result = await submitConsultationRequestViaApi(
+      parsed.data,
+      analyticsContext,
+    );
+
+    if (result.ok) {
+      revalidatePath("/consult");
+      revalidatePath("/admin");
+      revalidatePath("/admin/leads");
+    }
+
+    return result;
   }
 
   return submitConsultationRequest(parsed.data, analyticsContext);

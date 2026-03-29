@@ -4,7 +4,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 
 import { createBehaviorLogger } from "../create-behavior-logger";
 import { BehaviorLoggerProvider } from "../react/context";
-import { LogImpression } from "../react/LogImpression";
+import { LogImpression } from "../react/log-impression";
 
 class MockIntersectionObserver {
   static instances: MockIntersectionObserver[] = [];

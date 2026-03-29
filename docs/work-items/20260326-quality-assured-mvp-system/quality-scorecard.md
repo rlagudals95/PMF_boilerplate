@@ -41,9 +41,10 @@ skip_reason: null
 
 ## Browser QA Evidence
 
-- 이번 턴에서는 browser QA를 실제 실행하지 않았다.
-- code-level evidence는 `pnpm verify` 통과와 `pnpm squad:check --work 20260326-quality-assured-mvp-system` 통과다.
-- 다음 턴 또는 release 전 desktop/mobile에서 header, landing, lead, consultation surface를 확인해야 한다.
+- `docs/work-items/20260326-quality-assured-mvp-system/browser-qa.md`
+- `pnpm browser:qa --work 20260326-quality-assured-mvp-system`로 `/`, `/consult` desktop/mobile evidence를 생성했다.
+- local raw artifacts: `test-results/browser-qa/20260326-quality-assured-mvp-system`
+- local report manifest: `playwright-report/browser-qa/20260326-quality-assured-mvp-system/manifest.json`
 
 ## Measurement And Ops Checks
 

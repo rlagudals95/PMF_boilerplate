@@ -10,6 +10,8 @@
 
 - `apps/web/src/lib/product-config.ts`
 
+이 파일은 계속 canonical entrypoint로 유지합니다. 내부 구현은 `mvp`, `site`, `landing`, `lead-form`, `consultation`, `quality`, `validation` 같은 sub-surface 파일로 나눌 수 있지만, 비개발직군과 AI의 기본 수정 진입점은 계속 이 façade 하나입니다.
+
 이 파일은 현재 활성 제품의 아래 결정을 담습니다.
 
 - mvp runtime contract
@@ -36,6 +38,19 @@
 
 `product-config.ts`는 이 문제를 줄이기 위한 첫 번째 shared surface이자, v1 one-shot MVP의 runtime contract입니다.
 
+## 어떤 요청이 product-config-friendly 인가
+
+아래 요청은 기본적으로 `product-config-friendly`로 봅니다.
+
+- 서비스명, hero angle, trust signal 변경
+- primary CTA 문구와 목적지 변경
+- active/deferred flow 조정
+- nav exposure와 optional capability 노출 조정
+- lead / consultation form copy 조정
+- admin에서 먼저 강조할 metric 변경
+
+이 범위는 보통 existing block 안에서 해결 가능하므로 raw TSX나 deeper code보다 먼저 이 surface를 봅니다.
+
 ## Product Apply Contract
 
 새 MVP를 이 저장소에 적용할 때는 아래 계약을 기본값으로 둡니다.
@@ -47,6 +62,23 @@
 5. auth와 payment는 optional capability이므로 비즈니스 목표가 요구할 때만 surface에 올립니다.
 
 즉 이 저장소의 기본 적용 방식은 “새 코드를 많이 생성한다”가 아니라 “typed product surface를 먼저 맞춰 starter를 실제 제품처럼 보이게 만든다”입니다.
+
+## 언제 deeper code로 내려가나
+
+아래 요청은 `product-config`만으로 표현되지 않으므로 deeper code 가능성이 높습니다.
+
+- 새 폼 필드 추가
+- validation 조건 변경
+- schema 또는 persistence 변경
+- action / use case / repository 경계 변경
+- 새로운 도메인 규칙 추가
+- 기존 block이 모르는 새 user flow 추가
+
+이 경우에도 순서는 같습니다.
+
+1. 먼저 `product-config-friendly`로 처리 가능한 부분이 없는지 본다.
+2. user-facing 또는 goal-critical 작업이면 work item과 quality gate를 먼저 연다.
+3. 그다음에만 deeper code로 내려간다.
 
 ## 품질 가드레일
 

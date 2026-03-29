@@ -35,12 +35,16 @@ Repo OS 문서 계층과 verification entrypoint 인덱스는 `docs/repo-os.md`�
 - app-local 공용 코드는 `apps/web/src/shared/*`, 앱 인프라는 `apps/web/src/lib/*`에 둔다.
 - 엔지니어링 규칙은 `engineering-common.md`, `engineering-frontend.md`, `engineering-backend.md`로 분리한다.
 - FE 구조는 `apps/web`를 기준으로 관리한다.
+- `apps/api`는 optional NestJS backend example일 때만 추가한다.
 - backend/domain/integration 규칙은 package 기반이지만 extract-ready하게 관리한다.
 - 엔지니어링 품질 기준의 entry는 `ai/context/engineering.md`다.
+- lint 기본 엔진은 shared `@pmf/config-eslint`를 사용하는 `ESLint`다.
+- `Oxlint`는 speed pain이 생겼을 때만 sidecar spike 후보로 검토하고, default `lint` 명령을 대체하지 않는다.
+- `Biome` lint migration은 formatter/tool consolidation이 explicit goal일 때만 검토하고, rule coverage 대체 문서 없이 기본값으로 채택하지 않는다.
 
 ## Guardrails
 
-- separate API server, microservice, background job를 추가하지 않는다.
+- separate API server를 기본 구조로 강제하지 않는다. 단, `apps/api` 형태의 optional Nest backend example은 `apps/web` day-0 흐름과 shared package 경계를 깨지 않는 범위에서 허용한다.
 - 공통성이 확인되기 전에는 패키지 추상화를 늘리지 않는다.
 - social auth starter는 허용하되, admin auth enforcement와 role 체계는 미래 작업으로 둔다.
 - 제품별 내용은 `apps/web`에, 재사용 가능한 타입/검증/컴포넌트만 `packages/*`로 올린다.
@@ -49,6 +53,8 @@ Repo OS 문서 계층과 verification entrypoint 인덱스는 `docs/repo-os.md`�
 
 ```bash
 pnpm dev
+pnpm dev:api
+pnpm dev:full
 pnpm lint
 pnpm typecheck
 pnpm test
@@ -68,6 +74,7 @@ pnpm db:seed
 ## Primary folders
 
 - `apps/web`: UI, routes, server actions, module composition
+- `apps/api`: optional Nest backend example for API-backed write flows
 - `apps/web/src/app`: route entrypoint
 - `apps/web/src/modules`: 도메인별 feature slice
 - `apps/web/src/shared`: app-local shared UI, hooks, action entrypoint, types
@@ -108,6 +115,7 @@ pnpm db:seed
 - 중요한 작업은 `ai/context/spec-driven.md`와 `ai/context/doc-sync.md`도 함께 읽는다.
 - AI 코딩 툴이 raw business request를 받았다면 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)를 기준으로 repo를 먼저 읽고, 필요한 경우에만 1~3개의 질문으로 목표를 확인한 뒤 MVP를 적용한다.
 - 이때 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` contract와 관련 product-facing surface를 맞추고, existing block으로 표현되지 않는 요구일 때만 deeper code를 건드린다.
+- selected write flow를 HTTP backend 경계로 보여주고 싶을 때만 `apps/api`와 `PMF_API_BASE_URL`을 활성화한다.
 - repo-local PRD/work item scaffold가 먼저 필요하고 입력이 이미 구조화돼 있다면 `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`를 사용한다.
 - PRD가 있다면 먼저 `docs/prds/<slug>.md`로 정규화하고 `pnpm feature:new --prd <slug>`로 feature work item을 만든다.
 - 해당 작업은 `pnpm work:new <slug> --request "..."` 또는 수동 작성으로 `docs/work-items/<work-id>/`에 brief와 role spec을 만든다.
