@@ -75,6 +75,13 @@ Repo OS v1에서 metadata와 static gate를 강제하는 핵심 범위는 아래
 
 PM/PD/FE/BE 역할은 multi-bot 기능이 아니라 같은 goal packet을 다른 관점으로 검증하는 문서 계약입니다.
 
+요청 triage는 두 축으로 해석합니다.
+
+- work class: `light work | gated work`
+- editing depth: `product-config-friendly | deep code`
+
+즉 work item이 필요한 변경이어도, 구현의 첫 스텝은 safe surface인 `product-config`일 수 있습니다.
+
 ## Verification Entry Points
 
 - `pnpm lint`

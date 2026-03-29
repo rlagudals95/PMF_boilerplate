@@ -332,11 +332,33 @@ async function ensureWebServer(baseUrl) {
   const child = spawn(defaultServerCommand, {
     cwd: rootDir,
     shell: true,
-    stdio: "ignore",
+    stdio: ["ignore", "pipe", "pipe"],
     detached: process.platform !== "win32",
   });
+  let serverLogs = "";
 
-  await waitForUrl(baseUrl, serverTimeoutMs);
+  child.stdout?.on("data", (chunk) => {
+    serverLogs = `${serverLogs}${chunk}`;
+    serverLogs = trimServerLogs(serverLogs);
+  });
+  child.stderr?.on("data", (chunk) => {
+    serverLogs = `${serverLogs}${chunk}`;
+    serverLogs = trimServerLogs(serverLogs);
+  });
+
+  try {
+    await waitForUrl(baseUrl, child, () => serverLogs, serverTimeoutMs);
+  } catch (error) {
+    if (child.exitCode === null) {
+      if (process.platform === "win32") {
+        child.kill("SIGTERM");
+      } else {
+        process.kill(-child.pid, "SIGTERM");
+      }
+    }
+
+    throw error;
+  }
 
   return {
     mode: "started",
@@ -355,7 +377,7 @@ async function ensureWebServer(baseUrl) {
   };
 }
 
-async function waitForUrl(url, timeoutMs) {
+async function waitForUrl(url, child, getServerLogs, timeoutMs) {
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < timeoutMs) {
@@ -363,10 +385,22 @@ async function waitForUrl(url, timeoutMs) {
       return;
     }
 
+    if (child.exitCode !== null) {
+      const logTail = summarizeServerLogs(getServerLogs());
+      throw new Error(
+        logTail
+          ? `Browser QA server failed before ${url} became ready.\n${logTail}`
+          : `Browser QA server failed before ${url} became ready.`,
+      );
+    }
+
     await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
   }
 
-  throw new Error(`Timed out waiting for ${url}`);
+  const logTail = summarizeServerLogs(getServerLogs());
+  throw new Error(
+    logTail ? `Timed out waiting for ${url}\n${logTail}` : `Timed out waiting for ${url}`,
+  );
 }
 
 async function isUrlReady(url) {
@@ -385,6 +419,23 @@ function isMissingPathError(error) {
       "code" in error &&
       error.code === "ENOENT",
   );
+}
+
+function trimServerLogs(logs) {
+  const normalized = logs.slice(-8_000);
+  const lines = normalized.split("\n");
+
+  return lines.slice(-40).join("\n");
+}
+
+function summarizeServerLogs(logs) {
+  const summary = logs.trim();
+
+  if (!summary) {
+    return "";
+  }
+
+  return `Server log tail:\n${summary}`;
 }
 
 main().catch((error) => {

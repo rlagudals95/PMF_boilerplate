@@ -19,6 +19,13 @@ verification: "manual"
 raw business request에서 시작한다면 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)로 AI가 repo를 먼저 읽고, 필요한 경우 1~3개의 질문으로 목표를 확인한 뒤 PRD/work item 또는 직접 적용 방향을 정하게 하는 편이 좋습니다.
 정책이나 business goal이 먼저 주어지는 경우에도 같은 흐름으로 `goal packet -> work item -> thin slice` 순서로 정규화하는 것을 기본값으로 둡니다.
 
+여기서 먼저 보는 triage는 두 축입니다.
+
+- work class: `light work` 또는 `gated work`
+- editing depth: `product-config-friendly` 또는 `deep code`
+
+즉 user-facing 변경이라 work item이 필요한 경우에도, 구현은 먼저 safe surface인 `product-config`에서 시작할 수 있습니다.
+
 ## Manual / Scaffolding Quick Start
 
 ```bash

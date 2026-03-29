@@ -53,6 +53,9 @@ importers:
       '@pmf/error-logging':
         specifier: workspace:*
         version: link:../../packages/error-logging
+      mixpanel:
+        specifier: ^0.20.0
+        version: 0.20.0
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2

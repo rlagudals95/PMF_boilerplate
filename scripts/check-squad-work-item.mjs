@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { existsSync } from "node:fs";
 import { access, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
@@ -15,13 +16,8 @@ const requiredFiles = [
   "quality-scorecard.md",
 ];
 const nonSkippableFiles = new Set(["goal-packet.md"]);
-const optionalFiles = ["feature-spec.md"];
+const optionalFiles = ["feature-spec.md", "browser-qa.md"];
 const allowedFreshness = new Set(["active", "review-needed"]);
-const expectedMetadata = {
-  docType: "task-local",
-  sourceOfTruth: "true",
-  verification: "scripted",
-};
 
 async function main() {
   const { workId, strict } = await parseArgs(process.argv.slice(2));
@@ -34,7 +30,7 @@ async function main() {
     const filePath = path.join(targetDir, fileName);
     try {
       const markdown = await readFile(filePath, "utf8");
-      results.push(...inspectFile(fileName, markdown));
+      results.push(...inspectFile(fileName, markdown, { workId, targetDir }));
     } catch (error) {
       if (isMissingPathError(error)) {
         results.push(fail(fileName, "required file is missing"));
@@ -50,7 +46,7 @@ async function main() {
 
     try {
       const markdown = await readFile(filePath, "utf8");
-      results.push(...inspectFile(fileName, markdown));
+      results.push(...inspectFile(fileName, markdown, { workId, targetDir }));
     } catch (error) {
       if (!isMissingPathError(error)) {
         throw error;
@@ -133,7 +129,7 @@ async function resolveLatestWorkId() {
   }
 }
 
-function inspectFile(fileName, markdown) {
+function inspectFile(fileName, markdown, context) {
   const { frontmatter, body } = parseFrontmatter(markdown);
   const status = normalizeScalar(frontmatter.status);
   const metadataResults = checkMetadataFields(fileName, frontmatter);
@@ -298,11 +294,19 @@ function inspectFile(fileName, markdown) {
       );
       {
         const browserQaEvidence = extractSection(body, "Browser QA Evidence");
-        if (!hasBrowserQaEvidence(browserQaEvidence)) {
+        if (
+          !hasBrowserQaEvidence(browserQaEvidence, {
+            workId: context.workId,
+            hasBrowserQaDoc: hasOptionalArtifact(
+              context.targetDir,
+              "browser-qa.md",
+            ),
+          })
+        ) {
           results.push(
             fail(
               fileName,
-              "Browser QA Evidence must include concrete browser proof or an explicit non-user-facing skip reason",
+              "Browser QA Evidence must reference browser-qa.md when present, or include an explicit non-user-facing skip reason",
             ),
           );
         }
@@ -361,6 +365,18 @@ function inspectFile(fileName, markdown) {
         ]),
       );
       break;
+    case "browser-qa.md":
+      results.push(
+        ...checkSections(fileName, body, [
+          ["Scope", basicPlaceholderSet()],
+          ["Route Matrix", basicPlaceholderSet()],
+          ["Run Metadata", basicPlaceholderSet()],
+          ["Evidence", basicPlaceholderSet()],
+          ["Open Issues", basicPlaceholderSet()],
+          ["Suggested Scorecard Entry", basicPlaceholderSet()],
+        ]),
+      );
+      break;
     default:
       break;
   }
@@ -379,6 +395,7 @@ function checkMetadataFields(fileName, frontmatter) {
   const sourceOfTruth = normalizeScalar(frontmatter.source_of_truth);
   const freshness = normalizeScalar(frontmatter.freshness);
   const verification = normalizeScalar(frontmatter.verification);
+  const expectedMetadata = expectedMetadataForFile(fileName);
 
   if (!owner) {
     results.push(fail(fileName, "missing metadata field: owner"));
@@ -504,8 +521,16 @@ function basicPlaceholderSet(extra = []) {
   return new Set(["-", ...extra]);
 }
 
-function hasBrowserQaEvidence(section) {
+function hasBrowserQaEvidence(section, { workId, hasBrowserQaDoc }) {
   const normalized = section.toLowerCase();
+  const expectedBrowserQaPath = `docs/work-items/${workId}/browser-qa.md`;
+
+  if (
+    normalized.includes("browser-qa.md") ||
+    normalized.includes(expectedBrowserQaPath.toLowerCase())
+  ) {
+    return true;
+  }
 
   if (
     normalized.includes("non-user-facing") ||
@@ -517,6 +542,10 @@ function hasBrowserQaEvidence(section) {
     normalized.includes("skip_reason")
   ) {
     return true;
+  }
+
+  if (hasBrowserQaDoc) {
+    return false;
   }
 
   return [
@@ -534,6 +563,18 @@ function hasBrowserQaEvidence(section) {
     "manual proof",
     "chrome",
   ].some((keyword) => normalized.includes(keyword));
+}
+
+function expectedMetadataForFile(fileName) {
+  return {
+    docType: "task-local",
+    sourceOfTruth: "true",
+    verification: fileName === "browser-qa.md" ? "generated" : "scripted",
+  };
+}
+
+function hasOptionalArtifact(targetDir, fileName) {
+  return existsSync(path.join(targetDir, fileName));
 }
 
 function hasVerificationCommand(section) {

@@ -1,4 +1,4 @@
-import { promises as fs } from "node:fs";
+import { existsSync, promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -47,7 +47,19 @@ export const resolveLocalDataFile = () => {
   const configuredPath = process.env.LOCAL_DATA_FILE;
 
   if (!configuredPath) {
-    return path.resolve(packageRoot, "local-data.json");
+    // When @pmf/db is bundled into apps/api/dist, import.meta.url no longer points
+    // at packages/db, so fall back to a cwd-based location instead.
+    if (packageRoot.includes(`${path.sep}packages${path.sep}db`)) {
+      return path.resolve(packageRoot, "local-data.json");
+    }
+
+    const repoRelativeTarget = path.resolve(process.cwd(), "packages/db/local-data.json");
+
+    if (existsSync(path.dirname(repoRelativeTarget))) {
+      return repoRelativeTarget;
+    }
+
+    return path.resolve(process.cwd(), "local-data.json");
   }
 
   return path.isAbsolute(configuredPath)

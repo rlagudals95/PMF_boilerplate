@@ -1,6 +1,6 @@
 # Start Your MVP
 
-이 문서는 README의 `Day 0 사용 순서`를 조금 더 자세히 푼 확장판입니다.
+이 문서는 README의 빠른 시작 흐름을 조금 더 자세히 푼 확장판입니다.
 
 ## 권장 시작 방식
 
@@ -15,14 +15,34 @@
 1. 로컬에서 starter를 띄웁니다.
 2. AI 코딩 툴에 one-shot prompt를 붙여 넣습니다.
 3. AI가 repo를 읽고 필요한 경우에만 1~3개의 짧은 질문을 합니다.
-4. AI가 가장 얇은 MVP shape를 고릅니다.
-5. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춥니다.
-6. 기존 블록으로 안 되는 경우에만 deeper code를 수정합니다.
-7. 마지막에 `pnpm verify`와 브라우저 확인으로 닫습니다.
+4. AI가 먼저 이 요청이 `gated work`인지 판단하고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 분류합니다.
+5. AI가 가장 얇은 MVP shape를 고릅니다.
+6. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춥니다.
+7. 기존 블록으로 안 되는 경우에만 deeper code를 수정합니다.
+8. 마지막에 `pnpm verify`와 브라우저 확인으로 닫습니다.
 
 기본 모드는 `web-only`입니다. `apps/api` Nest backend example은 selected write flow를 HTTP 경계로 보고 싶을 때만 추가로 켭니다.
 
 canonical prompt와 follow-up prompt는 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)에 둡니다.
+
+## 요청 분기 빠른 기준
+
+처음 요청을 받으면 아래 세 가지를 먼저 구분합니다.
+
+- `product-config-friendly`
+  - existing block 안에서 해결 가능한 copy, CTA, trust, active/deferred flow, admin metric 강조 변경
+  - 기본 진입점은 [`apps/web/src/lib/product-config.ts`](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/apps/web/src/lib/product-config.ts)입니다.
+- `gated work`
+  - user-facing flow, goal-critical change, policy/business goal -> MVP shaping, validation/persistence/analytics contract change, 여러 파일에 걸친 기능 작업
+  - work item과 quality gate를 먼저 엽니다.
+- `deep code`
+  - existing block이나 `product-config`로 표현되지 않는 새 폼 필드, validation/schema, action/use case/repository, 새로운 도메인 규칙
+  - 마지막 escalation path로만 사용합니다.
+
+중요한 점은 한 요청이 동시에 여러 분류를 가질 수 있다는 것입니다.
+
+- `product-config-friendly`이면서 `gated work`일 수 있습니다.
+- `deep code`가 필요해도 먼저 safe surface를 소진했는지 확인합니다.
 
 ## Day 0 상세 순서
 
@@ -52,7 +72,7 @@ pnpm dev:full
 
 ### 2. AI에 one-shot prompt 넣기
 
-README의 starter prompt를 그대로 붙여 넣거나, [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)의 canonical prompt를 사용합니다. 두 문서의 starter prompt 원문은 같은 계약을 가리킵니다.
+[docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)의 canonical prompt를 사용합니다. README는 시작 경로를 안내하고, prompt 원문과 follow-up은 이 문서가 소유합니다.
 
 이 단계에서 중요한 건 기능 목록을 길게 설명하는 것이 아니라 아래만 주는 것입니다.
 
@@ -108,7 +128,7 @@ AI는 보통 아래 중 하나를 고릅니다.
 - inactive flow를 nav와 landing 기본 노출에서 숨기기
 - active지만 env가 없는 capability를 `setup required` 상태로 보여주기
 
-아래처럼 현재 블록으로 표현되지 않으면 deeper code를 수정합니다.
+즉 먼저 `product-config-friendly`로 처리 가능한지 보고, 아래처럼 현재 블록으로 표현되지 않을 때만 deeper code를 수정합니다.
 
 - 새 폼 필드 추가
 - validation/schema 변경
@@ -130,6 +150,13 @@ AI는 보통 아래 중 하나를 고릅니다.
 - `pnpm dev:full`
 - `PMF_API_BASE_URL=http://localhost:4000`
 - `lead`, `consultation` submit가 Nest API로 저장되는가
+
+API를 배포 가능한 형태까지 같이 확인하려면:
+
+- `pnpm --filter api build`
+- `pnpm smoke:api:runtime`
+- `pnpm smoke:api:docker`
+- 배포 전 DB schema 반영이 필요하면 startup hook 대신 `pnpm db:migrate`
 
 ## 실전 예시
 

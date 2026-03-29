@@ -1,13 +1,15 @@
 import { Controller, Get, InternalServerErrorException } from "@nestjs/common";
 import { listExperiments, listLeads, listPayments } from "@pmf/db";
 
-import { appConfig } from "../../lib/config/app-config";
+import { getAppConfig } from "../../lib/config/app-config";
 import { appErrorLogger } from "../../lib/app-error-logging";
 
 @Controller("health")
 export class HealthController {
   @Get()
   async getHealth() {
+    const appConfig = getAppConfig();
+
     try {
       const [leads, experiments, payments] = await Promise.all([
         listLeads(),

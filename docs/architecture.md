@@ -27,6 +27,7 @@ verification: "manual"
 - `apps/api`를 켜더라도 랜딩, 폼, 어드민 surface는 계속 `apps/web`가 소유합니다.
 - `apps/api`는 selected write flow의 transport/application 경계를 보여주는 backend example입니다.
 - domain과 persistence는 계속 shared package에 남겨 extract-ready 구조를 유지합니다.
+- `apps/api`는 provider-neutral `deployable shape`까지만 기본 제공하고, Docker와 CI runtime smoke는 포함하되 baked-in CD는 포함하지 않습니다.
 
 ### 2. Neon/Postgres 권장 + 로컬 JSON fallback
 

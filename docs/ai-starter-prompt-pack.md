@@ -12,8 +12,24 @@
 - 대부분의 사용자는 명령어보다 AI 코딩 툴에서 이 prompt pack으로 시작합니다.
 - 사용자 경험은 one-shot에 가깝게 유지하되, AI는 내부적으로 repo context를 먼저 읽고 필요한 경우에만 1~3개의 질문으로 목표를 확인합니다.
 - 입력이 business idea이든 정책/운영 규칙이든 먼저 goal packet으로 정규화한 뒤 가장 얇은 MVP slice를 고릅니다.
+- 요청은 먼저 work class가 `gated work`인지 보고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 판단한 뒤 가장 안전한 surface부터 시작합니다.
 - 이 저장소의 강점은 자유 생성이 아니라 existing block 조합입니다. 먼저 `landing`, `lead`, `consultation`, `payment`, `admin`, `auth` 블록 안에서 해결하고, 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` contract와 copy surface를 맞춥니다.
 - `mvp:new`, `prd:new`, `feature:new`, `work:new`는 계속 유지하지만, manual scaffold나 power-user workflow일 때 우선 사용합니다.
+
+## Request Triage Before Editing
+
+이 저장소의 triage는 “중요한 작업인가”만 보는 게 아니라 “어디서부터 수정할 것인가”도 같이 봅니다.
+
+| Triage Label | Meaning | Default First Move |
+| --- | --- | --- |
+| `product-config-friendly` | existing block 안에서 해결 가능한 copy, CTA, trust, active/deferred flow, admin metric 강조 변경 | [`apps/web/src/lib/product-config.ts`](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/apps/web/src/lib/product-config.ts)부터 조정 |
+| `gated work` | user-facing flow, goal-critical change, policy/business goal -> MVP shaping, validation/persistence/analytics contract change, 여러 파일에 걸친 기능 작업 | `goal packet -> brief -> role spec -> quality gate`를 먼저 열기 |
+| `deep code` | existing block이나 `product-config`로 표현되지 않는 새 폼 필드, validation/schema, action/use case/repository, 새로운 도메인 규칙 | safe surface를 먼저 검토한 뒤 module/action/schema 쪽으로만 내려가기 |
+
+중요한 점은 아래 두 가지입니다.
+
+- 한 요청은 `product-config-friendly`이면서 동시에 `gated work`일 수 있습니다.
+- `deep code`는 기본값이 아니라 escalation path입니다.
 
 ## Supported MVP Shapes
 
@@ -44,12 +60,14 @@ Auth와 payment는 기본 기능이 아니라 optional runtime capability입니�
 2. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal, target user, target moment, constraints를 확인한다.
 3. 입력을 goal packet과 goal / audience / offer / signal로 정리한다.
 4. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
-5. active flows와 deferred flows를 정한다.
-6. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
-7. 기존 블록으로 표현되지 않는 요구일 때만 deeper code를 변경한다.
-8. auth와 payment는 비즈니스 목표가 필요로 할 때만 노출한다.
-9. 필요한 env vars와 optional capability 상태를 정리한다.
-10. 마지막에 적절한 verify 명령을 실행한다.
+5. 이 요청의 work class가 `gated work`인지 먼저 보고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 판단한 뒤 가장 안전한 surface부터 시작한다.
+6. active flows와 deferred flows를 정한다.
+7. `product-config-friendly`면 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
+8. 기존 블록으로 표현되지 않는 요구일 때만 deeper code를 변경한다.
+9. user-facing 또는 goal-critical 작업이면 필요한 work item과 browser QA evidence까지 남긴다.
+10. auth와 payment는 비즈니스 목표가 필요로 할 때만 노출한다.
+11. 필요한 env vars와 optional capability 상태를 정리한다.
+12. 마지막에 적절한 verify 명령을 실행한다.
 
 최종 요약에는 반드시 아래를 포함해줘.
 - selected MVP shape
@@ -68,7 +86,8 @@ Auth와 payment는 기본 기능이 아니라 optional runtime capability입니�
 ```text
 이 repo를 읽고 내 사업 아이디어나 운영 정책을 이 구조에 맞는 가장 얇은 MVP로 적용해줘.
 먼저 repo context를 읽고 꼭 필요할 때만 1~3개의 질문을 해줘.
-existing landing / lead / consultation / payment / admin 블록 안에서 풀고, 먼저 `product-config.mvp`와 copy surface를 맞춘 뒤 verify까지 해줘.
+existing landing / lead / consultation / payment / admin 블록 안에서 풀고, 먼저 이 요청이 `gated work`인지와 `product-config-friendly`인지 또는 `deep code`가 필요한지를 분류해줘.
+그리고 `product-config-friendly`면 먼저 `product-config.mvp`와 copy surface를 맞춘 뒤 verify까지 해줘.
 마지막엔 active flows, deferred flows, required env vars, verification result를 요약해줘.
 ```
 
@@ -151,6 +170,7 @@ existing building block 안에서 active flows와 deferred flows를 다시 정�
 ## When To Use CLI Helpers
 
 - raw business idea에서 바로 시작할 때는 이 문서의 starter prompt를 그대로 사용합니다.
+- 먼저 이 요청이 `product-config-friendly`인지, `gated work`인지, `deep code`가 필요한지 판단한 뒤에 helper를 고릅니다.
 - `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`: 입력이 이미 구조화된 경우 PRD와 첫 work item을 여는 structured helper
 - `pnpm prd:new <slug>`: 더 자유도가 높은 PRD 초안이 필요할 때
 - `pnpm feature:new --prd <slug>`: canonical PRD를 단일 feature work item으로 정리할 때

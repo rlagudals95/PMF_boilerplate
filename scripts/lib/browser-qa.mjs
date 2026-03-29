@@ -1,3 +1,5 @@
+import path from "node:path";
+
 export function parseFrontmatter(markdown) {
   const match = markdown.match(/^---\n([\s\S]*?)\n---\n?/);
 
@@ -369,4 +371,3 @@ export function buildArtifactFileNames(route, viewport) {
     traceFileName: `${slug}-${viewport}-trace.zip`,
   };
 }
-import path from "node:path";

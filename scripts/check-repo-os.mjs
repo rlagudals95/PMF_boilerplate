@@ -220,10 +220,11 @@ async function checkMetadata(results) {
       files: (await walkMarkdownFiles(path.join(docsDir, "work-items"))).filter(
         (filePath) => path.basename(filePath) !== "README.md",
       ),
-      expectedForFile: () => ({
+      expectedForFile: (filePath) => ({
         docType: "task-local",
         sourceOfTruth: "true",
-        verification: "scripted",
+        verification:
+          path.basename(filePath) === "browser-qa.md" ? "generated" : "scripted",
       }),
     },
   ];

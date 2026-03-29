@@ -1,0 +1,15 @@
+.git
+.gitignore
+.next
+.turbo
+coverage
+dist
+node_modules
+playwright-report
+test-results
+*.log
+.env.local
+**/.next
+**/coverage
+**/dist
+**/node_modules

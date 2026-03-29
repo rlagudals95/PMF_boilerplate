@@ -5,7 +5,7 @@ export type AppConfig = {
   errorLoggingProviders: string[];
 };
 
-export const appConfig: AppConfig = {
+export const getAppConfig = (): AppConfig => ({
   serviceName: "pmf-api",
   dataMode: process.env.DATABASE_URL ? "postgres" : "local-json",
   analyticsProviders: [
@@ -14,4 +14,4 @@ export const appConfig: AppConfig = {
     ...(process.env.MIXPANEL_PROJECT_TOKEN ? ["mixpanel"] : []),
   ],
   errorLoggingProviders: ["console"],
-};
+});
