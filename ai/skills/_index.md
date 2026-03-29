@@ -37,6 +37,11 @@ verification: "manual"
 - 위치: `ai/skills/product-squad.md`
 - 사용 시점: 중요한 기능 작업이나 실험 변경을 PM/PD/FE/BE 역할로 나눠서 운영할 때
 
+### `po-role`
+
+- 위치: `ai/skills/po-role.md`
+- 사용 시점: raw business idea나 one-shot 요청을 goal packet, clarification gate, 역할별 승인 흐름으로 정규화할 때
+
 ### `goal-driven-delivery`
 
 - 위치: `ai/skills/goal-driven-delivery.md`
@@ -65,7 +70,7 @@ verification: "manual"
 ### `pd-role`
 
 - 위치: `ai/skills/pd-role.md`
-- 사용 시점: 카피, 정보 구조, CTA/폼 흐름, 상태/예외 UX를 검토할 때
+- 사용 시점: 카피, 정보 구조, CTA/폼 흐름, 상태/예외 UX, commercial landing critique를 검토할 때
 
 ### `fe-role`
 

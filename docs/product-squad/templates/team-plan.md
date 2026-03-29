@@ -25,6 +25,7 @@ skip_reason: null
 ## Team Topology
 
 - lead:
+- po:
 - pm:
 - pd:
 - fe:

@@ -29,6 +29,7 @@ pnpm dev
 - `/admin`: 현재 핵심 지표와 setup 상태
 
 이제 아래 프롬프트를 AI 코딩 툴에 그대로 붙여 넣으면 됩니다.
+예전처럼 “바로 구현”보다, 먼저 `goal packet`과 `visual bar`를 정리하고 부족하면 짧게 질문한 뒤 구현으로 들어가는 흐름으로 바뀌었습니다.
 
 ```text
 이 repo를 PMF 탐색용 MVP kit로 사용해서 아래 사업 아이디어 또는 운영 목표를 첫 데모 가능한 버전으로 만들어줘.
@@ -38,19 +39,22 @@ pnpm dev
 
 반드시 아래 순서로 진행해줘.
 1. AGENTS.md와 관련 문서를 읽고 이 repo의 기존 building block을 먼저 이해한다.
-2. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal, target user, target moment, constraints를 확인한다.
-3. 입력을 goal / audience / offer / signal로 정리한다.
-4. 기존 landing / lead / consultation / payment / admin / auth block 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
-5. active flows와 deferred flows를 정한다.
-6. 대부분의 첫 MVP는 copy, CTA, 활성 흐름 조정만으로 시작할 수 있으니 먼저 `apps/web/src/lib/product-config.ts`부터 맞춘다.
-7. 새 폼 필드, 데이터 규칙, admin 구조처럼 기존 block으로 표현되지 않는 요구일 때만 deeper code를 수정한다.
-8. 필요한 env vars와 optional capability 상태를 정리한다.
-9. 마지막에 적절한 verify 명령을 실행한다.
+2. 입력을 goal packet으로 정리하고 `business goal`, `target user`, `target moment`, `success metric`, `non-goals`, `constraints`, `existing evidence`, `visual bar`를 먼저 채운다.
+3. `po-role` 관점에서 이 요청을 `ready`, `needs-clarification`, `not-safe-to-build`로 분류한다.
+4. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal packet과 visual bar를 보강한다. landing이나 user-facing 작업이면 reference 또는 anti-reference 필요 여부도 판단한다.
+5. `pm-role` / `pd-role` / `fe-role` / `be-role` 관점에서 “이대로 구현하면 실패하는 이유”를 먼저 적고, critique가 끝나기 전에는 코드 수정을 시작하지 않는다.
+6. 기존 landing / lead / consultation / payment / admin / auth block 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
+7. active flows와 deferred flows를 정한다.
+8. 대부분의 첫 MVP는 copy, CTA, 활성 흐름 조정만으로 시작할 수 있으니 먼저 `apps/web/src/lib/product-config.ts`부터 맞춘다.
+9. 새 폼 필드, 데이터 규칙, admin 구조처럼 기존 block으로 표현되지 않는 요구일 때만 deeper code를 수정한다.
+10. 필요한 env vars와 optional capability 상태를 정리한다.
+11. 마지막에 적절한 verify 명령을 실행한다.
 
 최종 요약에는 반드시 아래를 포함해줘.
 - selected MVP shape
 - active flows
 - deferred flows
+- goal packet completeness result
 - major copy/product changes applied
 - required env vars for enabled capabilities
 - verification result
@@ -70,6 +74,7 @@ pnpm dev
 - `selected MVP shape`
 - `active flows`
 - `deferred flows`
+- `goal packet completeness result`
 - `major copy/product changes applied`
 - `required env vars for enabled capabilities`
 - `verification result`
@@ -90,6 +95,14 @@ pnpm dev
 ## What AI Will Change First
 
 대부분의 첫 MVP는 새 코드를 많이 만드는 것보다, 기존 starter를 내 서비스처럼 보이게 맞추는 작업으로 시작합니다.
+
+다만 이제는 바로 카피/CTA부터 만지는 대신 아래 순서를 먼저 거칩니다.
+
+1. `goal packet` 정리
+2. `visual bar`와 reference 필요 여부 판단
+3. `po-role` completeness check
+4. `pm-role` / `pd-role` / `fe-role` / `be-role` critique
+5. 그 다음에야 `product-config`나 deeper code 수정
 
 첫 수정 포인트는 보통 [`apps/web/src/lib/product-config.ts`](apps/web/src/lib/product-config.ts)입니다.
 

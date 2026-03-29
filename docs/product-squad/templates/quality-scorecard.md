@@ -24,12 +24,18 @@ skip_reason: null
 
 -
 
+## Design Gate Result
+
+-
+
 ## Review Checklist
 
 - [ ] primary business goal과 success metric이 이 변경과 연결된다
 - [ ] risky boundary test evidence가 있거나 skip reason이 명시되어 있다
 - [ ] 역할별 산출물이 enterprise principles를 따른다
 - [ ] 사용자에게 가장 중요한 CTA와 value proposition이 분명하거나 non-user-facing 범위라고 적혀 있다
+- [ ] `po-role` 또는 동등한 first gate가 goal packet completeness와 build-safe 여부를 판정했다
+- [ ] `pd-role` 또는 동등한 UX reviewer가 commercial quality / boilerplate smell을 검토했다
 - [ ] trust, error, empty, pending state 또는 관련 skip reason이 검토되었다
 - [ ] analytics/admin visibility 또는 운영 해석 근거가 있어 결과를 해석할 수 있다
 - [ ] docs/spec sync가 확인되었다

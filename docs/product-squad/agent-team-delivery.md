@@ -27,7 +27,7 @@ verification: "manual"
 ### 1. Single-Agent Sequential
 
 - 기본 모드입니다.
-- 한 에이전트가 `lead -> pm -> pd -> fe -> be -> quality review`를 순차적으로 수행합니다.
+- 한 에이전트가 `lead/po gate -> pm -> pd -> fe -> be -> quality review`를 순차적으로 수행합니다.
 - subagent나 agent team 기능이 없어도 동일한 산출물을 만들 수 있습니다.
 
 ### 2. Subagent Fan-Out
@@ -55,7 +55,7 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
 ## Team Topology
 
 - lead
-  - 목표 재정의, task 분해, review synthesis, 최종 판단
+  - orchestration shell, `po-role` gate 수행, task 분해, review synthesis, 최종 판단
 - pm
   - goal, metric, acceptance criteria
 - pd
@@ -149,7 +149,7 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
 
 ## Lead Rules
 
-- lead는 초반에 goal packet이 충분한지 점검합니다.
+- lead는 초반에 `po-role`처럼 goal packet과 visual bar가 충분한지 점검합니다.
 - 진행 중간에 team을 방치하지 않고 수시로 steer합니다.
 - 산출물 간 충돌이 생기면 더 최신 대화가 아니라 repo 문서를 source of truth로 삼습니다.
 - 최종 답은 역할별 산출물을 합쳐 `quality-scorecard.md`에 남깁니다.
