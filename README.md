@@ -1,39 +1,16 @@
 # PMF Boilerplate
 
-비즈니스 아이디어, 운영 정책, business goal을 `데모 가능한 MVP`로 빠르게 바꾸기 위한 AI-native PMF boilerplate입니다. 이 저장소는 자유 생성형 app builder보다, 이미 있는 MVP block을 빠르게 조합하고 검증해 첫 신호를 보는 데 더 잘 맞습니다.
+사업 아이디어나 운영 목표를 넣으면, 이미 있는 MVP block을 조합해 데모 가능한 첫 버전으로 빠르게 바꾸는 AI-native PMF boilerplate입니다.
 
-## Why This Exists
+## Who This Is For
 
-이 레포는 작은 팀이 PMF 단계의 MVP를 빠르게 여는 동안에도 품질 게이트와 문서 규율을 잃지 않게 하려고 만들어졌습니다. 목표는 “많이 만드는 것”이 아니라, business goal을 기준으로 가장 얇은 slice를 고르고 repo 안 증거로 품질을 닫는 것입니다.
+- founder, operator, business starter처럼 직접 첫 MVP를 열고 싶은 사람
+- landing, lead, consultation, admin 중심으로 빠르게 실험하고 싶은 팀
+- 기능 수보다 측정 가능한 첫 signal이 더 중요한 PMF-stage 제품
 
-## Good Fit / Bad Fit
+이 레포는 자유 생성형 app builder보다, 이미 있는 block을 business goal에 맞게 조합하고 검증하는 데 더 잘 맞습니다.
 
-잘 맞는 경우:
-
-- PMF-stage MVP를 빠르게 열고 싶은 경우
-- founder/operator가 AI와 함께 제품 shape를 직접 잡고 싶은 경우
-- landing, lead, consultation, admin 중심 funnel을 실험하고 싶은 경우
-- 기능 수보다 측정 가능한 signal을 더 중요하게 보는 경우
-
-덜 맞는 경우:
-
-- day 1부터 무거운 enterprise platform을 만들려는 경우
-- CMS-first 제품을 바로 운영하려는 경우
-- background job과 async workflow가 핵심인 경우
-- infra-first multi-service platform을 먼저 세우려는 경우
-
-## Core Value
-
-- 정책, business goal, PRD, raw request처럼 입력이 달라도 먼저 goal packet과 thin slice로 정규화합니다.
-- 빠른 구현 흐름에서도 `pnpm verify`, `pnpm repo:check`, `pnpm browser:qa` 같은 repo-local proof로 품질을 닫습니다.
-- 중요한 작업은 PM/PD/FE/BE 관점의 product-squad review로 business goal 달성 가능성을 높입니다.
-- 제품, 전략, PRD, 운영 규칙의 source of truth는 repo 안 Markdown이고, adapter나 외부 툴은 파생 surface로 둡니다.
-
-핵심 운영 철학은 [ai/context/ai-native.md](ai/context/ai-native.md), Repo OS 인덱스는 [docs/repo-os.md](docs/repo-os.md)에 있습니다.
-
-## Start In 5 Minutes
-
-가장 짧은 Day 0 경로는 아래입니다.
+## Start Your MVP In 5 Minutes
 
 ```bash
 corepack enable
@@ -43,46 +20,104 @@ pnpm db:seed
 pnpm dev
 ```
 
-그다음:
+그다음 `http://localhost:3000`을 열면 starter가 뜹니다.
 
-1. `http://localhost:3000`을 엽니다.
-2. [docs/ai-starter-prompt-pack.md](docs/ai-starter-prompt-pack.md)의 starter prompt로 AI를 시작합니다.
-3. 먼저 `product-config`에서 해결 가능한지 보고, 필요할 때만 deeper code로 내려갑니다.
-4. 마지막에 `pnpm verify`를 실행합니다.
+기본적으로 바로 확인할 수 있는 화면:
 
-더 자세한 Day 0 흐름은 [docs/start-your-mvp.md](docs/start-your-mvp.md)에 있습니다.
+- `/`: 랜딩과 주요 CTA
+- 필요 시 `/consult` 또는 `/pay`: 더 강한 전환 흐름
+- `/admin`: 현재 핵심 지표와 setup 상태
 
-## How It Works
+이제 아래 프롬프트를 AI 코딩 툴에 그대로 붙여 넣으면 됩니다.
 
-이 레포의 one-shot은 자유 생성이 아니라, 이미 있는 block을 business goal에 맞게 빠르게 조합하는 방식입니다.
+```text
+이 repo를 PMF 탐색용 MVP kit로 사용해서 아래 사업 아이디어 또는 운영 목표를 첫 데모 가능한 버전으로 만들어줘.
 
-`goal packet -> shape selection -> product-config -> deeper code only if needed -> verify`
+입력:
+[여기에 아이디어나 목표를 적기]
 
-요청을 받으면 먼저 이 변경이 `product-config-friendly`인지, `gated work`인지, `deep code`까지 필요한지 봅니다. 기본값은 언제나 safe surface부터 시작하는 것이고, [`apps/web/src/lib/product-config.ts`](apps/web/src/lib/product-config.ts)가 가장 안전한 첫 수정면입니다. deeper code는 기본 동작이 아니라 escalation path입니다.
+반드시 아래 순서로 진행해줘.
+1. AGENTS.md와 관련 문서를 읽고 이 repo의 기존 building block을 먼저 이해한다.
+2. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal, target user, target moment, constraints를 확인한다.
+3. 입력을 goal / audience / offer / signal로 정리한다.
+4. 기존 landing / lead / consultation / payment / admin / auth block 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
+5. active flows와 deferred flows를 정한다.
+6. 대부분의 첫 MVP는 copy, CTA, 활성 흐름 조정만으로 시작할 수 있으니 먼저 `apps/web/src/lib/product-config.ts`부터 맞춘다.
+7. 새 폼 필드, 데이터 규칙, admin 구조처럼 기존 block으로 표현되지 않는 요구일 때만 deeper code를 수정한다.
+8. 필요한 env vars와 optional capability 상태를 정리한다.
+9. 마지막에 적절한 verify 명령을 실행한다.
 
-## Daily Commands
-
-```bash
-pnpm dev
-pnpm verify
-pnpm repo:check
-pnpm browser:qa --work <work-id>
-pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."
-pnpm feature:new --prd <slug>
-pnpm work:new <slug> --request "..."
+최종 요약에는 반드시 아래를 포함해줘.
+- selected MVP shape
+- active flows
+- deferred flows
+- major copy/product changes applied
+- required env vars for enabled capabilities
+- verification result
+- remaining manual follow-ups
 ```
 
-## Choose Your Path
+입력 예시:
 
-- MVP를 오늘 바로 시작하고 싶다면: [docs/start-your-mvp.md](docs/start-your-mvp.md)
-- AI를 canonical prompt로 움직이고 싶다면: [docs/ai-starter-prompt-pack.md](docs/ai-starter-prompt-pack.md)
-- Repo OS와 agent operating rule을 이해하고 싶다면: [docs/repo-os.md](docs/repo-os.md)
-- 안전한 첫 수정 surface를 알고 싶다면: [docs/product-config-system.md](docs/product-config-system.md)
+```text
+가전렌탈 비교 사이트를 만들고 싶어.
+사용자가 TV, 냉장고, 정수기 같은 렌탈 상품을 비교하고 내게 맞는 옵션을 찾게 하고 싶어.
+첫 MVP 목표는 상담 신청이나 제휴 파트너 연결이야.
+```
 
-## Read Next
+좋은 실행 결과는 보통 아래를 바로 알려줍니다.
 
-- [docs/start-your-mvp.md](docs/start-your-mvp.md)
-- [docs/ai-starter-prompt-pack.md](docs/ai-starter-prompt-pack.md)
-- [docs/product-config-system.md](docs/product-config-system.md)
-- [docs/repo-os.md](docs/repo-os.md)
-- [docs/agent-context.md](docs/agent-context.md)
+- `selected MVP shape`
+- `active flows`
+- `deferred flows`
+- `major copy/product changes applied`
+- `required env vars for enabled capabilities`
+- `verification result`
+- `remaining manual follow-ups`
+
+## Pick Your MVP Shape
+
+| Shape | 언제 쓰면 좋은가 | 보통 켜지는 흐름 |
+| --- | --- | --- |
+| `lead-gen` | 관심 고객 정보를 빨리 모으고 싶은 경우 | landing, lead, admin |
+| `consultation` | 상담 요청 자체가 첫 성공 신호인 경우 | landing, consultation, admin |
+| `comparison-routing` | 비교 후 파트너 연결이나 상담 전환이 중요한 경우 | landing, lead, consultation, admin |
+| `paid-intent` | 결제 의사나 예약금 같은 강한 구매 신호를 보고 싶은 경우 | landing, payment, admin |
+| `waitlist` | 출시 전 관심자와 early signal을 모으고 싶은 경우 | landing, lead, admin |
+
+대부분의 Day 0 MVP는 이 다섯 가지 안에서 고르면 충분합니다.
+
+## What AI Will Change First
+
+대부분의 첫 MVP는 새 코드를 많이 만드는 것보다, 기존 starter를 내 서비스처럼 보이게 맞추는 작업으로 시작합니다.
+
+첫 수정 포인트는 보통 [`apps/web/src/lib/product-config.ts`](apps/web/src/lib/product-config.ts)입니다.
+
+여기서 AI가 먼저 맞추는 것:
+
+- 어떤 MVP shape를 쓸지
+- 어떤 흐름을 지금 노출할지
+- primary CTA와 주요 카피
+- 서비스명, hero, trust signal
+- lead 또는 consultation 문구
+- admin에서 먼저 볼 핵심 metric
+
+대부분의 첫 MVP는 카피, CTA, 활성 흐름 조정만으로 시작할 수 있습니다. 새 폼 필드, 데이터 규칙, admin 구조 변경처럼 현재 block으로 표현되지 않는 요구가 있을 때만 구조나 로직 수정이 들어갑니다.
+
+## First Demo Is Done When
+
+아래 네 가지가 맞으면 Day 0 데모는 거의 닫힌 상태입니다.
+
+1. `/`가 내 서비스의 랜딩과 CTA처럼 보인다.
+2. 필요한 경우 `/consult` 또는 `/pay`가 실제 전환 흐름처럼 보인다.
+3. `/admin`에서 핵심 signal과 setup 상태를 읽을 수 있다.
+4. `pnpm verify`가 통과한다.
+
+## When You Need More
+
+- 더 자세한 Day 0 흐름: [docs/start-your-mvp.md](docs/start-your-mvp.md)
+- canonical starter prompt와 follow-up pack: [docs/ai-starter-prompt-pack.md](docs/ai-starter-prompt-pack.md)
+- 첫 수정 surface 설명: [docs/product-config-system.md](docs/product-config-system.md)
+- 입력이 이미 구조화돼 있다면: `pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."`
+- Repo OS와 운영 규칙: [docs/repo-os.md](docs/repo-os.md)
+- 전체 agent context: [docs/agent-context.md](docs/agent-context.md)
