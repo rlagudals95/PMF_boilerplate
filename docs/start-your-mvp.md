@@ -20,6 +20,8 @@
 6. 기존 블록으로 안 되는 경우에만 deeper code를 수정합니다.
 7. 마지막에 `pnpm verify`와 브라우저 확인으로 닫습니다.
 
+기본 모드는 `web-only`입니다. `apps/api` Nest backend example은 selected write flow를 HTTP 경계로 보고 싶을 때만 추가로 켭니다.
+
 canonical prompt와 follow-up prompt는 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)에 둡니다.
 
 ## Day 0 상세 순서
@@ -38,6 +40,15 @@ pnpm dev
 
 - `http://localhost:3000`에서 starter가 뜹니다.
 - `DATABASE_URL`이 없어도 local JSON fallback으로 바로 시연할 수 있습니다.
+- 이 경로는 `apps/web`만 띄우는 기본 `web-only` 모드입니다.
+
+Nest backend example까지 같이 검증하려면 아래를 사용합니다.
+
+```bash
+pnpm dev:full
+```
+
+- `PMF_API_BASE_URL=http://localhost:4000`을 설정하면 `lead`, `consultation` write flow가 `apps/api`를 통해 저장됩니다.
 
 ### 2. AI에 one-shot prompt 넣기
 
@@ -113,6 +124,12 @@ AI는 보통 아래 중 하나를 고릅니다.
 - `/pay`: payment가 active일 때 env 및 flow가 맞는가
 - `/admin`: 핵심 metric과 setup required 상태가 맞게 보이는가
 - `pnpm verify`: 타입, lint, 테스트가 통과하는가
+
+선택적으로 `web + api` 모드도 같이 확인하려면:
+
+- `pnpm dev:full`
+- `PMF_API_BASE_URL=http://localhost:4000`
+- `lead`, `consultation` submit가 Nest API로 저장되는가
 
 ## 실전 예시
 

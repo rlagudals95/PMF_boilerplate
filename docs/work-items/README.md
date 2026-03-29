@@ -25,6 +25,7 @@ raw business request에서 시작한다면 [docs/ai-starter-prompt-pack.md](/Use
 pnpm mvp:new <slug> --goal "..." --audience "..." --offer "..." --signal "..."
 pnpm work:new <short-slug> --request "원 요청 또는 작업 배경"
 pnpm feature:new --prd <prd-slug>
+pnpm browser:qa --work <work-id>
 pnpm repo:check
 pnpm repo:check --work <work-id>
 pnpm squad:check [work-id]
@@ -33,6 +34,7 @@ pnpm squad:check [work-id]
 - `pnpm mvp:new ...`는 goal, audience, offer, signal이 이미 정리된 경우 PRD 초안과 첫 feature work item을 함께 만드는 structured scaffold helper입니다.
 - 위 명령은 `docs/product-squad/templates/*`를 복사해 새 work item 디렉터리를 만듭니다.
 - `pnpm feature:new --prd <prd-slug>`는 `goal-packet.md`, role spec 4종, `feature-spec.md`, `quality-scorecard.md`를 함께 생성합니다.
+- `pnpm browser:qa --work <work-id>`는 user-facing work의 browser evidence summary를 `browser-qa.md`로 남기는 repo-native helper입니다.
 - 중요한 작업이면 이 scaffold를 만든 뒤 문서를 채우고, 구현 단위를 테스트 가능한 behavior slice로 자른 뒤 진행합니다.
 - `brief.md`에는 최소한 business goal, target user, target moment, success metric, non-goals, constraints, existing evidence가 드러나야 합니다.
 - 기본 구현 루프는 `spec -> failing test -> minimal implementation -> refactor -> verify`입니다.
@@ -66,7 +68,8 @@ pnpm squad:check [work-id]
 - 중요한 작업과 핵심 로직 변경은 문서에 적힌 behavior slice를 먼저 failing test로 고정한 뒤 최소 구현을 추가합니다.
 - `quality-scorecard.md`는 browser QA뿐 아니라 test/docs sync/verify evidence까지 모으는 최종 quality gate입니다.
 - `quality-scorecard.md`는 역할별 enterprise principle adherence도 함께 확인하는 최종 quality gate입니다.
-- user-facing 또는 goal-critical 작업은 `quality-scorecard.md`에 browser QA evidence와 ship 판단을 남깁니다.
+- user-facing 또는 goal-critical 작업은 `quality-scorecard.md`에 `browser-qa.md` reference와 ship 판단을 남깁니다.
+- `browser-qa.md`에는 raw screenshots/trace path 대신 summary와 repo-local evidence만 적고, Playwright output은 local artifact로 둡니다.
 - `pnpm repo:check [work-id]`는 core docs metadata, adapter drift, active work item contract를 함께 확인하는 상위 static gate입니다.
 - `pnpm squad:check [work-id]`는 work item 문서가 아직 템플릿 상태인지 빠르게 확인하는 기본 검증입니다.
 - 구현 중 scope가 바뀌면 코드보다 문서를 먼저 갱신합니다.

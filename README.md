@@ -25,6 +25,8 @@ Day 0 목표는 아래 흐름을 가장 빠르게 여는 것입니다.
 
 `랜딩 -> 리드 수집 -> 상담 요청 -> 결제 의사 확인 -> 어드민 확인 -> 실험 문서화`
 
+기본 온보딩 모드는 `web-only`입니다. 필요할 때만 `web + api` 모드로 `apps/api` Nest backend example을 함께 띄워 selected write flow를 HTTP로 검증할 수 있습니다.
+
 ## Day 0 사용 순서
 
 처음 이 레포를 받으면 보통 아래 순서로 시작합니다.
@@ -45,6 +47,16 @@ pnpm dev
 
 - `http://localhost:3000`에서 기본 starter가 뜹니다.
 - `DATABASE_URL`이 없으면 `packages/db/local-data.json` fallback으로 바로 데모할 수 있습니다.
+- 이 경로는 `apps/web`만 띄우는 기본 `web-only` 모드입니다.
+
+선택적으로 Nest backend example까지 같이 보려면 아래를 사용합니다.
+
+```bash
+pnpm dev:full
+```
+
+- `apps/web`와 `apps/api`가 함께 뜹니다.
+- `PMF_API_BASE_URL=http://localhost:4000`을 설정하면 `lead`, `consultation` write flow가 Nest를 통해 저장됩니다.
 
 ### 2. AI에 one-shot prompt 붙여 넣기
 
@@ -234,6 +246,8 @@ pnpm dev
 
 - `DATABASE_URL`이 없으면 `packages/db/local-data.json`에 저장됩니다.
 - `DATABASE_URL`이 있으면 Neon을 포함한 generic Postgres/Drizzle 경로를 사용합니다.
+- `PMF_API_BASE_URL`이 없으면 현재 `apps/web` direct flow를 사용합니다.
+- `PMF_API_BASE_URL`이 있으면 selected write flow는 `apps/api` Nest backend example을 통해 저장됩니다.
 
 ## 지원하는 MVP Shapes
 
@@ -256,6 +270,13 @@ Auth와 payment는 기본 기능이 아니라 optional capability입니다. 비�
 - 가장 빠른 기본값은 local JSON fallback입니다.
 - 운영 DB 기본 권장값은 Neon입니다.
 - 런타임 계약은 `DATABASE_URL` 하나로 유지하고, Neon 외 다른 Postgres도 사용할 수 있습니다.
+
+### Optional Backend Example
+
+- 기본 starter는 `apps/web`만으로도 동작합니다.
+- `apps/api`는 optional NestJS backend example입니다.
+- `PMF_API_BASE_URL`을 설정하면 selected write flow가 API를 통해 저장됩니다.
+- 기본 dev는 `pnpm dev`, backend example까지 함께 보려면 `pnpm dev:full`을 사용합니다.
 
 ### Auth
 
@@ -298,6 +319,8 @@ pnpm mvp:new rental-support-match --goal "상담 신청과 제휴 파트너 연�
 
 ```bash
 pnpm dev
+pnpm dev:api
+pnpm dev:full
 pnpm repo:check
 pnpm verify
 pnpm verify:full

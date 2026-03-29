@@ -11,6 +11,7 @@ verification: "manual"
 
 현재 저장소에서는 주로 아래 위치를 예시로 사용합니다.
 
+- `apps/api`
 - `packages/core`
 - `packages/db`
 - `packages/analytics`
@@ -41,7 +42,7 @@ boundary -> application/use case -> domain -> infrastructure
 
 현재 저장소 예시:
 
-- boundary: server action, route handler, importable service entry
+- boundary: server action, route handler, Nest controller, importable service entry
 - application/use case: 입력 처리, orchestration, 상태 전이
 - domain: type, schema, mapper, entity 규칙
 - infrastructure: DB client, repository, analytics adapter, error logging adapter
@@ -93,6 +94,7 @@ boundary -> application/use case -> domain -> infrastructure
 
 추후 분리 시 옮겨야 할 최소 단위 예시:
 
+- `apps/api`
 - `packages/core`
 - `packages/db`
 - `packages/analytics`
@@ -105,5 +107,5 @@ boundary -> application/use case -> domain -> infrastructure
 - validation과 persistence가 분리되어 있는가
 - repository와 adapter 책임이 명확한가
 - 외부 provider 실패가 핵심 흐름을 깨지 않는가
-- `packages/*`가 `apps/web/*`에 의존하지 않는가
+- `packages/*`가 `apps/web/*`나 `apps/api/*`에 의존하지 않는가
 - backend를 별도 repo로 옮겨도 유지될 구조인가

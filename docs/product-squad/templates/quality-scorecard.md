@@ -34,11 +34,15 @@ skip_reason: null
 - [ ] analytics/admin visibility 또는 운영 해석 근거가 있어 결과를 해석할 수 있다
 - [ ] docs/spec sync가 확인되었다
 - [ ] fresh `pnpm verify` 또는 `pnpm verify:full` 결과가 있다
-- [ ] responsive + accessibility + browser QA evidence가 있거나 non-user-facing skip reason이 있다
+- [ ] responsive + accessibility + browser QA evidence가 `docs/work-items/<work-id>/browser-qa.md`로 정리되었거나 non-user-facing skip reason이 있다
 
 ## Browser QA Evidence
 
-<!-- user-facing evidence를 적거나, non-user-facing이면 명시적 skip reason을 적습니다. -->
+<!--
+  user-facing work라면 `docs/work-items/<work-id>/browser-qa.md`를 참조해
+  desktop/mobile, happy path, error/empty/pending, focus/accessibility evidence를 적습니다.
+  non-user-facing work라면 browser QA skip reason을 명시합니다.
+-->
 
 -
 
