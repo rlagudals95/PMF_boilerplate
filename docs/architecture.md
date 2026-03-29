@@ -221,7 +221,7 @@ page.tsx
 ### 12. 중요한 작업은 역할 기반 문서 산출물로 관리한다
 
 - 기본 진입점은 `product-squad` 오케스트레이터입니다.
-- 역할은 `pm-role`, `pd-role`, `fe-role`, `be-role`로 나눕니다.
+- 첫 게이트는 `po-role`이고, 기본 토폴로지는 `po supervisor -> pm/pd/fe/be specialists -> evaluator-role`입니다.
 - 중요한 작업은 구현 전에 `docs/work-items/<work-id>/`에 brief와 role spec을 먼저 만듭니다.
 - business goal 중심 제품 작업은 `docs/product-squad/goal-driven-delivery.md` 기준으로 role debate, browser QA, quality scorecard까지 남깁니다.
 - 역할 간 handoff나 병렬 탐색이 필요한 경우 `docs/product-squad/agent-team-delivery.md` 기준으로 `team-plan.md`를 같이 만듭니다.

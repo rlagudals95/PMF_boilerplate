@@ -42,6 +42,10 @@ skip_reason: null
 
 -
 
+## Visual Bar
+
+-
+
 ## Selected Delivery Shape
 
 -

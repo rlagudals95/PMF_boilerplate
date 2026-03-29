@@ -8,18 +8,20 @@
 
 핵심 계약은 아래 한 줄입니다.
 
-`one-shot prompt -> repo-aware shape selection -> product-config.mvp + copy update -> optional deeper code -> verify`
+`one-shot kickoff -> goal packet / visual bar -> PO supervisor + specialist critique -> product-config.mvp + copy update -> optional deeper code -> evaluator gate -> verify`
 
 추천 흐름은 아래와 같습니다.
 
 1. 로컬에서 starter를 띄웁니다.
 2. AI 코딩 툴에 one-shot prompt를 붙여 넣습니다.
 3. AI가 repo를 읽고 필요한 경우에만 1~3개의 짧은 질문을 합니다.
-4. AI가 먼저 이 요청이 `gated work`인지 판단하고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 분류합니다.
-5. AI가 가장 얇은 MVP shape를 고릅니다.
-6. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춥니다.
-7. 기존 블록으로 안 되는 경우에만 deeper code를 수정합니다.
-8. 마지막에 `pnpm verify`와 브라우저 확인으로 닫습니다.
+4. AI가 goal packet과 visual bar를 먼저 정리하고 `po-role` completeness check를 수행합니다.
+5. `po-role`이 user conversation과 synthesis를 소유한 상태로 PM/PD/FE/BE critique를 먼저 돌립니다.
+6. AI가 먼저 이 요청이 `gated work`인지 판단하고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 분류합니다.
+7. AI가 가장 얇은 MVP shape를 고릅니다.
+8. 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춥니다.
+9. 기존 블록으로 안 되는 경우에만 deeper code를 수정합니다.
+10. 마지막에 `evaluator-role` 관점의 release recommendation, `pnpm verify`, 브라우저 확인으로 닫습니다.
 
 기본 모드는 `web-only`입니다. `apps/api` Nest backend example은 selected write flow를 HTTP 경계로 보고 싶을 때만 추가로 켭니다.
 
@@ -94,6 +96,7 @@ AI는 보통 아래 중 하나를 고릅니다.
 - selected MVP shape
 - active flows
 - deferred flows
+- release recommendation
 - major copy/product changes applied
 - required env vars for enabled capabilities
 - verification result

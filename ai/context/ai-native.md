@@ -18,7 +18,7 @@ verification: "manual"
 
 - 정책, business goal, PRD, raw request처럼 입력 형태가 달라도 goal packet과 MVP thin slice로 정규화할 수 있어야 합니다.
 - 바이브 코딩처럼 빠른 구현 흐름에서도 repo 안 문서와 검증으로 엔터프라이즈급 품질 기준을 판정할 수 있어야 합니다.
-- 중요한 작업은 `product-squad`와 PM/PD/FE/BE 역할 관점으로 검토해 business goal을 더 잘 달성해야 합니다.
+- 중요한 작업은 `product-squad`와 `po-role`, PM/PD/FE/BE, `evaluator-role` 관점으로 검토해 business goal을 더 잘 달성해야 합니다.
 - 제품, 전략, PRD, 운영 규칙의 source of truth는 repo 안 Markdown이어야 하며, adapter와 외부 툴은 파생 surface여야 합니다.
 
 ## Input Normalization
@@ -43,8 +43,18 @@ verification: "manual"
 - non-goals
 - constraints
 - existing evidence
+- visual bar
 
 정책 입력은 goal packet 밖의 별도 체계로 두지 않고, 주로 `constraints`, `non-goals`, `required quality bar`로 변환합니다.
+
+landing이나 다른 강한 user-facing 작업이면 `visual bar`에는 아래가 포함되어야 합니다.
+
+- 상용 서비스처럼 보여야 하는지
+- 어떤 trust source를 전면에 둘지
+- reference 또는 anti-reference가 있는지
+- boilerplate smell을 어떻게 피할지
+
+raw request에서 시작할 때 `po-role`은 goal packet을 `ready`, `needs-clarification`, `not-safe-to-build`로 먼저 분류합니다. quality bar를 판단할 근거가 부족하면 구현보다 질문과 문서 보강이 먼저입니다.
 
 정규화가 끝나면 아래 순서로 얇은 slice를 고릅니다.
 
@@ -64,6 +74,8 @@ verification: "manual"
 - risky boundary는 가능하면 failing test로 먼저 고정하고, 생략 시 skip reason이 남는다.
 - `pnpm repo:check`, `pnpm squad:check`, `pnpm verify`, 필요 시 `pnpm verify:full` 같은 repo-local proof로 종료한다.
 - user-facing 변경은 browser evidence와 quality scorecard 없이 완료로 보지 않는다.
+- landing 같은 user-facing surface는 browser evidence 전에 commercial quality critique를 통과해야 한다.
+- prompt, workflow, role topology 변경은 replayable evaluation evidence 또는 explicit skip reason 없이 완료로 보지 않는다.
 
 완료 판정에 필요한 최소 증거는 아래입니다.
 
@@ -98,16 +110,22 @@ verification: "manual"
 
 중요한 작업의 기본 진입점은 `product-squad`입니다.
 
+- `po`
+  - goal packet completeness, clarification loop, build-start approval을 담당합니다.
 - `pm`
   - goal, success metric, acceptance criteria를 고정합니다.
 - `pd`
-  - CTA, IA, trust, edge state, browser QA 포인트를 검토합니다.
+  - CTA, IA, trust, edge state, browser QA 포인트와 commercial landing quality를 검토합니다.
 - `fe`
   - route/module/component 경계와 UI verify 계획을 정합니다.
 - `be`
   - validation, persistence, analytics, failure mode, adapter 계약을 정합니다.
+- `evaluator`
+  - goal fit, evidence completeness, release recommendation, replayable evaluation 필요 여부를 판정합니다.
 
 이 역할은 반드시 별도 agent를 띄우라는 뜻이 아니라, business goal을 기준으로 관점을 분리해 누락을 줄이기 위한 장치입니다.
+기본 토폴로지는 `po supervisor -> bounded specialists -> evaluator gate`입니다.
+즉 `po`가 user conversation과 synthesis를 소유하고, specialist는 artifact를 반환하며, evaluator가 독립적으로 마무리 판정을 합니다.
 
 역할별 enterprise-grade 철칙은 아래를 추가로 따릅니다.
 
@@ -117,12 +135,16 @@ verification: "manual"
 - `pd`
   - happy path, error, empty, pending state를 모두 다룹니다.
   - 정보 구조, trust, accessibility, CTA hierarchy를 일관된 시스템으로 봅니다.
+  - boilerplate smell, 정보 과밀, first impression 실패를 명시적으로 반려할 수 있습니다.
 - `fe`
   - route entry는 얇게 두고, UI/상태/행동의 책임을 모듈 경계로 분리합니다.
   - 큰 컴포넌트, 암묵적 state coupling, 재사용을 해치는 direct import를 경계합니다.
 - `be`
   - boundary validation, use case, repository, adapter 책임을 분리합니다.
   - domain invariant, failure mode, measurement integrity를 코드 구조로 보호합니다.
+- `evaluator`
+  - 구현 편의보다 goal fit, release safety, evidence completeness를 우선합니다.
+  - `ship | iterate | stop` 판단은 독립적으로 남기고 weak proof를 추측으로 보완하지 않습니다.
 - `quality review`
   - 결과가 돌아간다는 인상보다 evidence와 principle adherence를 기준으로 판정합니다.
 

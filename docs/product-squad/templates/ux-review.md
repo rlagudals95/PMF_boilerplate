@@ -34,6 +34,14 @@ skip_reason: null
 
 -
 
+## Commercial Quality Critique
+
+-
+
+## Boilerplate Smell Check
+
+-
+
 ## Happy Path
 
 -
