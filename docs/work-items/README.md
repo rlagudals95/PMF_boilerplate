@@ -32,7 +32,7 @@ pnpm squad:check [work-id]
 
 - `pnpm mvp:new ...`는 goal, audience, offer, signal이 이미 정리된 경우 PRD 초안과 첫 feature work item을 함께 만드는 structured scaffold helper입니다.
 - 위 명령은 `docs/product-squad/templates/*`를 복사해 새 work item 디렉터리를 만듭니다.
-- `pnpm feature:new --prd <prd-slug>`는 role spec 4종에 더해 `feature-spec.md`와 `quality-scorecard.md`까지 같이 생성합니다.
+- `pnpm feature:new --prd <prd-slug>`는 `goal-packet.md`, role spec 4종, `feature-spec.md`, `quality-scorecard.md`를 함께 생성합니다.
 - 중요한 작업이면 이 scaffold를 만든 뒤 문서를 채우고, 구현 단위를 테스트 가능한 behavior slice로 자른 뒤 진행합니다.
 - `brief.md`에는 최소한 business goal, target user, target moment, success metric, non-goals, constraints, existing evidence가 드러나야 합니다.
 - 기본 구현 루프는 `spec -> failing test -> minimal implementation -> refactor -> verify`입니다.

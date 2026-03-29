@@ -175,17 +175,18 @@ docs/work-items/<work-id>/
 
 1. 요청을 `gated work` 또는 `light work`로 분류한다.
 2. gated work면 `work-id`를 만든다.
-3. `brief.md`를 먼저 만든다.
-4. `team-plan.md`로 execution mode와 task graph를 먼저 정한다.
-5. 필요한 역할 문서를 만든다.
-6. 필요 없는 문서는 `skipped`로 남긴다.
-7. 구현 단위를 테스트 가능한 behavior slice로 자른다.
-8. 중요한 작업과 핵심 로직 변경은 각 slice를 failing test로 먼저 고정한 뒤 최소 구현과 리팩터링을 진행한다.
-9. user-facing 작업이면 browser QA evidence와 measurement check를 `quality-scorecard.md`에 남긴다.
-10. non-user-facing 작업이어도 `quality-scorecard.md`에 test/docs sync/verify evidence를 남긴다.
-11. 작업 종료 전에는 `pnpm repo:check --work <work-id>`와 `pnpm squad:check [work-id]`로 문서와 metadata가 placeholder 상태를 벗어났는지 확인한다.
-12. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
-13. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인하고 `pnpm verify` 또는 `pnpm verify:full`을 실행한다.
+3. `goal-packet.md`로 입력을 정규화하고 delivery shape와 active/deferred scope를 먼저 고정한다.
+4. `brief.md`를 만든다.
+5. `team-plan.md`로 execution mode와 task graph를 먼저 정한다.
+6. 필요한 역할 문서를 만든다.
+7. 필요 없는 문서는 `skipped`로 남긴다.
+8. 구현 단위를 테스트 가능한 behavior slice로 자른다.
+9. 중요한 작업과 핵심 로직 변경은 각 slice를 failing test로 먼저 고정한 뒤 최소 구현과 리팩터링을 진행한다.
+10. user-facing 작업이면 browser QA evidence와 measurement check를 `quality-scorecard.md`에 남긴다.
+11. non-user-facing 작업이어도 `quality-scorecard.md`에 test/docs sync/verify evidence를 남긴다.
+12. 작업 종료 전에는 `pnpm repo:check --work <work-id>`와 `pnpm squad:check [work-id]`로 문서와 metadata가 placeholder 상태를 벗어났는지 확인한다.
+13. 구현 중 scope가 바뀌면 관련 문서를 먼저 갱신한다.
+14. 작업 종료 전에는 canonical 문서와 work item 문서 sync를 함께 확인하고 `pnpm verify` 또는 `pnpm verify:full`을 실행한다.
 
 ## Goal-Driven Review Loop
 
