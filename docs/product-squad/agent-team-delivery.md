@@ -74,6 +74,7 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
 
 중요한 작업의 공용 산출물은 아래입니다.
 
+- `goal-packet.md`
 - `brief.md`
 - `feature-spec.md`
 - `ux-review.md`
@@ -82,7 +83,7 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
 - `team-plan.md`
 - `quality-scorecard.md`
 
-이 중 `team-plan.md`는 coordination source of truth이고, `quality-scorecard.md`는 최종 review source of truth입니다.
+이 중 `goal-packet.md`는 입력 정규화 source of truth이고, `team-plan.md`는 coordination source of truth이며, `quality-scorecard.md`는 최종 review source of truth입니다.
 
 ## Team Plan
 
@@ -122,6 +123,14 @@ platform capability가 없거나 불명확하면 항상 `single-agent sequential
 - role principle adherence note
 
 다음 역할은 이전 대화 로그가 아니라 이 packet과 repo 문서를 기준으로 움직입니다.
+
+## Handoff Quality Rubric
+
+- next owner가 채팅 로그를 다시 읽지 않아도 바로 이어받을 수 있어야 합니다.
+- unresolved questions는 `없음` 또는 구체 항목으로 명시해야 합니다.
+- changed files or docs는 실제 repo 경로로 적어 다음 역할이 바로 읽을 수 있어야 합니다.
+- success check에는 verification evidence 또는 explicit skip reason이 포함되어야 합니다.
+- 이 기준을 못 맞추면 lead가 바로 보완을 요청합니다.
 
 ## Shared Task List 규칙
 

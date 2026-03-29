@@ -6,6 +6,7 @@ import path from "node:path";
 const rootDir = process.cwd();
 const workItemsDir = path.join(rootDir, "docs", "work-items");
 const requiredFiles = [
+  "goal-packet.md",
   "brief.md",
   "team-plan.md",
   "ux-review.md",
@@ -13,6 +14,7 @@ const requiredFiles = [
   "backend-spec.md",
   "quality-scorecard.md",
 ];
+const nonSkippableFiles = new Set(["goal-packet.md"]);
 const optionalFiles = ["feature-spec.md"];
 const allowedFreshness = new Set(["active", "review-needed"]);
 const expectedMetadata = {
@@ -137,6 +139,13 @@ function inspectFile(fileName, markdown) {
   const metadataResults = checkMetadataFields(fileName, frontmatter);
 
   if (status === "skipped") {
+    if (nonSkippableFiles.has(fileName)) {
+      return [
+        ...metadataResults,
+        fail(fileName, "status skipped is not allowed for this required artifact"),
+      ];
+    }
+
     const skipReason = normalizeScalar(frontmatter.skip_reason);
     if (!skipReason || skipReason === "null") {
       return [
@@ -160,6 +169,23 @@ function inspectFile(fileName, markdown) {
   }
 
   switch (fileName) {
+    case "goal-packet.md":
+      results.push(
+        ...checkSections(fileName, body, [
+          ["Business Goal", basicPlaceholderSet()],
+          ["Target User", basicPlaceholderSet()],
+          ["Target Moment", basicPlaceholderSet()],
+          ["Success Metric", basicPlaceholderSet()],
+          ["Non-Goals", basicPlaceholderSet()],
+          ["Constraints", basicPlaceholderSet()],
+          ["Existing Evidence", basicPlaceholderSet()],
+          ["Selected Delivery Shape", basicPlaceholderSet()],
+          ["Active Scope", basicPlaceholderSet()],
+          ["Deferred Scope", basicPlaceholderSet()],
+          ["Selection Rationale", basicPlaceholderSet()],
+        ]),
+      );
+      break;
     case "brief.md":
       results.push(
         ...checkSections(fileName, body, [

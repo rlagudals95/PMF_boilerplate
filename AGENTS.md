@@ -56,6 +56,7 @@
 ## 네이밍 규칙
 
 - UI 컴포넌트: PascalCase
+- source 파일명(`*.ts`, `*.tsx`)은 kebab-case
 - 함수/변수: camelCase
 - DB 컬럼: snake_case
 - 실험 코드: `LP-001`, `CF-002` 같은 짧은 식별자

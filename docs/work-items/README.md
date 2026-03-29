@@ -45,6 +45,7 @@ pnpm squad:check [work-id]
 
 ## Required files
 
+- `goal-packet.md`
 - `brief.md`
 - `feature-spec.md` (PRD 기반 feature 작업이면 필수)
 - `team-plan.md`
@@ -57,6 +58,7 @@ pnpm squad:check [work-id]
 
 ## Source of truth
 
+- 입력 정규화 기준 문서는 항상 최신 `goal-packet.md`입니다.
 - 구현 전 기준 문서는 항상 최신 `brief.md`입니다.
 - PRD 기반 작업에서는 `docs/prds/<slug>.md`와 `feature-spec.md`가 brief를 보완하는 task-local source입니다.
 - 각 역할 문서는 `docs/product-squad/templates/*.md`를 복사해서 시작합니다.

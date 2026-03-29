@@ -19,13 +19,25 @@ verification: "manual"
 - 중요한 작업의 Repo OS 기본 경로는 `goal packet -> brief -> role specs -> team-plan -> tests -> browser evidence -> quality-scorecard`다.
 - canonical PRD가 있으면 `new-feature`가 `product-squad` 앞단에서 work item 생성기를 담당할 수 있다.
 - 중요한 작업은 먼저 문서 산출물을 만든다.
-- 최신 `brief.md`가 구현 전 기준 문서다.
+- 최신 `goal-packet.md`가 입력 정규화 기준 문서이고, 최신 `brief.md`가 구현 전 기준 문서다.
 - user-facing 또는 goal-critical 작업은 `goal-driven-delivery` 기준으로 browser evidence와 quality scorecard까지 남긴다.
 - 역할 handoff나 병렬 탐색이 있으면 `agent-team-delivery` 기준으로 `team-plan.md`를 coordination source로 사용한다.
 - 작은 수정은 full process를 생략할 수 있지만 `skip_reason`은 남긴다.
 - spec-driven 기준은 `ai/context/spec-driven.md`를 따른다.
 - 문서 sync 기준은 `ai/context/doc-sync.md`를 따른다.
 - 모든 역할은 `ai/context/ai-native.md`의 enterprise principles를 기본값으로 따른다.
+
+## Task Triage Matrix
+
+| Request Type | Default Work Class | Default Roles | Default Execution Mode |
+| --- | --- | --- | --- |
+| policy / business goal -> MVP shaping | gated work | product-squad + pm + pd + fe (+ be when data or analytics change) | single-agent sequential |
+| user-facing flow or copy change | gated work | pm + pd + fe | single-agent sequential |
+| validation / persistence / analytics contract change | gated work | pm + fe + be | single-agent sequential |
+| pure FE refactor with no behavior change | light work | fe | single-agent sequential |
+| pure BE refactor with no contract change | light work | be | single-agent sequential |
+| parallel research or competing hypotheses | gated work | product-squad + role owners | subagent fan-out |
+| tightly coupled cross-layer implementation | gated work | product-squad + pm + pd + fe + be | agent-team only when platform support is clearly useful |
 
 ## 어떤 작업이 gated work 인가
 
@@ -122,6 +134,7 @@ verification: "manual"
 
 ```txt
 docs/work-items/<work-id>/
+  goal-packet.md
   brief.md
   feature-spec.md
   team-plan.md

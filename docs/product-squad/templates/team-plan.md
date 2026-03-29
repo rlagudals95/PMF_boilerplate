@@ -33,6 +33,7 @@ skip_reason: null
 
 ## Shared Context Pack
 
+- goal packet:
 - brief:
 - feature spec:
 - ux review:
@@ -58,6 +59,13 @@ skip_reason: null
 - from:
   to:
   packet:
+
+## Handoff Quality Bar
+
+- [ ] next owner can continue without re-reading chat history
+- [ ] unresolved questions are explicit
+- [ ] changed files or docs are listed
+- [ ] success check includes verification evidence or explicit skip reason
 
 ## Escalations
 

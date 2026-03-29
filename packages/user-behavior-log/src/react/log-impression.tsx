@@ -4,7 +4,7 @@ import type { ReactElement } from "react";
 
 import type { BehaviorLogger, ImpressionInput } from "../types";
 import { useBehaviorLogger } from "./context";
-import { ImpressionTracker, type ImpressionTrackerProps } from "./ImpressionTracker";
+import { ImpressionTracker, type ImpressionTrackerProps } from "./impression-tracker";
 
 export interface LogImpressionProps
   extends Omit<ImpressionTrackerProps, "onImpression" | "children">,
