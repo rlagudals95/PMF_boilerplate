@@ -419,6 +419,41 @@ function withHarnessDefaults(baseFields, planning) {
   };
 }
 
+const backendSignalKeywords = {
+  analytics: [
+    "analytics",
+    "event",
+    "events",
+    "metric",
+    "metrics",
+    "track",
+    "tracking",
+    "measure",
+    "measurement",
+    "instrument",
+    "telemetry",
+  ],
+  data: [
+    "schema",
+    "validation",
+    "repository",
+    "contract",
+    "backend",
+    "persist",
+    "persistence",
+    "store",
+    "storage",
+    "save",
+    "write",
+    "database",
+    "db",
+    "table",
+    "field",
+    "record",
+    "model",
+  ],
+};
+
 function buildHarnessContract({ workClass, changeTypes, releaseSurface, primaryGate }) {
   const normalizedChangeTypes = uniqueItems(changeTypes);
 
@@ -438,12 +473,20 @@ function buildHarnessContract({ workClass, changeTypes, releaseSurface, primaryG
 
 function deriveChangeTypes(planning) {
   const changeTypes = [];
+  const meaningfulDataImpact = extractMeaningfulSignals(
+    planning.dataImpact,
+    backendSignalKeywords.data,
+  );
+  const meaningfulAnalyticsImpact = extractMeaningfulSignals(
+    planning.analyticsImpact,
+    backendSignalKeywords.analytics,
+  );
 
   if (planning.frontendRequired || planning.uxRequired) {
     changeTypes.push("user-facing-behavior");
   }
 
-  if (planning.dataImpact.length > 0) {
+  if (meaningfulDataImpact.length > 0) {
     changeTypes.push("validation-schema");
   }
 
@@ -451,7 +494,7 @@ function deriveChangeTypes(planning) {
     changeTypes.push("repository-contract");
   }
 
-  if (planning.analyticsImpact.length > 0 && planning.backendRequired) {
+  if (meaningfulAnalyticsImpact.length > 0 && planning.backendRequired) {
     changeTypes.push("cross-repo-contract");
   }
 
@@ -513,6 +556,36 @@ function inferEvidenceRequirements({
 
   return [...evidence];
 }
+
+function extractMeaningfulSignals(items, keywords) {
+  return items.filter((item) => hasMeaningfulSignal(item, keywords));
+}
+
+function hasMeaningfulSignal(item, keywords) {
+  const text = normalizeSignalText(item);
+
+  if (!text || isNoOpSignal(text)) {
+    return false;
+  }
+
+  return keywords.some((keyword) => text.includes(keyword));
+}
+
+function normalizeSignalText(value) {
+  return normalizeContent(value).toLowerCase();
+}
+
+function isNoOpSignal(text) {
+  return NO_OP_SIGNAL_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+const NO_OP_SIGNAL_PATTERNS = [
+  /^\s*(none|n\/a|na|not applicable|no-op|noop|-)\s*$/i,
+  /^\s*no\b.*\b(change|changes|update|updates|impact|impacts|modification|modifications|change required|required)\b/i,
+  /^\s*.*\bnot required\b.*$/i,
+  /^\s*.*\bdoes not change\b.*$/i,
+  /^\s*.*\bno\s+(analytics|schema|repository|backend|data|validation|contract|persistence|storage|database|db)\s+change(s)?\b.*$/i,
+];
 
 function buildUserFlow(feature, prd, targetUser) {
   const flow = [];
@@ -2084,14 +2157,23 @@ function isFrontendRequired(feature) {
 }
 
 function isBackendRequired(feature, analyticsImpact, dataImpact) {
+  const meaningfulDataImpact = extractMeaningfulSignals(
+    dataImpact,
+    backendSignalKeywords.data,
+  );
+  const meaningfulAnalyticsImpact = extractMeaningfulSignals(
+    analyticsImpact,
+    backendSignalKeywords.analytics,
+  );
+
   return (
     feature.backendChanges === "yes" ||
     feature.paymentRequired === "yes" ||
     feature.authRequired === "yes" ||
     (feature.externalProviderImpact &&
       feature.externalProviderImpact !== "none") ||
-    analyticsImpact.length > 0 ||
-    dataImpact.length > 0
+    meaningfulDataImpact.length > 0 ||
+    meaningfulAnalyticsImpact.length > 0
   );
 }
 

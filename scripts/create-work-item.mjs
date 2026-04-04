@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const rootDir = process.cwd();
@@ -52,7 +52,7 @@ async function main() {
   const workId = `${datePart}-${slug}`;
   const targetDir = path.join(workItemsDir, workId);
 
-  await mkdir(targetDir, { recursive: force });
+  await ensureWorkItemDirectory(targetDir, workId, force);
 
   for (const fileName of templateFiles) {
     const templatePath = path.join(templatesDir, fileName);
@@ -235,6 +235,24 @@ function buildHarnessContract(options) {
   };
 }
 
+async function ensureWorkItemDirectory(targetDir, workId, force) {
+  try {
+    await readdir(targetDir);
+
+    if (!force) {
+      throw new Error(
+        `Work item docs/work-items/${workId} already exist. Re-run with --force to overwrite them.`,
+      );
+    }
+  } catch (error) {
+    if (!isMissingPathError(error)) {
+      throw error;
+    }
+  }
+
+  await mkdir(targetDir, { recursive: true });
+}
+
 function inferEvidenceRequirements({
   workClass,
   changeTypes,
@@ -401,6 +419,10 @@ function escapeRegExp(value) {
 
 function uniqueItems(items) {
   return [...new Set(items.filter(Boolean))];
+}
+
+function isMissingPathError(error) {
+  return error instanceof Error && "code" in error && error.code === "ENOENT";
 }
 
 function buildDatePart(date) {
