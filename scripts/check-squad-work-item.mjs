@@ -18,11 +18,42 @@ const requiredFiles = [
 const nonSkippableFiles = new Set(["goal-packet.md"]);
 const optionalFiles = ["feature-spec.md", "browser-qa.md"];
 const allowedFreshness = new Set(["active", "review-needed"]);
+const allowedWorkClasses = new Set(["light", "soft-gated", "hard-gated"]);
+const allowedChangeTypes = new Set([
+  "user-facing-behavior",
+  "validation-schema",
+  "repository-contract",
+  "cross-repo-contract",
+  "prompt-workflow",
+  "release-ops",
+  "new-capability",
+]);
+const allowedEvidenceRequirements = new Set([
+  "verify",
+  "quality-scorecard",
+  "browser-qa",
+  "ops-evidence",
+  "contract-test",
+  "replayable-evaluation",
+]);
+const allowedReleaseSurfaces = new Set([
+  "none",
+  "user-facing",
+  "ops-facing",
+  "cross-repo",
+]);
+const allowedPrimaryGates = new Set([
+  "brief",
+  "scorecard",
+  "browser-qa",
+  "contract-test",
+]);
 
 async function main() {
   const { workId, strict } = await parseArgs(process.argv.slice(2));
   const targetDir = path.join(workItemsDir, workId);
   const results = [];
+  const inspectionsByFile = new Map();
 
   await access(targetDir);
 
@@ -30,7 +61,9 @@ async function main() {
     const filePath = path.join(targetDir, fileName);
     try {
       const markdown = await readFile(filePath, "utf8");
-      results.push(...inspectFile(fileName, markdown, { workId, targetDir }));
+      const inspection = inspectFile(fileName, markdown, { workId, targetDir });
+      inspectionsByFile.set(fileName, inspection);
+      results.push(...inspection.results);
     } catch (error) {
       if (isMissingPathError(error)) {
         results.push(fail(fileName, "required file is missing"));
@@ -46,13 +79,39 @@ async function main() {
 
     try {
       const markdown = await readFile(filePath, "utf8");
-      results.push(...inspectFile(fileName, markdown, { workId, targetDir }));
+      const inspection = inspectFile(fileName, markdown, { workId, targetDir });
+      results.push(...inspection.results);
     } catch (error) {
       if (!isMissingPathError(error)) {
         throw error;
       }
     }
   }
+
+  const workItemContract = collectHarnessContract(inspectionsByFile);
+  const requiredEvidenceRequirements = deriveExpectedEvidenceRequirements(
+    workItemContract,
+  );
+  const missingEvidenceRequirements = requiredEvidenceRequirements.filter(
+    (evidenceRequirement) =>
+      !workItemContract.evidenceRequirements.includes(evidenceRequirement),
+  );
+
+  if (missingEvidenceRequirements.length > 0) {
+    results.push(
+      fail(
+        "work-item",
+        `evidence_requirements must include ${formatList(missingEvidenceRequirements)} for ${describeHarnessContract(workItemContract)}`,
+      ),
+    );
+  }
+
+  enforceArtifactMatrix({
+    results,
+    inspectionsByFile,
+    workItemContract,
+    workId,
+  });
 
   const hasFailure = results.some((result) => result.level === "fail");
   const hasStrictWarning =
@@ -133,30 +192,53 @@ function inspectFile(fileName, markdown, context) {
   const { frontmatter, body } = parseFrontmatter(markdown);
   const status = normalizeScalar(frontmatter.status);
   const metadataResults = checkMetadataFields(fileName, frontmatter);
+  const harness = readHarnessContract(frontmatter);
+  const results = [...metadataResults];
+
+  results.push(...validateHarnessContract(fileName, harness));
 
   if (status === "skipped") {
     if (nonSkippableFiles.has(fileName)) {
-      return [
-        ...metadataResults,
-        fail(fileName, "status skipped is not allowed for this required artifact"),
-      ];
+      return {
+        fileName,
+        body,
+        frontmatter,
+        harness,
+        results: [
+          ...results,
+          fail(
+            fileName,
+            "status skipped is not allowed for this required artifact",
+          ),
+        ],
+        status,
+      };
     }
 
     const skipReason = normalizeScalar(frontmatter.skip_reason);
     if (!skipReason || skipReason === "null") {
-      return [
-        ...metadataResults,
-        fail(fileName, "status is skipped but skip_reason is empty"),
-      ];
+      return {
+        fileName,
+        body,
+        frontmatter,
+        harness,
+        results: [
+          ...results,
+          fail(fileName, "status is skipped but skip_reason is empty"),
+        ],
+        status,
+      };
     }
 
-    return [
-      ...metadataResults,
-      pass(fileName, `skipped with reason: ${skipReason}`),
-    ];
+    return {
+      fileName,
+      body,
+      frontmatter,
+      harness,
+      results: [...results, pass(fileName, `skipped with reason: ${skipReason}`)],
+      status,
+    };
   }
-
-  const results = [...metadataResults];
 
   if (!status || status === "draft") {
     results.push(
@@ -385,7 +467,14 @@ function inspectFile(fileName, markdown, context) {
     results.unshift(pass(fileName, "required sections are present"));
   }
 
-  return results;
+  return {
+    fileName,
+    body,
+    frontmatter,
+    harness,
+    results,
+    status,
+  };
 }
 
 function checkMetadataFields(fileName, frontmatter) {
@@ -434,6 +523,301 @@ function checkMetadataFields(fileName, frontmatter) {
   return results;
 }
 
+function readHarnessContract(frontmatter) {
+  return {
+    workClass: normalizeScalar(frontmatter.work_class),
+    changeTypes: normalizeList(frontmatter.change_types),
+    evidenceRequirements: normalizeList(frontmatter.evidence_requirements),
+    releaseSurface: normalizeScalar(frontmatter.release_surface),
+    primaryGate: normalizeScalar(frontmatter.primary_gate),
+  };
+}
+
+function validateHarnessContract(fileName, contract) {
+  const results = [];
+
+  if (!allowedWorkClasses.has(contract.workClass)) {
+    results.push(
+      fail(fileName, `invalid work_class: ${contract.workClass || "(empty)"}`),
+    );
+  }
+
+  const invalidChangeTypes = contract.changeTypes.filter(
+    (changeType) => !allowedChangeTypes.has(changeType),
+  );
+  if (invalidChangeTypes.length > 0) {
+    results.push(
+      fail(fileName, `invalid change_types: ${formatList(invalidChangeTypes)}`),
+    );
+  }
+
+  const invalidEvidenceRequirements = contract.evidenceRequirements.filter(
+    (evidenceRequirement) => !allowedEvidenceRequirements.has(evidenceRequirement),
+  );
+  if (invalidEvidenceRequirements.length > 0) {
+    results.push(
+      fail(
+        fileName,
+        `invalid evidence_requirements: ${formatList(invalidEvidenceRequirements)}`,
+      ),
+    );
+  }
+
+  if (!allowedReleaseSurfaces.has(contract.releaseSurface)) {
+    results.push(
+      fail(
+        fileName,
+        `invalid release_surface: ${contract.releaseSurface || "(empty)"}`,
+      ),
+    );
+  }
+
+  if (!allowedPrimaryGates.has(contract.primaryGate)) {
+    results.push(
+      fail(fileName, `invalid primary_gate: ${contract.primaryGate || "(empty)"}`),
+    );
+  }
+
+  return results;
+}
+
+function deriveExpectedEvidenceRequirements({
+  workClass,
+  changeTypes,
+  releaseSurface,
+  primaryGate,
+}) {
+  const evidence = new Set(["verify", "quality-scorecard"]);
+
+  if (
+    releaseSurface === "user-facing" ||
+    changeTypes.includes("user-facing-behavior")
+  ) {
+    evidence.add("browser-qa");
+  }
+
+  if (releaseSurface === "ops-facing" || changeTypes.includes("release-ops")) {
+    evidence.add("ops-evidence");
+  }
+
+  if (
+    releaseSurface === "cross-repo" ||
+    changeTypes.some((type) =>
+      ["validation-schema", "repository-contract", "cross-repo-contract"].includes(
+        type,
+      ),
+    )
+  ) {
+    evidence.add("contract-test");
+  }
+
+  if (changeTypes.includes("prompt-workflow")) {
+    evidence.add("replayable-evaluation");
+  }
+
+  if (workClass === "light" && evidence.size === 2 && primaryGate === "brief") {
+    return ["verify"];
+  }
+
+  if (primaryGate === "browser-qa") {
+    evidence.add("browser-qa");
+  }
+
+  if (primaryGate === "contract-test") {
+    evidence.add("contract-test");
+  }
+
+  if (primaryGate === "scorecard") {
+    evidence.add("quality-scorecard");
+  }
+
+  return [...evidence];
+}
+
+function collectHarnessContract(inspectionsByFile) {
+  const source =
+    inspectionsByFile.get("brief.md") ??
+    inspectionsByFile.get("goal-packet.md") ??
+    inspectionsByFile.get("team-plan.md") ??
+    inspectionsByFile.get("quality-scorecard.md") ??
+    null;
+
+  if (!source) {
+    return {
+      workClass: "soft-gated",
+      changeTypes: [],
+      evidenceRequirements: [],
+      releaseSurface: "none",
+      primaryGate: "brief",
+    };
+  }
+
+  return source.harness;
+}
+
+function enforceArtifactMatrix({
+  results,
+  inspectionsByFile,
+  workItemContract,
+  workId,
+}) {
+  const hasUserFacingBehavior =
+    workItemContract.changeTypes.includes("user-facing-behavior") ||
+    workItemContract.releaseSurface === "user-facing";
+  const hasContractChange =
+    workItemContract.changeTypes.some((type) =>
+      ["validation-schema", "repository-contract", "cross-repo-contract"].includes(
+        type,
+      ),
+    ) || workItemContract.releaseSurface === "cross-repo";
+  const hasPromptWorkflow = workItemContract.changeTypes.includes(
+    "prompt-workflow",
+  );
+  const hasReleaseOps =
+    workItemContract.changeTypes.includes("release-ops") ||
+    workItemContract.releaseSurface === "ops-facing";
+
+  if (workItemContract.workClass === "hard-gated") {
+    requireArtifactPresent(
+      results,
+      inspectionsByFile,
+      "goal-packet.md",
+      "hard-gated change requires goal-packet.md, team-plan.md, and quality-scorecard.md",
+    );
+    requireArtifactPresent(
+      results,
+      inspectionsByFile,
+      "team-plan.md",
+      "hard-gated change requires goal-packet.md, team-plan.md, and quality-scorecard.md",
+    );
+    requireArtifactPresent(
+      results,
+      inspectionsByFile,
+      "quality-scorecard.md",
+      "hard-gated change requires goal-packet.md, team-plan.md, and quality-scorecard.md",
+    );
+  }
+
+  if (hasUserFacingBehavior) {
+    requireArtifactPresent(
+      results,
+      inspectionsByFile,
+      "ux-review.md",
+      "user-facing-behavior change requires ux-review.md and frontend-spec.md",
+    );
+    requireArtifactPresent(
+      results,
+      inspectionsByFile,
+      "frontend-spec.md",
+      "user-facing-behavior change requires ux-review.md and frontend-spec.md",
+    );
+    requireScorecardEvidence(
+      results,
+      inspectionsByFile.get("quality-scorecard.md")?.body ?? "",
+      "Browser QA Evidence",
+      "user-facing-behavior change requires browser QA evidence or an explicit skip reason",
+      {
+        workId,
+        hasBrowserQaDoc: hasOptionalArtifact(
+          path.join(workItemsDir, workId),
+          "browser-qa.md",
+        ),
+      },
+    );
+  }
+
+  if (hasContractChange) {
+    requireArtifactPresent(
+      results,
+      inspectionsByFile,
+      "backend-spec.md",
+      "validation-schema or repository-contract change requires backend-spec.md and code quality evidence",
+    );
+    requireScorecardEvidence(
+      results,
+      inspectionsByFile.get("quality-scorecard.md")?.body ?? "",
+      "Code Quality Evidence",
+      "validation-schema or repository-contract change requires backend-spec.md and code quality evidence",
+    );
+  }
+
+  if (hasPromptWorkflow) {
+    requireScorecardEvidence(
+      results,
+      inspectionsByFile.get("quality-scorecard.md")?.body ?? "",
+      "Replayable Evaluation Evidence",
+      "prompt-workflow change requires replayable evaluation evidence or an explicit skip reason",
+    );
+  }
+
+  if (hasReleaseOps) {
+    requireScorecardEvidence(
+      results,
+      inspectionsByFile.get("quality-scorecard.md")?.body ?? "",
+      "Measurement And Ops Checks",
+      "release-ops change requires Measurement And Ops Checks evidence",
+    );
+  }
+}
+
+function requireArtifactPresent(
+  results,
+  inspectionsByFile,
+  fileName,
+  message,
+) {
+  const inspection = inspectionsByFile.get(fileName);
+
+  if (!inspection || inspection.status === "skipped") {
+    results.push(fail("work-item", message));
+  }
+}
+
+function requireScorecardEvidence(
+  results,
+  scorecardBody,
+  heading,
+  message,
+  context = {},
+) {
+  const section = extractSection(scorecardBody, heading);
+
+  if (!section) {
+    results.push(fail("work-item", message));
+    return;
+  }
+
+  if (
+    heading === "Browser QA Evidence" &&
+    !hasBrowserQaEvidence(section, context)
+  ) {
+    results.push(fail("work-item", message));
+    return;
+  }
+
+  if (!hasMeaningfulContent(section, basicPlaceholderSet())) {
+    results.push(fail("work-item", message));
+  }
+}
+
+function describeHarnessContract(contract) {
+  const parts = [contract.workClass];
+
+  if (contract.changeTypes.length > 0) {
+    parts.push(contract.changeTypes.join("+"));
+  }
+
+  if (contract.releaseSurface !== "none") {
+    parts.push(contract.releaseSurface);
+  }
+
+  return parts.join(" ");
+}
+
+function formatList(values) {
+  return values.map((value) => JSON.stringify(value)).join(", ");
+}
+
 function checkSections(fileName, body, checks) {
   return checks.flatMap(([heading, placeholders]) => {
     const section = extractSection(body, heading);
@@ -478,15 +862,45 @@ function parseFrontmatter(markdown) {
   }
 
   const frontmatter = {};
+  let currentKey = "";
 
   for (const line of match[1].split("\n")) {
     const parsed = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
 
     if (!parsed) {
+      const listItem = line.match(/^\s*-\s*(.*)$/);
+
+      if (listItem && currentKey) {
+        if (!Array.isArray(frontmatter[currentKey])) {
+          frontmatter[currentKey] = [];
+        }
+
+        frontmatter[currentKey].push(listItem[1]);
+        continue;
+      }
+
+      if (!line.trim()) {
+        continue;
+      }
+
+      currentKey = "";
       continue;
     }
 
-    frontmatter[parsed[1]] = parsed[2];
+    currentKey = parsed[1];
+    const value = parsed[2].trim();
+
+    if (!value || value === "[]") {
+      frontmatter[currentKey] = [];
+      continue;
+    }
+
+    if (value === "null") {
+      frontmatter[currentKey] = null;
+      continue;
+    }
+
+    frontmatter[currentKey] = value;
   }
 
   return {
@@ -585,6 +999,24 @@ function normalizeScalar(value) {
   return String(value ?? "")
     .trim()
     .replace(/^['"]|['"]$/g, "");
+}
+
+function normalizeList(value) {
+  if (Array.isArray(value)) {
+    return uniqueItems(value.map((item) => normalizeScalar(item)).filter(Boolean));
+  }
+
+  const normalized = normalizeScalar(value);
+
+  if (!normalized || normalized === "[]") {
+    return [];
+  }
+
+  return uniqueItems([normalized]);
+}
+
+function uniqueItems(items) {
+  return [...new Set(items.filter(Boolean))];
 }
 
 function countByLevel(results, level) {
