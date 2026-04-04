@@ -28,13 +28,22 @@ const allowedChangeTypes = new Set([
   "release-ops",
   "new-capability",
 ]);
-const allowedEvidenceRequirements = new Set([
+const planLevelEvidenceRequirements = new Set([
+  "repo:check",
+  "squad:check",
+  "ai:sync",
   "verify",
+]);
+const legacyGateEvidenceRequirements = new Set([
   "quality-scorecard",
   "browser-qa",
   "ops-evidence",
   "contract-test",
   "replayable-evaluation",
+]);
+const allowedEvidenceRequirements = new Set([
+  ...planLevelEvidenceRequirements,
+  ...legacyGateEvidenceRequirements,
 ]);
 const allowedReleaseSurfaces = new Set([
   "none",
@@ -98,7 +107,7 @@ async function main() {
     workItemContract.legacyDefaults.primaryGate;
   const missingEvidenceRequirements = requiredEvidenceRequirements.filter(
     (evidenceRequirement) =>
-      !workItemContract.evidenceRequirements.includes(evidenceRequirement),
+      !requirementSatisfied(evidenceRequirement, workItemContract.evidenceRequirements),
   );
 
   if (hasLegacyHarnessDefaults) {
@@ -659,6 +668,30 @@ function deriveExpectedEvidenceRequirements({
   }
 
   return [...evidence];
+}
+
+function requirementSatisfied(requirement, declaredRequirements) {
+  if (declaredRequirements.includes(requirement)) {
+    return true;
+  }
+
+  if (requirement === "verify") {
+    return false;
+  }
+
+  if (
+    [
+      "quality-scorecard",
+      "browser-qa",
+      "ops-evidence",
+      "contract-test",
+      "replayable-evaluation",
+    ].includes(requirement)
+  ) {
+    return declaredRequirements.includes("squad:check");
+  }
+
+  return false;
 }
 
 function collectHarnessContract(inspectionsByFile) {
