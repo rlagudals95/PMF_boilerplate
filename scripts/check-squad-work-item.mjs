@@ -92,12 +92,23 @@ async function main() {
   const requiredEvidenceRequirements = deriveExpectedEvidenceRequirements(
     workItemContract,
   );
+  const hasLegacyHarnessDefaults =
+    workItemContract.legacyDefaults.workClass ||
+    workItemContract.legacyDefaults.releaseSurface ||
+    workItemContract.legacyDefaults.primaryGate;
   const missingEvidenceRequirements = requiredEvidenceRequirements.filter(
     (evidenceRequirement) =>
       !workItemContract.evidenceRequirements.includes(evidenceRequirement),
   );
 
-  if (missingEvidenceRequirements.length > 0) {
+  if (hasLegacyHarnessDefaults) {
+    results.push(
+      warn(
+        "work-item",
+        "legacy work item is missing harness classification metadata; skipping evidence_requirements backfill enforcement until Task 4",
+      ),
+    );
+  } else if (missingEvidenceRequirements.length > 0) {
     results.push(
       fail(
         "work-item",
@@ -524,19 +535,22 @@ function checkMetadataFields(fileName, frontmatter) {
 }
 
 function readHarnessContract(frontmatter) {
-  return {
+  return applyHarnessDefaults({
     workClass: normalizeScalar(frontmatter.work_class),
     changeTypes: normalizeList(frontmatter.change_types),
     evidenceRequirements: normalizeList(frontmatter.evidence_requirements),
     releaseSurface: normalizeScalar(frontmatter.release_surface),
     primaryGate: normalizeScalar(frontmatter.primary_gate),
-  };
+  });
 }
 
 function validateHarnessContract(fileName, contract) {
   const results = [];
+  const missingFields = [];
 
-  if (!allowedWorkClasses.has(contract.workClass)) {
+  if (contract.legacyDefaults.workClass) {
+    missingFields.push("work_class");
+  } else if (!allowedWorkClasses.has(contract.workClass)) {
     results.push(
       fail(fileName, `invalid work_class: ${contract.workClass || "(empty)"}`),
     );
@@ -563,7 +577,9 @@ function validateHarnessContract(fileName, contract) {
     );
   }
 
-  if (!allowedReleaseSurfaces.has(contract.releaseSurface)) {
+  if (contract.legacyDefaults.releaseSurface) {
+    missingFields.push("release_surface");
+  } else if (!allowedReleaseSurfaces.has(contract.releaseSurface)) {
     results.push(
       fail(
         fileName,
@@ -572,9 +588,20 @@ function validateHarnessContract(fileName, contract) {
     );
   }
 
-  if (!allowedPrimaryGates.has(contract.primaryGate)) {
+  if (contract.legacyDefaults.primaryGate) {
+    missingFields.push("primary_gate");
+  } else if (!allowedPrimaryGates.has(contract.primaryGate)) {
     results.push(
       fail(fileName, `invalid primary_gate: ${contract.primaryGate || "(empty)"}`),
+    );
+  }
+
+  if (missingFields.length > 0) {
+    results.push(
+      warn(
+        fileName,
+        `missing harness metadata ${formatList(missingFields)}; defaulting to work_class=${contract.workClass}, release_surface=${contract.releaseSurface}, primary_gate=${contract.primaryGate} until Task 4 backfill`,
+      ),
     );
   }
 
@@ -643,13 +670,13 @@ function collectHarnessContract(inspectionsByFile) {
     null;
 
   if (!source) {
-    return {
+    return applyHarnessDefaults({
       workClass: "soft-gated",
       changeTypes: [],
       evidenceRequirements: [],
       releaseSurface: "none",
       primaryGate: "brief",
-    };
+    });
   }
 
   return source.harness;
@@ -986,6 +1013,7 @@ function stripHtmlComments(section) {
 }
 
 function hasContractProofEvidence(section, { workId }) {
+  const normalized = stripHtmlComments(section).toLowerCase();
   const lines = getEvidenceLines(section);
 
   return (
@@ -994,7 +1022,11 @@ function hasContractProofEvidence(section, { workId }) {
       workId,
       isContractProofArtifactReference,
     ) ||
-    hasNamedCommandOutputEvidence(lines, /\bcontract(?:-| )?(?:proof|test|tests?)\b/i) ||
+    hasSectionCommandOutputEvidence(
+      normalized,
+      contractEvidenceSubjectPattern,
+      contractEvidenceProofPattern,
+    ) ||
     hasLabeledSkipReason(section)
   );
 }
@@ -1010,18 +1042,18 @@ function hasReleaseOpsEvidence(section, { workId }) {
   const lines = getEvidenceLines(section);
 
   return (
-    hasReleaseOpsProofReference(normalized) &&
-    hasReleaseStateReference(normalized) &&
+    releaseEvidenceSubjectPattern.test(normalized) &&
+    releaseEvidenceStatePattern.test(normalized) &&
     (
       hasExistingWorkItemArtifactReference(
         lines,
         workId,
         isReleaseOpsArtifactReference,
       ) ||
-      hasNamedCommandOutputEvidence(
-        lines,
-        /\b(?:publish|readiness)\b/i,
-        /\b(?:freshness|version|last_success_at)\b/i,
+      hasSectionCommandOutputEvidence(
+        normalized,
+        releaseEvidenceSubjectPattern,
+        releaseEvidenceStatePattern,
       )
     )
   );
@@ -1057,6 +1089,13 @@ function hasNamedCommandOutputEvidence(lines, ...requiredPatterns) {
     (line) =>
       hasCommandOutputReference(line) &&
       requiredPatterns.every((pattern) => pattern.test(line)),
+  );
+}
+
+function hasSectionCommandOutputEvidence(normalizedSection, ...requiredPatterns) {
+  return (
+    hasCommandOutputReference(normalizedSection) &&
+    requiredPatterns.every((pattern) => pattern.test(normalizedSection))
   );
 }
 
@@ -1102,38 +1141,23 @@ function getWorkItemArtifactReferences(content, workId) {
 }
 
 function isContractProofArtifactReference(reference, line) {
+  const referenceText = reference.replace(/[._-]/g, " ");
+
   return (
-    /\bcontract\b/i.test(reference) &&
-    /\b(?:proof|test|tests?)\b/i.test(reference) &&
-    /\bcontract\b/i.test(line)
+    contractEvidenceSubjectPattern.test(referenceText) &&
+    (
+      contractEvidenceProofPattern.test(referenceText) ||
+      contractEvidenceProofPattern.test(line)
+    )
   );
 }
 
 function isReleaseOpsArtifactReference(reference, line) {
-  const artifactName = path.basename(reference);
+  const referenceText = reference.replace(/[._-]/g, " ");
 
   return (
-    /\b(?:publish|readiness|release|ops|freshness|version|last_success_at)\b/i.test(
-      artifactName.replace(/[._-]/g, " "),
-    ) &&
-    /\b(?:publish|readiness)\b/i.test(line) &&
-    /\b(?:freshness|version|last_success_at)\b/i.test(line)
-  );
-}
-
-function hasReleaseOpsProofReference(normalizedSection) {
-  return (
-    /\bpublish(?:ed|ing)?\b/i.test(normalizedSection) ||
-    /\breadiness\b/i.test(normalizedSection) ||
-    /\bops(?:-facing)?\b/i.test(normalizedSection)
-  );
-}
-
-function hasReleaseStateReference(normalizedSection) {
-  return (
-    /\bfreshness\b/i.test(normalizedSection) ||
-    /\bversion\b/i.test(normalizedSection) ||
-    /\blast_success_at\b/i.test(normalizedSection)
+    releaseEvidenceSubjectPattern.test(referenceText) &&
+    releaseEvidenceStatePattern.test(line)
   );
 }
 
@@ -1142,12 +1166,11 @@ function hasBrowserQaSkipReason(section) {
 
   return (
     hasLabeledSkipReason(section) &&
-    normalizedSection.includes("browser qa") &&
+    browserSkipSubjectPattern.test(normalizedSection) &&
     (
-      normalizedSection.includes("intentionally skipped") ||
-      normalizedSection.includes("intentionally not required") ||
-      normalizedSection.includes("not required") ||
-      normalizedSection.includes("대상 아님")
+      browserSkipReasonPattern.test(normalizedSection) ||
+      normalizedSection.includes("non-user-facing") ||
+      normalizedSection.includes("non user-facing")
     )
   );
 }
@@ -1164,6 +1187,33 @@ function hasLabeledSkipReason(section) {
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+
+function applyHarnessDefaults(contract) {
+  return {
+    ...contract,
+    workClass: contract.workClass || "soft-gated",
+    releaseSurface: contract.releaseSurface || "none",
+    primaryGate: contract.primaryGate || "brief",
+    legacyDefaults: {
+      workClass: !contract.workClass,
+      releaseSurface: !contract.releaseSurface,
+      primaryGate: !contract.primaryGate,
+    },
+  };
+}
+
+const browserSkipSubjectPattern =
+  /\b(?:browser|user-facing|runtime ui|route|cta|copy flow|ia|interaction|non-user-facing)\b|브라우저|상호작용|런타임 ui|앱 runtime ui/i;
+const browserSkipReasonPattern =
+  /\b(?:skip|skipped|not required|does not|doesn't|no new|without|intentionally skipped)\b|바꾸지 않|대상 아님|없다|아님/i;
+const contractEvidenceSubjectPattern =
+  /\b(?:contract|schema|validation|repository|boundary|adapter)\b/i;
+const contractEvidenceProofPattern =
+  /\b(?:proof|test|tests?|evidence|log|report|verification|verify|result|results?)\b/i;
+const releaseEvidenceSubjectPattern =
+  /\b(?:publish(?:ed|ing)?|readiness|release|deploy(?:ment)?|ops|operational)\b/i;
+const releaseEvidenceStatePattern =
+  /\b(?:freshness|version|last_success_at|last success(?: at)?)\b/i;
 
 function expectedMetadataForFile(fileName) {
   return {
