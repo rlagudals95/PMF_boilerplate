@@ -73,14 +73,19 @@ async function main() {
 
 function renderGoalPacket(workId, planning) {
   return [
-    renderFrontmatter({
-      status: planning.readiness === "blocked" ? "blocked" : "draft",
-      owner_role: "product-squad",
-      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
-      affected_paths: planning.affectedPaths,
-      dependencies: [`docs/prds/${planning.prd.slug}.md`],
-      skip_reason: null,
-    }),
+    renderFrontmatter(
+      withHarnessDefaults(
+        {
+          status: planning.readiness === "blocked" ? "blocked" : "draft",
+          owner_role: "product-squad",
+          source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+          affected_paths: planning.affectedPaths,
+          dependencies: [`docs/prds/${planning.prd.slug}.md`],
+          skip_reason: null,
+        },
+        planning,
+      ),
+    ),
     "# Goal Packet",
     "",
     "## Business Goal",
@@ -366,6 +371,35 @@ function buildPlanningContext(prd, feature) {
   };
 }
 
+function buildHarnessDefaults(planning) {
+  const changeTypes = [];
+
+  if (planning.frontendRequired || planning.uxRequired) {
+    changeTypes.push("user-facing-behavior");
+  }
+
+  if (planning.backendRequired) {
+    changeTypes.push("repository-contract");
+  }
+
+  return {
+    work_class: "hard-gated",
+    change_types: uniqueItems(changeTypes),
+    evidence_requirements: planning.frontendRequired
+      ? ["verify", "browser-qa", "quality-scorecard"]
+      : ["verify", "quality-scorecard"],
+    release_surface: planning.frontendRequired ? "user-facing" : "none",
+    primary_gate: "scorecard",
+  };
+}
+
+function withHarnessDefaults(baseFields, planning) {
+  return {
+    ...baseFields,
+    ...buildHarnessDefaults(planning),
+  };
+}
+
 function buildUserFlow(feature, prd, targetUser) {
   const flow = [];
 
@@ -517,14 +551,19 @@ function renderBrief(workId, planning) {
   const status = planning.readiness === "blocked" ? "blocked" : "draft";
 
   return [
-    renderFrontmatter({
-      status,
-      owner_role: "pm",
-      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
-      affected_paths: planning.affectedPaths,
-      dependencies: buildDependencies(workId, planning, true),
-      skip_reason: null,
-    }),
+    renderFrontmatter(
+      withHarnessDefaults(
+        {
+          status,
+          owner_role: "pm",
+          source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+          affected_paths: planning.affectedPaths,
+          dependencies: buildDependencies(workId, planning, true),
+          skip_reason: null,
+        },
+        planning,
+      ),
+    ),
     "# Brief",
     "",
     "## Problem",
@@ -576,17 +615,22 @@ function renderBrief(workId, planning) {
 
 function renderFeatureSpec(workId, planning) {
   return [
-    renderFrontmatter({
-      status: planning.readiness === "blocked" ? "blocked" : "draft",
-      owner_role: "product-squad",
-      related_prd: `docs/prds/${planning.prd.slug}.md`,
-      related_work_item: `docs/work-items/${workId}`,
-      feature_slug: planning.feature.slug,
-      implementation_readiness: planning.readiness,
-      affected_paths: planning.affectedPaths,
-      dependencies: buildDependencies(workId, planning, false),
-      skip_reason: null,
-    }),
+    renderFrontmatter(
+      withHarnessDefaults(
+        {
+          status: planning.readiness === "blocked" ? "blocked" : "draft",
+          owner_role: "product-squad",
+          related_prd: `docs/prds/${planning.prd.slug}.md`,
+          related_work_item: `docs/work-items/${workId}`,
+          feature_slug: planning.feature.slug,
+          implementation_readiness: planning.readiness,
+          affected_paths: planning.affectedPaths,
+          dependencies: buildDependencies(workId, planning, false),
+          skip_reason: null,
+        },
+        planning,
+      ),
+    ),
     "# Feature Spec",
     "",
     "## Feature Summary",
@@ -668,17 +712,22 @@ function renderFeatureSpec(workId, planning) {
 
 function renderTeamPlan(workId, planning) {
   return [
-    renderFrontmatter({
-      status: planning.readiness === "blocked" ? "blocked" : "draft",
-      owner_role: "product-squad",
-      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
-      affected_paths: planning.affectedPaths,
-      dependencies: uniqueItems([
-        `docs/work-items/${workId}/brief.md`,
-        `docs/work-items/${workId}/feature-spec.md`,
-      ]),
-      skip_reason: null,
-    }),
+    renderFrontmatter(
+      withHarnessDefaults(
+        {
+          status: planning.readiness === "blocked" ? "blocked" : "draft",
+          owner_role: "product-squad",
+          source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+          affected_paths: planning.affectedPaths,
+          dependencies: uniqueItems([
+            `docs/work-items/${workId}/brief.md`,
+            `docs/work-items/${workId}/feature-spec.md`,
+          ]),
+          skip_reason: null,
+        },
+        planning,
+      ),
+    ),
     "# Team Plan",
     "",
     "## Mission",
@@ -725,6 +774,7 @@ function renderUxReview(workId, planning) {
       skipReason: "This feature does not add or change a user-facing surface.",
       affectedPaths: planning.affectedPaths,
       dependencies: buildDependencies(workId, planning, true),
+      planning,
       sections: [
         "## Goal Alignment",
         "",
@@ -771,14 +821,19 @@ function renderUxReview(workId, planning) {
   }
 
   return [
-    renderFrontmatter({
-      status: planning.readiness === "blocked" ? "blocked" : "draft",
-      owner_role: "pd",
-      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
-      affected_paths: planning.affectedPaths,
-      dependencies: buildDependencies(workId, planning, true),
-      skip_reason: null,
-    }),
+    renderFrontmatter(
+      withHarnessDefaults(
+        {
+          status: planning.readiness === "blocked" ? "blocked" : "draft",
+          owner_role: "pd",
+          source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+          affected_paths: planning.affectedPaths,
+          dependencies: buildDependencies(workId, planning, true),
+          skip_reason: null,
+        },
+        planning,
+      ),
+    ),
     "# UX Review",
     "",
     "## Goal Alignment",
@@ -850,6 +905,7 @@ function renderFrontendSpec(workId, planning) {
         "This feature does not require a new or changed frontend surface.",
       affectedPaths: planning.affectedPaths,
       dependencies: buildDependencies(workId, planning, true),
+      planning,
       sections: [
         "## Goal Alignment",
         "",
@@ -896,14 +952,19 @@ function renderFrontendSpec(workId, planning) {
   }
 
   return [
-    renderFrontmatter({
-      status: planning.readiness === "blocked" ? "blocked" : "draft",
-      owner_role: "fe",
-      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
-      affected_paths: planning.affectedPaths,
-      dependencies: buildDependencies(workId, planning),
-      skip_reason: null,
-    }),
+    renderFrontmatter(
+      withHarnessDefaults(
+        {
+          status: planning.readiness === "blocked" ? "blocked" : "draft",
+          owner_role: "fe",
+          source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+          affected_paths: planning.affectedPaths,
+          dependencies: buildDependencies(workId, planning),
+          skip_reason: null,
+        },
+        planning,
+      ),
+    ),
     "# Frontend Spec",
     "",
     "## Goal Alignment",
@@ -967,6 +1028,7 @@ function renderBackendSpec(workId, planning) {
         "This feature does not change validation, persistence, analytics, or external integrations.",
       affectedPaths: planning.affectedPaths,
       dependencies: buildDependencies(workId, planning),
+      planning,
       sections: [
         "## Goal Alignment",
         "",
@@ -1005,14 +1067,19 @@ function renderBackendSpec(workId, planning) {
   }
 
   return [
-    renderFrontmatter({
-      status: planning.readiness === "blocked" ? "blocked" : "draft",
-      owner_role: "be",
-      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
-      affected_paths: planning.affectedPaths,
-      dependencies: buildDependencies(workId, planning),
-      skip_reason: null,
-    }),
+    renderFrontmatter(
+      withHarnessDefaults(
+        {
+          status: planning.readiness === "blocked" ? "blocked" : "draft",
+          owner_role: "be",
+          source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+          affected_paths: planning.affectedPaths,
+          dependencies: buildDependencies(workId, planning),
+          skip_reason: null,
+        },
+        planning,
+      ),
+    ),
     "# Backend Spec",
     "",
     "## Goal Alignment",
@@ -1056,25 +1123,30 @@ function renderBackendSpec(workId, planning) {
 
 function renderQualityScorecard(workId, planning) {
   return [
-    renderFrontmatter({
-      status: planning.readiness === "blocked" ? "blocked" : "draft",
-      owner_role: "product-squad",
-      source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
-      affected_paths: planning.affectedPaths,
-      dependencies: uniqueItems(
-        [
-          `docs/work-items/${workId}/brief.md`,
-          `docs/work-items/${workId}/team-plan.md`,
-          `docs/work-items/${workId}/feature-spec.md`,
-          `docs/work-items/${workId}/ux-review.md`,
-          `docs/work-items/${workId}/frontend-spec.md`,
-          planning.backendRequired
-            ? `docs/work-items/${workId}/backend-spec.md`
-            : null,
-        ].filter(Boolean),
+    renderFrontmatter(
+      withHarnessDefaults(
+        {
+          status: planning.readiness === "blocked" ? "blocked" : "draft",
+          owner_role: "product-squad",
+          source_request: `PRD: docs/prds/${planning.prd.slug}.md`,
+          affected_paths: planning.affectedPaths,
+          dependencies: uniqueItems(
+            [
+              `docs/work-items/${workId}/brief.md`,
+              `docs/work-items/${workId}/team-plan.md`,
+              `docs/work-items/${workId}/feature-spec.md`,
+              `docs/work-items/${workId}/ux-review.md`,
+              `docs/work-items/${workId}/frontend-spec.md`,
+              planning.backendRequired
+                ? `docs/work-items/${workId}/backend-spec.md`
+                : null,
+            ].filter(Boolean),
+          ),
+          skip_reason: null,
+        },
+        planning,
       ),
-      skip_reason: null,
-    }),
+    ),
     "# Quality Scorecard",
     "",
     "## Goal Fit",
@@ -1127,17 +1199,23 @@ function renderSkippedRoleDoc({
   skipReason,
   affectedPaths,
   dependencies,
+  planning,
   sections,
 }) {
   return [
-    renderFrontmatter({
-      status: "skipped",
-      owner_role: ownerRole,
-      source_request: sourceRequest,
-      affected_paths: affectedPaths,
-      dependencies,
-      skip_reason: skipReason,
-    }),
+    renderFrontmatter(
+      withHarnessDefaults(
+        {
+          status: "skipped",
+          owner_role: ownerRole,
+          source_request: sourceRequest,
+          affected_paths: affectedPaths,
+          dependencies,
+          skip_reason: skipReason,
+        },
+        planning,
+      ),
+    ),
     `# ${title}`,
     "",
     ...sections,

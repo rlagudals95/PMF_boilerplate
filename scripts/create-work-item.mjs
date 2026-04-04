@@ -17,7 +17,15 @@ const templateFiles = [
 ];
 
 async function main() {
-  const { slug, request, force } = parseArgs(process.argv.slice(2));
+  const {
+    slug,
+    request,
+    force,
+    workClass,
+    changeTypes,
+    releaseSurface,
+    primaryGate,
+  } = parseArgs(process.argv.slice(2));
   const datePart = buildDatePart(new Date());
   const workId = `${datePart}-${slug}`;
   const targetDir = path.join(workItemsDir, workId);
@@ -28,7 +36,13 @@ async function main() {
     const templatePath = path.join(templatesDir, fileName);
     const destinationPath = path.join(targetDir, fileName);
     const template = await readFile(templatePath, "utf8");
-    const contents = materializeTaskLocalTemplate(template, { request });
+    const contents = materializeTaskLocalTemplate(template, {
+      request,
+      workClass,
+      changeTypes,
+      releaseSurface,
+      primaryGate,
+    });
 
     await writeFile(destinationPath, contents);
   }
@@ -47,12 +61,40 @@ function parseArgs(args) {
   let slug;
   let request = "";
   let force = false;
+  const changeTypes = [];
+  let workClass = "soft-gated";
+  let releaseSurface = "none";
+  let primaryGate = "brief";
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
 
     if (arg === "--request") {
       request = args[index + 1] ?? "";
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--class") {
+      workClass = args[index + 1] ?? workClass;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--type") {
+      changeTypes.push(args[index + 1] ?? "");
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--release-surface") {
+      releaseSurface = args[index + 1] ?? releaseSurface;
+      index += 1;
+      continue;
+    }
+
+    if (arg === "--primary-gate") {
+      primaryGate = args[index + 1] ?? primaryGate;
       index += 1;
       continue;
     }
@@ -78,15 +120,44 @@ function parseArgs(args) {
     slug: normalizeSlug(slug),
     request,
     force,
+    workClass,
+    changeTypes: changeTypes.filter(Boolean),
+    releaseSurface,
+    primaryGate,
   };
 }
 
-function materializeTaskLocalTemplate(template, { request }) {
+function materializeTaskLocalTemplate(template, options) {
+  const {
+    request,
+    workClass,
+    changeTypes,
+    releaseSurface,
+    primaryGate,
+  } = options;
+
   let output = template
     .replace(/^doc_type:\s*".*"$/m, 'doc_type: "task-local"')
     .replace(/^source_of_truth:\s*.*$/m, "source_of_truth: true")
     .replace(/^freshness:\s*".*"$/m, 'freshness: "active"')
-    .replace(/^verification:\s*".*"$/m, 'verification: "scripted"');
+    .replace(/^verification:\s*".*"$/m, 'verification: "scripted"')
+    .replace(/^work_class:\s*".*"$/m, `work_class: ${JSON.stringify(workClass)}`)
+    .replace(
+      /^change_types:\s*\[\]$/m,
+      changeTypes.length === 0
+        ? "change_types: []"
+        : `change_types:\n${changeTypes
+            .map((item) => `  - ${JSON.stringify(item)}`)
+            .join("\n")}`,
+    )
+    .replace(
+      /^release_surface:\s*".*"$/m,
+      `release_surface: ${JSON.stringify(releaseSurface)}`,
+    )
+    .replace(
+      /^primary_gate:\s*".*"$/m,
+      `primary_gate: ${JSON.stringify(primaryGate)}`,
+    );
 
   if (request) {
     output = output.replace(
