@@ -768,7 +768,11 @@ function requireArtifactPresent(
 ) {
   const inspection = inspectionsByFile.get(fileName);
 
-  if (!inspection || inspection.status === "skipped") {
+  if (
+    !inspection ||
+    inspection.status === "skipped" ||
+    inspection.results.some((result) => result.level === "fail")
+  ) {
     results.push(fail("work-item", message));
   }
 }
@@ -918,11 +922,10 @@ function extractSection(body, heading) {
 }
 
 function hasMeaningfulContent(section, placeholders) {
-  const lines = section
+  const lines = stripHtmlComments(section)
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean)
-    .filter((line) => !line.startsWith("<!--"));
 
   if (lines.length === 0) {
     return false;
@@ -936,7 +939,7 @@ function basicPlaceholderSet(extra = []) {
 }
 
 function hasBrowserQaEvidence(section, { workId, hasBrowserQaDoc }) {
-  const normalized = section.toLowerCase();
+  const normalized = stripHtmlComments(section).toLowerCase();
   const expectedBrowserQaPath = `docs/work-items/${workId}/browser-qa.md`;
 
   if (
@@ -977,6 +980,10 @@ function hasBrowserQaEvidence(section, { workId, hasBrowserQaDoc }) {
     "manual proof",
     "chrome",
   ].some((keyword) => normalized.includes(keyword));
+}
+
+function stripHtmlComments(section) {
+  return section.replace(/<!--[\s\S]*?-->/g, "");
 }
 
 function expectedMetadataForFile(fileName) {
