@@ -661,102 +661,10 @@ function enforceArtifactMatrix({
   workItemContract,
   workId,
 }) {
-  const hasUserFacingBehavior =
-    workItemContract.changeTypes.includes("user-facing-behavior") ||
-    workItemContract.releaseSurface === "user-facing";
-  const hasContractChange =
-    workItemContract.changeTypes.some((type) =>
-      ["validation-schema", "repository-contract", "cross-repo-contract"].includes(
-        type,
-      ),
-    ) || workItemContract.releaseSurface === "cross-repo";
-  const hasPromptWorkflow = workItemContract.changeTypes.includes(
-    "prompt-workflow",
-  );
-  const hasReleaseOps =
-    workItemContract.changeTypes.includes("release-ops") ||
-    workItemContract.releaseSurface === "ops-facing";
+  const scorecardBody = inspectionsByFile.get("quality-scorecard.md")?.body ?? "";
 
-  if (workItemContract.workClass === "hard-gated") {
-    requireArtifactPresent(
-      results,
-      inspectionsByFile,
-      "goal-packet.md",
-      "hard-gated change requires goal-packet.md, team-plan.md, and quality-scorecard.md",
-    );
-    requireArtifactPresent(
-      results,
-      inspectionsByFile,
-      "team-plan.md",
-      "hard-gated change requires goal-packet.md, team-plan.md, and quality-scorecard.md",
-    );
-    requireArtifactPresent(
-      results,
-      inspectionsByFile,
-      "quality-scorecard.md",
-      "hard-gated change requires goal-packet.md, team-plan.md, and quality-scorecard.md",
-    );
-  }
-
-  if (hasUserFacingBehavior) {
-    requireArtifactPresent(
-      results,
-      inspectionsByFile,
-      "ux-review.md",
-      "user-facing-behavior change requires ux-review.md and frontend-spec.md",
-    );
-    requireArtifactPresent(
-      results,
-      inspectionsByFile,
-      "frontend-spec.md",
-      "user-facing-behavior change requires ux-review.md and frontend-spec.md",
-    );
-    requireScorecardEvidence(
-      results,
-      inspectionsByFile.get("quality-scorecard.md")?.body ?? "",
-      "Browser QA Evidence",
-      "user-facing-behavior change requires browser QA evidence or an explicit skip reason",
-      {
-        workId,
-        hasBrowserQaDoc: hasOptionalArtifact(
-          path.join(workItemsDir, workId),
-          "browser-qa.md",
-        ),
-      },
-    );
-  }
-
-  if (hasContractChange) {
-    requireArtifactPresent(
-      results,
-      inspectionsByFile,
-      "backend-spec.md",
-      "validation-schema or repository-contract change requires backend-spec.md and code quality evidence",
-    );
-    requireScorecardEvidence(
-      results,
-      inspectionsByFile.get("quality-scorecard.md")?.body ?? "",
-      "Code Quality Evidence",
-      "validation-schema or repository-contract change requires backend-spec.md and code quality evidence",
-    );
-  }
-
-  if (hasPromptWorkflow) {
-    requireScorecardEvidence(
-      results,
-      inspectionsByFile.get("quality-scorecard.md")?.body ?? "",
-      "Replayable Evaluation Evidence",
-      "prompt-workflow change requires replayable evaluation evidence or an explicit skip reason",
-    );
-  }
-
-  if (hasReleaseOps) {
-    requireScorecardEvidence(
-      results,
-      inspectionsByFile.get("quality-scorecard.md")?.body ?? "",
-      "Measurement And Ops Checks",
-      "release-ops change requires Measurement And Ops Checks evidence",
-    );
+  for (const rule of buildArtifactMatrixRules(workItemContract, workId)) {
+    rule.run({ results, inspectionsByFile, scorecardBody });
   }
 }
 
@@ -783,6 +691,7 @@ function requireScorecardEvidence(
   heading,
   message,
   context = {},
+  validator = hasMeaningfulContent,
 ) {
   const section = extractSection(scorecardBody, heading);
 
@@ -799,9 +708,142 @@ function requireScorecardEvidence(
     return;
   }
 
-  if (!hasMeaningfulContent(section, basicPlaceholderSet())) {
+  if (
+    validator === hasMeaningfulContent
+      ? !hasMeaningfulContent(section, basicPlaceholderSet())
+      : !validator(section, context)
+  ) {
     results.push(fail("work-item", message));
   }
+}
+
+function buildArtifactMatrixRules(workItemContract, workId) {
+  const rules = [];
+  const isHardGated = workItemContract.workClass === "hard-gated";
+  const hasUserFacingBehavior =
+    workItemContract.changeTypes.includes("user-facing-behavior") ||
+    workItemContract.releaseSurface === "user-facing";
+  const hasContractChange =
+    workItemContract.changeTypes.some((type) =>
+      ["validation-schema", "repository-contract", "cross-repo-contract"].includes(
+        type,
+      ),
+    ) || workItemContract.releaseSurface === "cross-repo";
+  const hasPromptWorkflow = workItemContract.changeTypes.includes(
+    "prompt-workflow",
+  );
+  const hasReleaseOps =
+    workItemContract.changeTypes.includes("release-ops") ||
+    workItemContract.releaseSurface === "ops-facing";
+
+  if (isHardGated) {
+    rules.push({
+      run({ results, inspectionsByFile }) {
+        requireArtifactPresent(
+          results,
+          inspectionsByFile,
+          "goal-packet.md",
+          "hard-gated change requires goal-packet.md, team-plan.md, and quality-scorecard.md",
+        );
+        requireArtifactPresent(
+          results,
+          inspectionsByFile,
+          "team-plan.md",
+          "hard-gated change requires goal-packet.md, team-plan.md, and quality-scorecard.md",
+        );
+        requireArtifactPresent(
+          results,
+          inspectionsByFile,
+          "quality-scorecard.md",
+          "hard-gated change requires goal-packet.md, team-plan.md, and quality-scorecard.md",
+        );
+      },
+    });
+  }
+
+  if (hasUserFacingBehavior) {
+    rules.push({
+      run({ results, inspectionsByFile, scorecardBody }) {
+        requireArtifactPresent(
+          results,
+          inspectionsByFile,
+          "ux-review.md",
+          "user-facing-behavior change requires ux-review.md and frontend-spec.md",
+        );
+        requireArtifactPresent(
+          results,
+          inspectionsByFile,
+          "frontend-spec.md",
+          "user-facing-behavior change requires ux-review.md and frontend-spec.md",
+        );
+        requireScorecardEvidence(
+          results,
+          scorecardBody,
+          "Browser QA Evidence",
+          "user-facing-behavior change requires browser QA evidence or an explicit skip reason",
+          {
+            workId,
+            hasBrowserQaDoc: hasOptionalArtifact(
+              path.join(workItemsDir, workId),
+              "browser-qa.md",
+            ),
+          },
+          hasBrowserQaEvidence,
+        );
+      },
+    });
+  }
+
+  if (hasContractChange) {
+    rules.push({
+      run({ results, inspectionsByFile, scorecardBody }) {
+        requireArtifactPresent(
+          results,
+          inspectionsByFile,
+          "backend-spec.md",
+          "validation-schema or repository-contract change requires backend-spec.md and code quality evidence",
+        );
+        requireScorecardEvidence(
+          results,
+          scorecardBody,
+          "Code Quality Evidence",
+          "validation-schema or repository-contract change requires backend-spec.md and code quality evidence",
+          {},
+          hasContractProofEvidence,
+        );
+      },
+    });
+  }
+
+  if (hasPromptWorkflow) {
+    rules.push({
+      run({ results, scorecardBody }) {
+        requireScorecardEvidence(
+          results,
+          scorecardBody,
+          "Replayable Evaluation Evidence",
+          "prompt-workflow change requires replayable evaluation evidence or an explicit skip reason",
+          {},
+          hasReplayableEvaluationEvidence,
+        );
+      },
+    });
+  }
+
+  if (hasReleaseOps) {
+    rules.push({
+      run({ results, scorecardBody }) {
+        requireScorecardEvidence(
+          results,
+          scorecardBody,
+          "Measurement And Ops Checks",
+          "release-ops change requires Measurement And Ops Checks evidence",
+        );
+      },
+    });
+  }
+
+  return rules;
 }
 
 function describeHarnessContract(contract) {
@@ -925,7 +967,7 @@ function hasMeaningfulContent(section, placeholders) {
   const lines = stripHtmlComments(section)
     .split("\n")
     .map((line) => line.trim())
-    .filter(Boolean)
+    .filter(Boolean);
 
   if (lines.length === 0) {
     return false;
@@ -949,41 +991,47 @@ function hasBrowserQaEvidence(section, { workId, hasBrowserQaDoc }) {
     return true;
   }
 
-  if (
-    normalized.includes("non-user-facing") ||
-    normalized.includes("non user-facing") ||
-    normalized.includes("browser qa 대상 아님") ||
-    normalized.includes("브라우저 qa 대상 아님") ||
-    normalized.includes("대상 아님") ||
-    normalized.includes("skip reason") ||
-    normalized.includes("skip_reason")
-  ) {
-    return true;
-  }
-
-  if (hasBrowserQaDoc) {
-    return false;
-  }
-
-  return [
-    "desktop",
-    "mobile",
-    "viewport",
-    "screenshot",
-    "record",
-    "flow",
-    "responsive",
-    "focus",
-    "label",
-    "contrast",
-    "playwright",
-    "manual proof",
-    "chrome",
-  ].some((keyword) => normalized.includes(keyword));
+  return hasExplicitSkipReason(normalized);
 }
 
 function stripHtmlComments(section) {
   return section.replace(/<!--[\s\S]*?-->/g, "");
+}
+
+function hasContractProofEvidence(section) {
+  const normalized = stripHtmlComments(section).toLowerCase();
+
+  return (
+    normalized.includes("contract test") ||
+    normalized.includes("contract-test") ||
+    normalized.includes("contract proof") ||
+    normalized.includes("contract-proof") ||
+    hasExplicitSkipReason(normalized)
+  );
+}
+
+function hasReplayableEvaluationEvidence(section) {
+  const normalized = stripHtmlComments(section).toLowerCase();
+
+  return (
+    normalized.includes("replayable evaluation") ||
+    normalized.includes("replayable-evaluation") ||
+    normalized.includes("prompt evaluation") ||
+    hasExplicitSkipReason(normalized)
+  );
+}
+
+function hasExplicitSkipReason(normalizedSection) {
+  return (
+    normalizedSection.includes("skip reason") ||
+    normalizedSection.includes("skip_reason") ||
+    normalizedSection.includes("non-user-facing") ||
+    normalizedSection.includes("non user-facing") ||
+    normalizedSection.includes("browser qa 대상 아님") ||
+    normalizedSection.includes("브라우저 qa 대상 아님") ||
+    normalizedSection.includes("browser qa not required") ||
+    normalizedSection.includes("browser qa intentionally not required")
+  );
 }
 
 function expectedMetadataForFile(fileName) {
