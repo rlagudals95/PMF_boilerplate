@@ -388,7 +388,7 @@ function inspectFile(fileName, markdown, context) {
           results.push(
             fail(
               fileName,
-              "Browser QA Evidence must reference browser-qa.md when present, or include an explicit non-user-facing skip reason",
+              "Browser QA Evidence must reference the local docs/work-items/<work-id>/browser-qa.md file and that file must exist, or include an explicit browser QA skip reason",
             ),
           );
         }
@@ -772,7 +772,7 @@ function buildArtifactMatrixRules(workItemContract, workId) {
           results,
           scorecardBody,
           "Browser QA Evidence",
-          "user-facing-behavior change requires browser QA evidence or an explicit skip reason",
+          "user-facing-behavior change requires a local docs/work-items/<work-id>/browser-qa.md reference with an existing file, or an explicit browser QA skip reason",
           { workId },
           hasBrowserQaEvidence,
         );
@@ -794,7 +794,7 @@ function buildArtifactMatrixRules(workItemContract, workId) {
           scorecardBody,
           "Code Quality Evidence",
           "validation-schema or repository-contract change requires backend-spec.md and code quality evidence",
-          {},
+          { workId },
           hasContractProofEvidence,
         );
       },
@@ -830,7 +830,7 @@ function buildArtifactMatrixRules(workItemContract, workId) {
           scorecardBody,
           "Measurement And Ops Checks",
           "release-ops change requires backend-spec.md and publish/readiness/ops proof",
-          {},
+          { workId },
           hasReleaseOpsEvidence,
         );
       },
@@ -975,11 +975,9 @@ function basicPlaceholderSet(extra = []) {
 }
 
 function hasBrowserQaEvidence(section, { workId }) {
-  const normalized = stripHtmlComments(section).toLowerCase();
-
   return (
-    hasLocalArtifactReference(normalized, workId, "browser-qa.md") ||
-    hasExplicitSkipReason(normalized)
+    hasExistingExpectedArtifactReference(section, workId, "browser-qa.md") ||
+    hasBrowserQaSkipReason(section)
   );
 }
 
@@ -987,25 +985,46 @@ function stripHtmlComments(section) {
   return section.replace(/<!--[\s\S]*?-->/g, "");
 }
 
-function hasContractProofEvidence(section) {
-  const normalized = stripHtmlComments(section).toLowerCase();
+function hasContractProofEvidence(section, { workId }) {
+  const lines = getEvidenceLines(section);
 
-  return hasConcreteEvidenceReference(normalized) || hasExplicitSkipReason(normalized);
+  return (
+    hasExistingWorkItemArtifactReference(
+      lines,
+      workId,
+      isContractProofArtifactReference,
+    ) ||
+    hasNamedCommandOutputEvidence(lines, /\bcontract(?:-| )?(?:proof|test|tests?)\b/i) ||
+    hasLabeledSkipReason(section)
+  );
 }
 
 function hasReplayableEvaluationEvidence(section) {
   const normalized = stripHtmlComments(section).toLowerCase();
 
-  return hasConcreteEvidenceReference(normalized) || hasExplicitSkipReason(normalized);
+  return hasConcreteEvidenceReference(normalized) || hasLabeledSkipReason(section);
 }
 
-function hasReleaseOpsEvidence(section) {
+function hasReleaseOpsEvidence(section, { workId }) {
   const normalized = stripHtmlComments(section).toLowerCase();
+  const lines = getEvidenceLines(section);
 
   return (
     hasReleaseOpsProofReference(normalized) &&
-    hasConcreteEvidenceReference(normalized)
-  ) || hasExplicitSkipReason(normalized);
+    hasReleaseStateReference(normalized) &&
+    (
+      hasExistingWorkItemArtifactReference(
+        lines,
+        workId,
+        isReleaseOpsArtifactReference,
+      ) ||
+      hasNamedCommandOutputEvidence(
+        lines,
+        /\b(?:publish|readiness)\b/i,
+        /\b(?:freshness|version|last_success_at)\b/i,
+      )
+    )
+  );
 }
 
 function hasConcreteEvidenceReference(normalizedSection) {
@@ -1033,14 +1052,72 @@ function hasCommandOutputReference(normalizedSection) {
   );
 }
 
-function hasLocalArtifactReference(normalizedSection, workId, fileName) {
+function hasNamedCommandOutputEvidence(lines, ...requiredPatterns) {
+  return lines.some(
+    (line) =>
+      hasCommandOutputReference(line) &&
+      requiredPatterns.every((pattern) => pattern.test(line)),
+  );
+}
+
+function hasExistingExpectedArtifactReference(section, workId, fileName) {
   const expectedPath = `docs/work-items/${workId}/${fileName}`.toLowerCase();
+  const filePath = path.join(workItemsDir, workId, fileName);
 
   return (
-    normalizedSection.includes(expectedPath) ||
-    normalizedSection.includes(`[${expectedPath}](`) ||
-    normalizedSection.includes(`(${expectedPath})`) ||
-    normalizedSection.includes(`\`${expectedPath}\``)
+    existsSync(filePath) &&
+    getWorkItemArtifactReferences(section, workId).includes(expectedPath)
+  );
+}
+
+function hasExistingWorkItemArtifactReference(lines, workId, matcher) {
+  return lines.some((line) =>
+    getWorkItemArtifactReferences(line, workId).some(
+      (reference) => existsSync(path.join(rootDir, reference)) && matcher(reference, line),
+    ),
+  );
+}
+
+function getEvidenceLines(section) {
+  return stripHtmlComments(section)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function getWorkItemArtifactReferences(content, workId) {
+  return Array.from(
+    stripHtmlComments(content)
+      .toLowerCase()
+      .matchAll(
+        new RegExp(
+          "docs/work-items/" +
+            escapeRegExp(workId.toLowerCase()) +
+            "/[^\\s)\\]`]+",
+          "gi",
+        ),
+      ),
+    (match) => match[0].replace(/[.,;:]+$/g, ""),
+  );
+}
+
+function isContractProofArtifactReference(reference, line) {
+  return (
+    /\bcontract\b/i.test(reference) &&
+    /\b(?:proof|test|tests?)\b/i.test(reference) &&
+    /\bcontract\b/i.test(line)
+  );
+}
+
+function isReleaseOpsArtifactReference(reference, line) {
+  const artifactName = path.basename(reference);
+
+  return (
+    /\b(?:publish|readiness|release|ops|freshness|version|last_success_at)\b/i.test(
+      artifactName.replace(/[._-]/g, " "),
+    ) &&
+    /\b(?:publish|readiness)\b/i.test(line) &&
+    /\b(?:freshness|version|last_success_at)\b/i.test(line)
   );
 }
 
@@ -1052,17 +1129,40 @@ function hasReleaseOpsProofReference(normalizedSection) {
   );
 }
 
-function hasExplicitSkipReason(normalizedSection) {
+function hasReleaseStateReference(normalizedSection) {
+  return (
+    /\bfreshness\b/i.test(normalizedSection) ||
+    /\bversion\b/i.test(normalizedSection) ||
+    /\blast_success_at\b/i.test(normalizedSection)
+  );
+}
+
+function hasBrowserQaSkipReason(section) {
+  const normalizedSection = stripHtmlComments(section).toLowerCase();
+
+  return (
+    hasLabeledSkipReason(section) &&
+    normalizedSection.includes("browser qa") &&
+    (
+      normalizedSection.includes("intentionally skipped") ||
+      normalizedSection.includes("intentionally not required") ||
+      normalizedSection.includes("not required") ||
+      normalizedSection.includes("대상 아님")
+    )
+  );
+}
+
+function hasLabeledSkipReason(section) {
+  const normalizedSection = stripHtmlComments(section).toLowerCase();
+
   return (
     normalizedSection.includes("skip reason") ||
-    normalizedSection.includes("skip_reason") ||
-    normalizedSection.includes("non-user-facing") ||
-    normalizedSection.includes("non user-facing") ||
-    normalizedSection.includes("browser qa 대상 아님") ||
-    normalizedSection.includes("브라우저 qa 대상 아님") ||
-    normalizedSection.includes("browser qa not required") ||
-    normalizedSection.includes("browser qa intentionally not required")
+    normalizedSection.includes("skip_reason")
   );
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function expectedMetadataForFile(fileName) {
