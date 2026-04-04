@@ -16,13 +16,15 @@ const knownGoalPacketScopes = [
 ];
 
 async function main() {
-  const { prdSlug, requestedFeatureSlug } = parseArgs(process.argv.slice(2));
+  const { prdSlug, requestedFeatureSlug, force } = parseArgs(
+    process.argv.slice(2),
+  );
   const prdPath = path.join(prdsDir, `${prdSlug}.md`);
   const prdRaw = await readFile(prdPath, "utf8");
   const prd = parsePrdDocument(prdRaw, prdSlug);
   const selectedFeature = selectFeatureCandidate(prd, requestedFeatureSlug);
   const planning = buildPlanningContext(prd, selectedFeature);
-  const workId = await resolveWorkId(selectedFeature.slug);
+  const workId = await resolveWorkId(selectedFeature.slug, force);
   const targetDir = path.join(workItemsDir, workId);
 
   await mkdir(targetDir, { recursive: true });
@@ -138,32 +140,62 @@ function renderGoalPacket(workId, planning) {
 function parseArgs(args) {
   let prdSlug = "";
   let requestedFeatureSlug = "";
+  let force = false;
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
 
     if (arg === "--prd") {
-      prdSlug = normalizeSlug(args[index + 1] ?? "");
+      prdSlug = normalizeSlug(readOptionValue(args, index, "--prd"));
       index += 1;
       continue;
     }
 
     if (arg === "--feature") {
-      requestedFeatureSlug = normalizeSlug(args[index + 1] ?? "");
+      requestedFeatureSlug = normalizeSlug(
+        readOptionValue(args, index, "--feature"),
+      );
       index += 1;
+      continue;
     }
+
+    if (arg === "--force") {
+      force = true;
+      continue;
+    }
+
+    if (arg.startsWith("--")) {
+      throw new Error(`Unexpected argument: ${arg}`);
+    }
+
+    if (prdSlug) {
+      throw new Error(`Unexpected argument: ${arg}`);
+    }
+
+    prdSlug = normalizeSlug(arg);
   }
 
   if (!prdSlug) {
     throw new Error(
-      "Usage: pnpm feature:new --prd <prd-slug> [--feature <feature-slug>]",
+      "Usage: pnpm feature:new --prd <prd-slug> [--feature <feature-slug>] [--force]",
     );
   }
 
   return {
     prdSlug,
     requestedFeatureSlug,
+    force,
   };
+}
+
+function readOptionValue(args, index, flagName) {
+  const value = args[index + 1];
+
+  if (!value || value.startsWith("--")) {
+    throw new Error(`Missing value for ${flagName}.`);
+  }
+
+  return value;
 }
 
 function parsePrdDocument(markdown, prdSlug) {
@@ -372,25 +404,12 @@ function buildPlanningContext(prd, feature) {
 }
 
 function buildHarnessDefaults(planning) {
-  const changeTypes = [];
-
-  if (planning.frontendRequired || planning.uxRequired) {
-    changeTypes.push("user-facing-behavior");
-  }
-
-  if (planning.backendRequired) {
-    changeTypes.push("repository-contract");
-  }
-
-  return {
-    work_class: "hard-gated",
-    change_types: uniqueItems(changeTypes),
-    evidence_requirements: planning.frontendRequired
-      ? ["verify", "browser-qa", "quality-scorecard"]
-      : ["verify", "quality-scorecard"],
-    release_surface: planning.frontendRequired ? "user-facing" : "none",
-    primary_gate: "scorecard",
-  };
+  return buildHarnessContract({
+    workClass: "hard-gated",
+    changeTypes: deriveChangeTypes(planning),
+    releaseSurface: planning.frontendRequired ? "user-facing" : "none",
+    primaryGate: "scorecard",
+  });
 }
 
 function withHarnessDefaults(baseFields, planning) {
@@ -398,6 +417,101 @@ function withHarnessDefaults(baseFields, planning) {
     ...baseFields,
     ...buildHarnessDefaults(planning),
   };
+}
+
+function buildHarnessContract({ workClass, changeTypes, releaseSurface, primaryGate }) {
+  const normalizedChangeTypes = uniqueItems(changeTypes);
+
+  return {
+    work_class: workClass,
+    change_types: normalizedChangeTypes,
+    evidence_requirements: inferEvidenceRequirements({
+      workClass,
+      changeTypes: normalizedChangeTypes,
+      releaseSurface,
+      primaryGate,
+    }),
+    release_surface: releaseSurface,
+    primary_gate: primaryGate,
+  };
+}
+
+function deriveChangeTypes(planning) {
+  const changeTypes = [];
+
+  if (planning.frontendRequired || planning.uxRequired) {
+    changeTypes.push("user-facing-behavior");
+  }
+
+  if (planning.dataImpact.length > 0) {
+    changeTypes.push("validation-schema");
+  }
+
+  if (planning.backendRequired) {
+    changeTypes.push("repository-contract");
+  }
+
+  if (planning.analyticsImpact.length > 0 && planning.backendRequired) {
+    changeTypes.push("cross-repo-contract");
+  }
+
+  return changeTypes;
+}
+
+function inferEvidenceRequirements({
+  workClass,
+  changeTypes,
+  releaseSurface,
+  primaryGate,
+}) {
+  const evidence = new Set(["verify", "quality-scorecard"]);
+
+  if (
+    releaseSurface === "user-facing" ||
+    changeTypes.includes("user-facing-behavior")
+  ) {
+    evidence.add("browser-qa");
+  }
+
+  if (
+    releaseSurface === "ops-facing" ||
+    changeTypes.includes("release-ops")
+  ) {
+    evidence.add("ops-evidence");
+  }
+
+  if (
+    releaseSurface === "cross-repo" ||
+    changeTypes.some((type) =>
+      ["validation-schema", "repository-contract", "cross-repo-contract"].includes(
+        type,
+      ),
+    )
+  ) {
+    evidence.add("contract-test");
+  }
+
+  if (changeTypes.includes("prompt-workflow")) {
+    evidence.add("replayable-evaluation");
+  }
+
+  if (workClass === "light" && evidence.size === 2 && primaryGate === "brief") {
+    return ["verify"];
+  }
+
+  if (primaryGate === "browser-qa") {
+    evidence.add("browser-qa");
+  }
+
+  if (primaryGate === "contract-test") {
+    evidence.add("contract-test");
+  }
+
+  if (primaryGate === "scorecard") {
+    evidence.add("quality-scorecard");
+  }
+
+  return [...evidence];
 }
 
 function buildUserFlow(feature, prd, targetUser) {
@@ -530,18 +644,24 @@ function deriveAffectedPaths(feature, analyticsImpact, dataImpact) {
   return uniqueItems(paths);
 }
 
-async function resolveWorkId(featureSlug) {
+async function resolveWorkId(featureSlug, force) {
   const today = buildDatePart(new Date());
   const todayWorkId = `${today}-${featureSlug}`;
   const todayPath = path.join(workItemsDir, todayWorkId);
 
   try {
     await readdir(todayPath);
-    return todayWorkId;
   } catch (error) {
     if (!isMissingPathError(error)) {
       throw error;
     }
+    return todayWorkId;
+  }
+
+  if (!force) {
+    throw new Error(
+      `Work item docs/work-items/${todayWorkId} already exist. Re-run with --force to overwrite them.`,
+    );
   }
 
   return todayWorkId;
