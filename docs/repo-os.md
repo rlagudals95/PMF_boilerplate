@@ -81,7 +81,8 @@ PM/PD/FE/BE 역할은 multi-bot 기능이 아니라 같은 goal packet을 다른
 - editing depth: `product-config-friendly | deep code`
 - release surface: `none | user-facing | ops-facing | cross-repo`
 
-hard-gated 작업은 change type에 맞는 artifact matrix와 evidence closure를 통과해야 합니다.
+`gated work`는 기존의 넓은 우산 분류이고, hybrid harness contract에서는 `soft-gated`/`hard-gated`로 더 쪼갭니다.
+hard-gated 작업은 change type에 맞는 artifact matrix와 evidence closure를 요구하는 대상으로 분류합니다. 실제 enforcement는 upcoming harness gate 작업에서 붙습니다.
 
 ## Verification Entry Points
 

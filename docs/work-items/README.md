@@ -19,16 +19,20 @@ verification: "manual"
 raw business request에서 시작한다면 [docs/ai-starter-prompt-pack.md](/Users/hyeongmin/Desktop/workspace/pmf-boilerplate/docs/ai-starter-prompt-pack.md)로 AI가 repo를 먼저 읽고, 필요한 경우 1~3개의 질문으로 목표를 확인한 뒤 PRD/work item 또는 직접 적용 방향을 정하게 하는 편이 좋습니다.
 정책이나 business goal이 먼저 주어지는 경우에도 같은 흐름으로 `goal packet -> work item -> thin slice` 순서로 정규화하는 것을 기본값으로 둡니다.
 
-여기서 먼저 보는 triage는 두 축입니다.
+여기서 먼저 보는 triage는 세 축입니다.
 
-- work class: `light` 또는 `soft-gated` 또는 `hard-gated`
+- work class: `light | soft-gated | hard-gated`
 - editing depth: `product-config-friendly` 또는 `deep code`
+- release surface: `none | user-facing | ops-facing | cross-repo`
+
+`gated work`는 기존의 넓은 우산 분류이고, hybrid harness contract에서는 `soft-gated`와 `hard-gated`로 더 세분화합니다.
+release surface는 지금부터 work item에 함께 적는 선언값이며, enforcement는 upcoming harness gate 작업에서 붙습니다.
 
 즉 user-facing 변경이라 work item이 필요한 경우에도, 구현은 먼저 safe surface인 `product-config`에서 시작할 수 있습니다.
 
 - work item frontmatter는 `work_class`, `change_types`, `evidence_requirements`, `release_surface`, `primary_gate`를 함께 가진다.
-- `squad:check`는 이 metadata를 읽어 required artifact/evidence matrix를 검사한다.
-- `repo:check`는 active work item의 classification consistency를 검사한다.
+- `squad:check`는 upcoming harness gate가 이 metadata를 읽어 required artifact/evidence matrix를 검사하도록 연결될 예정이다.
+- `repo:check`는 upcoming harness gate가 active work item의 classification consistency를 검사하도록 확장될 예정이다.
 
 ## Manual / Scaffolding Quick Start
 

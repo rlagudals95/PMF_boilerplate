@@ -41,6 +41,8 @@ verification: "manual"
 | parallel research or competing hypotheses | gated work | product-squad + po + role owners + evaluator | subagent fan-out |
 | tightly coupled cross-layer implementation | gated work | product-squad + po + pm + pd + fe + be + evaluator | agent-team only when platform support is clearly useful |
 
+`gated work`는 legacy umbrella classification이고, hybrid harness contract에서는 `soft-gated`/`hard-gated`로 더 세분화한다. 이 문서의 분류는 선언 contract이며, 실제 enforcement는 upcoming harness gate 작업에서 붙는다.
+
 ## Hybrid Harness Defaults
 
 - `light`: small low-risk changes that can close with local verify
