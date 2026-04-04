@@ -10,6 +10,11 @@ source_request: ""
 affected_paths: []
 dependencies: []
 skip_reason: null
+work_class: "soft-gated"
+change_types: []
+evidence_requirements: []
+release_surface: "none"
+primary_gate: "brief"
 ---
 
 # Quality Scorecard
@@ -23,6 +28,14 @@ skip_reason: null
 ## Product Risks To Kill
 
 -
+
+## Required Evidence
+
+- required artifacts:
+- required evidence:
+- release surface:
+- primary gate:
+- explicit skip reasons:
 
 ## Design Gate Result
 

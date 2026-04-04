@@ -76,6 +76,9 @@ raw request에서 시작할 때 `po-role`은 goal packet을 `ready`, `needs-clar
 - user-facing 변경은 browser evidence와 quality scorecard 없이 완료로 보지 않는다.
 - landing 같은 user-facing surface는 browser evidence 전에 commercial quality critique를 통과해야 한다.
 - prompt, workflow, role topology 변경은 replayable evaluation evidence 또는 explicit skip reason 없이 완료로 보지 않는다.
+- 중요한 작업은 `light | soft-gated | hard-gated` 분류를 먼저 선언한다.
+- hard-gated 변경은 declared risk에 맞는 artifact와 evidence 없이 완료로 보지 않는다.
+- ship 판단은 merge 자체가 아니라 `evidence closure`를 기준으로 한다.
 
 완료 판정에 필요한 최소 증거는 아래입니다.
 

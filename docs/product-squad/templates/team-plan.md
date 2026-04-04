@@ -10,6 +10,11 @@ source_request: ""
 affected_paths: []
 dependencies: []
 skip_reason: null
+work_class: "soft-gated"
+change_types: []
+evidence_requirements: []
+release_surface: "none"
+primary_gate: "brief"
 ---
 
 # Team Plan
@@ -36,6 +41,11 @@ skip_reason: null
 
 - goal packet:
 - brief:
+- work class:
+- change types:
+- release surface:
+- evidence requirements:
+- primary gate:
 - feature spec:
 - ux review:
 - frontend spec:

@@ -10,6 +10,11 @@ source_request: ""
 affected_paths: []
 dependencies: []
 skip_reason: null
+work_class: "soft-gated"
+change_types: []
+evidence_requirements: []
+release_surface: "none"
+primary_gate: "brief"
 ---
 
 # Goal Packet
@@ -45,6 +50,13 @@ skip_reason: null
 ## Visual Bar
 
 -
+
+## Change Classification
+
+- work class:
+- change types:
+- release surface:
+- primary gate:
 
 ## Selected Delivery Shape
 

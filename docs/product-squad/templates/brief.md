@@ -10,6 +10,11 @@ source_request: ""
 affected_paths: []
 dependencies: []
 skip_reason: null
+work_class: "soft-gated"
+change_types: []
+evidence_requirements: []
+release_surface: "none"
+primary_gate: "brief"
 ---
 
 # Brief
@@ -48,7 +53,11 @@ skip_reason: null
 
 ## Enterprise Decision Guardrails
 
--
+- work class:
+- why this is gated:
+- change types:
+- evidence requirements:
+- primary gate:
 
 ## Success Metric
 

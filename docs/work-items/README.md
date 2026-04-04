@@ -21,10 +21,14 @@ raw business request에서 시작한다면 [docs/ai-starter-prompt-pack.md](/Use
 
 여기서 먼저 보는 triage는 두 축입니다.
 
-- work class: `light work` 또는 `gated work`
+- work class: `light` 또는 `soft-gated` 또는 `hard-gated`
 - editing depth: `product-config-friendly` 또는 `deep code`
 
 즉 user-facing 변경이라 work item이 필요한 경우에도, 구현은 먼저 safe surface인 `product-config`에서 시작할 수 있습니다.
+
+- work item frontmatter는 `work_class`, `change_types`, `evidence_requirements`, `release_surface`, `primary_gate`를 함께 가진다.
+- `squad:check`는 이 metadata를 읽어 required artifact/evidence matrix를 검사한다.
+- `repo:check`는 active work item의 classification consistency를 검사한다.
 
 ## Manual / Scaffolding Quick Start
 

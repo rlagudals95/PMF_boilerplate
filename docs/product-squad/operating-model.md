@@ -41,6 +41,22 @@ verification: "manual"
 | parallel research or competing hypotheses | gated work | product-squad + po + role owners + evaluator | subagent fan-out |
 | tightly coupled cross-layer implementation | gated work | product-squad + po + pm + pd + fe + be + evaluator | agent-team only when platform support is clearly useful |
 
+## Hybrid Harness Defaults
+
+- `light`: small low-risk changes that can close with local verify
+- `soft-gated`: meaningful changes that require `brief` and verify evidence
+- `hard-gated`: changes that alter user behavior, contracts, ops interpretation, prompt/workflow, or release rules
+
+대표 `change_types`:
+
+- `user-facing-behavior`
+- `validation-schema`
+- `repository-contract`
+- `cross-repo-contract`
+- `prompt-workflow`
+- `release-ops`
+- `new-capability`
+
 ## Editing Surface Triage
 
 작업 분류와 별개로, 구현을 어디서 시작할지에 대한 triage도 같이 합니다.

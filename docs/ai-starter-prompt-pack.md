@@ -15,7 +15,9 @@
 - landing이나 강한 user-facing 작업이면 `visual bar`, trust source, reference 또는 anti-reference가 약할 때 그대로 구현하지 않습니다.
 - `po-role`이 먼저 goal packet completeness를 보고, `pm-role` / `pd-role` / `fe-role` / `be-role` critique가 끝나기 전에는 코드를 수정하지 않습니다.
 - 기본 토폴로지는 `po-role`이 user conversation과 synthesis를 소유하고, specialist는 bounded artifact를 반환하며, `evaluator-role`이 release gate를 닫는 구조입니다.
-- 요청은 먼저 work class가 `gated work`인지 보고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 판단한 뒤 가장 안전한 surface부터 시작합니다.
+- 먼저 `light | soft-gated | hard-gated`를 판정한다.
+- hard-gated면 change type과 release surface를 선언하고 work item artifact를 먼저 연다.
+- 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 판단한 뒤 가장 안전한 surface부터 시작합니다.
 - 이 저장소의 강점은 자유 생성이 아니라 existing block 조합입니다. 먼저 `landing`, `lead`, `consultation`, `payment`, `admin`, `auth` 블록 안에서 해결하고, 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` contract와 copy surface를 맞춥니다.
 - 단, existing block 조합이 business goal이나 commercial quality bar를 해치면 starter convenience보다 목표 달성을 우선합니다.
 - `mvp:new`, `prd:new`, `feature:new`, `work:new`는 계속 유지하지만, manual scaffold나 power-user workflow일 때 우선 사용합니다.
@@ -66,7 +68,7 @@ Auth와 payment는 기본 기능이 아니라 optional runtime capability입니�
 4. 정말 필요한 경우에만 1~3개의 짧은 질문으로 goal packet과 visual bar를 보강한다. landing이나 user-facing 작업이면 reference 또는 anti-reference가 필요한지도 판단한다.
 5. `po-role`이 user conversation과 synthesis owner라는 전제로 `pm-role` / `pd-role` / `fe-role` / `be-role` 관점에서 “이대로 구현하면 실패하는 이유”를 먼저 적고, critique가 끝나기 전에는 코드 수정을 시작하지 않는다.
 6. 기존 landing / lead / consultation / payment / admin / auth 블록 안에서 가장 얇고 데모 가능한 MVP shape를 고른다.
-7. 이 요청의 work class가 `gated work`인지 먼저 보고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 판단한 뒤 가장 안전한 surface부터 시작한다.
+7. 이 요청의 work class가 `light | soft-gated | hard-gated`인지 먼저 보고, 동시에 `product-config-friendly`인지 또는 `deep code`가 필요한지도 판단한 뒤 가장 안전한 surface부터 시작한다.
 8. active flows와 deferred flows를 정한다.
 9. `product-config-friendly`면 먼저 `apps/web/src/lib/product-config.ts`의 `mvp` shape, active/deferred flow, primary CTA와 copy surface를 맞춘다.
 10. 기존 블록으로 표현되지 않는 요구일 때만 deeper code를 변경한다.
