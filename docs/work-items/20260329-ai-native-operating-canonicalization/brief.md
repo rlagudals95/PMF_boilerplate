@@ -37,6 +37,15 @@ dependencies:
   - docs/product-squad/operating-model.md
   - docs/product-squad/goal-driven-delivery.md
 skip_reason: null
+work_class: "hard-gated"
+change_types:
+  - "prompt-workflow"
+evidence_requirements:
+  - "verify"
+  - "quality-scorecard"
+  - "replayable-evaluation"
+release_surface: "none"
+primary_gate: "scorecard"
 ---
 
 # Brief

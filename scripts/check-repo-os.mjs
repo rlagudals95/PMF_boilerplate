@@ -16,6 +16,42 @@ const allowedVerification = new Set([
   "scripted",
   "generated",
 ]);
+const allowedWorkClasses = new Set(["light", "soft-gated", "hard-gated"]);
+const allowedChangeTypes = new Set([
+  "user-facing-behavior",
+  "validation-schema",
+  "repository-contract",
+  "cross-repo-contract",
+  "prompt-workflow",
+  "release-ops",
+  "new-capability",
+]);
+const allowedEvidenceRequirements = new Set([
+  "verify",
+  "quality-scorecard",
+  "browser-qa",
+  "ops-evidence",
+  "contract-test",
+  "replayable-evaluation",
+]);
+const allowedReleaseSurfaces = new Set([
+  "none",
+  "user-facing",
+  "ops-facing",
+  "cross-repo",
+]);
+const allowedPrimaryGates = new Set([
+  "brief",
+  "scorecard",
+  "browser-qa",
+  "contract-test",
+]);
+const harnessArtifactNames = [
+  "goal-packet.md",
+  "brief.md",
+  "team-plan.md",
+  "quality-scorecard.md",
+];
 
 async function main() {
   const options = await parseArgs(process.argv.slice(2));
@@ -24,6 +60,7 @@ async function main() {
 
   await checkMetadata(results);
   await checkTargetWorkItems(results, workIds, options.strict);
+  await checkHarnessClassificationConsistency(results, workIds);
   await checkAdapterDrift(results);
   await checkLintToolingContract(results);
 
@@ -371,6 +408,97 @@ async function checkTargetWorkItems(results, workIds, strict) {
   }
 }
 
+async function checkHarnessClassificationConsistency(results, workIds) {
+  for (const workId of workIds) {
+    const targetDir = path.join(workItemsDir, workId);
+    const inspections = [];
+    let hasWorkItemFailure = false;
+
+    for (const fileName of harnessArtifactNames) {
+      const filePath = path.join(targetDir, fileName);
+
+      try {
+        const markdown = await readFile(filePath, "utf8");
+        const { frontmatter } = parseFrontmatter(markdown);
+        inspections.push({
+          fileName,
+          harness: readHarnessClassification(frontmatter),
+        });
+      } catch (error) {
+        if (isMissingPathError(error)) {
+          continue;
+        }
+
+        throw error;
+      }
+    }
+
+    const harnessInspections = inspections.filter(
+      (inspection) => inspection.harness.hasAnyMetadata,
+    );
+
+    if (harnessInspections.length === 0) {
+      results.push(
+        warn(
+          "work-item",
+          `${workId}: harness metadata is still legacy; repo:check will keep using squad:check defaults until the item is backfilled`,
+        ),
+      );
+      continue;
+    }
+
+    if (harnessInspections.length !== harnessArtifactNames.length) {
+      results.push(
+        fail(
+          "work-item",
+          `${workId}: harness metadata must be declared consistently across goal-packet.md, brief.md, team-plan.md, and quality-scorecard.md`,
+        ),
+      );
+      hasWorkItemFailure = true;
+      continue;
+    }
+
+    const base = harnessInspections.find(
+      (inspection) => inspection.fileName === "brief.md",
+    )?.harness ?? harnessInspections[0].harness;
+    const baseSignature = harnessSignature(base);
+
+    for (const inspection of harnessInspections) {
+      const invalidIssues = validateHarnessClassification(
+        inspection.fileName,
+        inspection.harness,
+      );
+
+      if (invalidIssues.length > 0) {
+        for (const issue of invalidIssues) {
+          results.push(fail("work-item", `${workId}: ${issue}`));
+        }
+        hasWorkItemFailure = true;
+        continue;
+      }
+
+      if (harnessSignature(inspection.harness) !== baseSignature) {
+        results.push(
+          fail(
+            "work-item",
+            `${workId}: ${inspection.fileName} does not match brief.md harness classification`,
+          ),
+        );
+        hasWorkItemFailure = true;
+      }
+    }
+
+    if (!hasWorkItemFailure) {
+      results.push(
+        pass(
+          "work-item",
+          `${workId}: harness classification is consistent across active work-item artifacts`,
+        ),
+      );
+    }
+  }
+}
+
 async function checkAdapterDrift(results) {
   const run = spawnSync(
     process.execPath,
@@ -525,15 +653,40 @@ function parseFrontmatter(markdown) {
   }
 
   const frontmatter = {};
+  let currentKey = "";
 
   for (const line of match[1].split("\n")) {
     const parsed = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
 
     if (!parsed) {
+      const listItem = line.match(/^\s*-\s*(.*)$/);
+
+      if (listItem && currentKey) {
+        if (!Array.isArray(frontmatter[currentKey])) {
+          frontmatter[currentKey] = [];
+        }
+
+        frontmatter[currentKey].push(listItem[1]);
+        continue;
+      }
+
       continue;
     }
 
-    frontmatter[parsed[1]] = parsed[2];
+    currentKey = parsed[1];
+    const value = parsed[2].trim();
+
+    if (!value || value === "[]") {
+      frontmatter[currentKey] = [];
+      continue;
+    }
+
+    if (value === "null") {
+      frontmatter[currentKey] = null;
+      continue;
+    }
+
+    frontmatter[currentKey] = value;
   }
 
   return {
@@ -546,6 +699,108 @@ function normalizeScalar(value) {
   return String(value ?? "")
     .trim()
     .replace(/^['"]|['"]$/g, "");
+}
+
+function normalizeList(value) {
+  if (Array.isArray(value)) {
+    return uniqueItems(value.map((item) => normalizeScalar(item)).filter(Boolean));
+  }
+
+  const normalized = normalizeScalar(value);
+
+  if (!normalized || normalized === "[]") {
+    return [];
+  }
+
+  return uniqueItems([normalized]);
+}
+
+function uniqueItems(items) {
+  return [...new Set(items.filter(Boolean))];
+}
+
+function readHarnessClassification(frontmatter) {
+  const workClass = normalizeScalar(frontmatter.work_class);
+  const changeTypes = normalizeList(frontmatter.change_types);
+  const evidenceRequirements = normalizeList(frontmatter.evidence_requirements);
+  const releaseSurface = normalizeScalar(frontmatter.release_surface);
+  const primaryGate = normalizeScalar(frontmatter.primary_gate);
+
+  return {
+    workClass,
+    changeTypes,
+    evidenceRequirements,
+    releaseSurface,
+    primaryGate,
+    hasAnyMetadata:
+      Boolean(workClass) ||
+      changeTypes.length > 0 ||
+      evidenceRequirements.length > 0 ||
+      Boolean(releaseSurface) ||
+      Boolean(primaryGate),
+  };
+}
+
+function validateHarnessClassification(fileName, harness) {
+  const issues = [];
+
+  if (!harness.hasAnyMetadata) {
+    return issues;
+  }
+
+  if (harness.workClass && !allowedWorkClasses.has(harness.workClass)) {
+    issues.push(
+      `${fileName}: invalid work_class=${JSON.stringify(harness.workClass)}`,
+    );
+  }
+
+  const invalidChangeTypes = harness.changeTypes.filter(
+    (changeType) => !allowedChangeTypes.has(changeType),
+  );
+
+  if (invalidChangeTypes.length > 0) {
+    issues.push(
+      `${fileName}: invalid change_types=${formatList(invalidChangeTypes)}`,
+    );
+  }
+
+  const invalidEvidenceRequirements = harness.evidenceRequirements.filter(
+    (evidenceRequirement) => !allowedEvidenceRequirements.has(evidenceRequirement),
+  );
+
+  if (invalidEvidenceRequirements.length > 0) {
+    issues.push(
+      `${fileName}: invalid evidence_requirements=${formatList(invalidEvidenceRequirements)}`,
+    );
+  }
+
+  if (harness.releaseSurface && !allowedReleaseSurfaces.has(harness.releaseSurface)) {
+    issues.push(
+      `${fileName}: invalid release_surface=${JSON.stringify(harness.releaseSurface)}`,
+    );
+  }
+
+  if (harness.primaryGate && !allowedPrimaryGates.has(harness.primaryGate)) {
+    issues.push(
+      `${fileName}: invalid primary_gate=${JSON.stringify(harness.primaryGate)}`,
+    );
+  }
+
+  return issues;
+}
+
+function harnessSignature(harness) {
+  return JSON.stringify({
+    workClass: harness.workClass,
+    changeTypes: harness.changeTypes,
+    evidenceRequirements: harness.evidenceRequirements,
+    releaseSurface: harness.releaseSurface,
+    primaryGate: harness.primaryGate,
+  });
+}
+
+function formatList(values) {
+  return values.map((value) => JSON.stringify(value)).join(", ");
 }
 
 function summarizeChildOutput(stdout, stderr) {

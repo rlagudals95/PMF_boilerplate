@@ -24,6 +24,15 @@ dependencies:
   - docs/work-items/20260329-ai-native-operating-canonicalization/brief.md
   - ai/context/doc-sync.md
 skip_reason: null
+work_class: "hard-gated"
+change_types:
+  - "prompt-workflow"
+evidence_requirements:
+  - "verify"
+  - "quality-scorecard"
+  - "replayable-evaluation"
+release_surface: "none"
+primary_gate: "scorecard"
 ---
 
 # Team Plan

@@ -25,6 +25,15 @@ dependencies:
   - docs/work-items/20260329-ai-native-operating-canonicalization/brief.md
   - docs/work-items/20260329-ai-native-operating-canonicalization/backend-spec.md
 skip_reason: null
+work_class: "hard-gated"
+change_types:
+  - "prompt-workflow"
+evidence_requirements:
+  - "verify"
+  - "quality-scorecard"
+  - "replayable-evaluation"
+release_surface: "none"
+primary_gate: "scorecard"
 ---
 
 # Quality Scorecard
@@ -65,6 +74,10 @@ skip_reason: null
 - `ai/skills/pm-role.md`, `pd-role.md`, `fe-role.md`, `be-role.md`에 역할별 enterprise principles를 추가했고, `ai/agents/*.md`도 같은 원칙을 읽고 적용하도록 맞췄다.
 - `scripts/check-squad-work-item.mjs`가 `Enterprise Decision Guardrails`, `Enterprise UX Principles`, `Enterprise FE Guardrails`, `Enterprise BE Guardrails`, `Principle Adherence` 섹션을 확인하도록 갱신됐다.
 - fresh `pnpm verify`가 exit code 0으로 끝났고 lint, typecheck, test가 모두 통과했다.
+
+## Replayable Evaluation Evidence
+
+- skip reason: canonical workflow hardening slice. `pnpm repo:check --work 20260329-ai-native-operating-canonicalization`, `pnpm squad:check 20260329-ai-native-operating-canonicalization`, `pnpm ai:sync`, and `pnpm verify` act as the replayable proof for this non-user-facing change.
 
 ## Principle Adherence
 
