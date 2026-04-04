@@ -27,6 +27,9 @@ const allowedChangeTypes = new Set([
   "new-capability",
 ]);
 const allowedEvidenceRequirements = new Set([
+  "repo:check",
+  "squad:check",
+  "ai:sync",
   "verify",
   "quality-scorecard",
   "browser-qa",
@@ -422,6 +425,7 @@ async function checkHarnessClassificationConsistency(results, workIds) {
         const { frontmatter } = parseFrontmatter(markdown);
         inspections.push({
           fileName,
+          body: markdown,
           harness: readHarnessClassification(frontmatter),
         });
       } catch (error) {
@@ -462,6 +466,10 @@ async function checkHarnessClassificationConsistency(results, workIds) {
       (inspection) => inspection.fileName === "brief.md",
     )?.harness ?? harnessInspections[0].harness;
     const baseSignature = harnessSignature(base);
+    const scorecardBody =
+      inspections.find(
+        (inspection) => inspection.fileName === "quality-scorecard.md",
+      )?.body ?? "";
 
     for (const inspection of harnessInspections) {
       const invalidIssues = validateHarnessClassification(
@@ -486,6 +494,19 @@ async function checkHarnessClassificationConsistency(results, workIds) {
         );
         hasWorkItemFailure = true;
       }
+    }
+
+    if (
+      base.releaseSurface === "user-facing" &&
+      !/browser-qa\.md/i.test(scorecardBody)
+    ) {
+      results.push(
+        fail(
+          "work-item",
+          `${workId}: user-facing active work item must reference browser-qa.md in quality-scorecard.md`,
+        ),
+      );
+      hasWorkItemFailure = true;
     }
 
     if (!hasWorkItemFailure) {

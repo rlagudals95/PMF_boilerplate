@@ -28,9 +28,10 @@ work_class: "hard-gated"
 change_types:
   - "prompt-workflow"
 evidence_requirements:
+  - "repo:check"
+  - "squad:check"
+  - "ai:sync"
   - "verify"
-  - "quality-scorecard"
-  - "replayable-evaluation"
 release_surface: "none"
 primary_gate: "scorecard"
 ---
